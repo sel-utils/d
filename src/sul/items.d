@@ -663,7 +663,7 @@ enum Items : Item {
 	DIAMOND_HORSE_ARMOR = Item("diamond horse armor", 636, ItemData(true, 419, 0), ItemData(true, 419, 0), 1),
 	LEAD = Item("lead", 637, ItemData(true, 420, 0), ItemData(true, 420, 0), 64),
 	NAME_TAG = Item("name tag", 638, ItemData(true, 421, 0), ItemData(true, 421, 0), 64),
-	MINECART_WITH_COMMAND_BLOCK = Item("minecart with command block", 639, ItemData(true, 422, 0), ItemData(false), 1),
+	MINECART_WITH_COMMAND_BLOCK = Item("minecart with command block", 639, ItemData(true, 422, 0), ItemData(true, 443, 0), 1),
 	RAW_MUTTON = Item("raw mutton", 640, ItemData(true, 423, 0), ItemData(true, 423, 0), 64),
 	COOKED_MUTTON = Item("cooked mutton", 641, ItemData(true, 424, 0), ItemData(true, 424, 0), 64),
 	BANNER = Item("banner", 642, ItemData(true, 425, 0), ItemData(false), 64),

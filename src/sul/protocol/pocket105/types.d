@@ -546,17 +546,17 @@ struct Decoration {
 struct Rule {
 
 	// name
+	public enum string COMMAND_BLOCK_OUTPUT = "commandblockoutput";
 	public enum string DROWNING_DAMAGE = "drowningdamage";
 	public enum string FALL_DAMAGE = "falldamage";
 	public enum string FIRE_DAMAGE = "firedamage";
-	public enum string IMMUTABLE_WORLD = "immutableworld";
 	public enum string PVP = "pvp";
+	public enum string SEND_COMMAND_FEEDBACK = "sendcommandfeedback";
 
 	public enum string[] FIELDS = ["name", "value", "unknown2"];
 
 	/**
-	 * Name of the rule. Same of the `gamerule` command's field in Minecraft: Education
-	 * Edition.
+	 * Name of the rule. Same of the `gamerule` command's field in the game.
 	 * The behaviours indicated in the following constants' descriptions is enabled or
 	 * disabled.
 	 */

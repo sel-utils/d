@@ -21,6 +21,7 @@ public enum Entities : Entity {
 	MINECART_WITH_HOPPER = Entity("minecart with hopper", true, 0, 96, 0.98, 0.7),
 	MINECART_WITH_TNT = Entity("minecart with tnt", true, 0, 97, 0.98, 0.7),
 	MINECART_WITH_CHEST = Entity("minecart with chest", true, 0, 98, 0.98, 0.7),
+	MINECART_WITH_COMMAND_BLOCK = Entity("minecart with command block", true, 0, 100, 0.98, 0.7),
 	ACTIVATED_TNT = Entity("activated tnt", true, 50, 65, 0.98, 0.98),
 	ENDER_CRYSTAL = Entity("ender crystal", true, 51, 71, 2, 2),
 	ARROW = Entity("arrow", true, 60, 80, 0.5, 0.5),
