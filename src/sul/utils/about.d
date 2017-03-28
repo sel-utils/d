@@ -7,4 +7,4 @@
  */
 module sul.utils.about;
 
-enum __sul = 335;
+enum __sul = 336;
