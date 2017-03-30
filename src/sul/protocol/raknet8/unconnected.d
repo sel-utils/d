@@ -339,3 +339,4 @@ class OpenConnectionReply2 : Buffer {
 	}
 
 }
+

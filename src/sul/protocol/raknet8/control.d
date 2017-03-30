@@ -153,3 +153,4 @@ class Encapsulated : Buffer {
 	}
 
 }
+

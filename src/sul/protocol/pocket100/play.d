@@ -4676,3 +4676,4 @@ class ResourcePackChunkRequest : Buffer {
 	}
 
 }
+

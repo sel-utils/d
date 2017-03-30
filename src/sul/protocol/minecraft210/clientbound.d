@@ -5237,3 +5237,4 @@ class EntityEffect : Buffer {
 	}
 
 }
+

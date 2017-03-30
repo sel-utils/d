@@ -5,6 +5,7 @@
  * License: https://github.com/sel-project/sel-utils/blob/master/LICENSE
  * Repository: https://github.com/sel-project/sel-utils
  */
+
 module sul.utils.var;
 
 import std.traits : isNumeric, isIntegral, isSigned, isUnsigned, Unsigned;
@@ -84,3 +85,4 @@ alias varuint = var!uint;
 alias varlong = var!long;
 
 alias varulong = var!ulong;
+	

@@ -291,3 +291,4 @@ class SetCompression : Buffer {
 	}
 
 }
+

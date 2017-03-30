@@ -268,3 +268,4 @@ class UpdateStats : Buffer {
 	}
 
 }
+

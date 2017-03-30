@@ -73,3 +73,4 @@ class Connection : Buffer {
 	}
 
 }
+

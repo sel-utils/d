@@ -1088,3 +1088,4 @@ class OrderedGamePacket : Buffer {
 	}
 
 }
+
