@@ -8,7 +8,7 @@
  */
 module sul.enchantments;
 
-public struct EnchantmentValue
+public struct EnchantmentData
 {
 
     bool exists;
