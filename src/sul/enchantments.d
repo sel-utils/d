@@ -59,6 +59,7 @@ public enum Enchantments : Enchantment
     LUCK_OF_THE_SEA = Enchantment("luck of the sea", EnchantmentData(true, 61), EnchantmentData(true, 23), 3),
     LURE = Enchantment("lure", EnchantmentData(true, 62), EnchantmentData(true, 24), 3),
     MENDING = Enchantment("mending", EnchantmentData(true, 70), EnchantmentData(false, 0), 1),
-    CURSE_OF_VANISHING = Enchantment("curse of vanishing", EnchantmentData(true, 71), EnchantmentData(false, 0), 1),    
+    CURSE_OF_VANISHING = Enchantment("curse of vanishing", EnchantmentData(true, 71), EnchantmentData(false, 0), 1),
 
 }
+

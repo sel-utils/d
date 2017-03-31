@@ -18,7 +18,7 @@ public struct ItemData
 
 }
 
-public struct Item 
+public struct Item
 {
 
     string name;
@@ -710,6 +710,7 @@ public enum Items : Item
     DISC_STRAD = Item("disc strad", ItemData(true, 2264, 0), ItemData(false), 1),
     DISC_WARD = Item("disc ward", ItemData(true, 2265, 0), ItemData(false), 1),
     DISC_11 = Item("disc 11", ItemData(true, 2266, 0), ItemData(false), 1),
-    DISC_WAIT = Item("disc wait", ItemData(true, 2267, 0), ItemData(false), 1),    
+    DISC_WAIT = Item("disc wait", ItemData(true, 2267, 0), ItemData(false), 1),
 
 }
+

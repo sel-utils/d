@@ -11,7 +11,7 @@ module sul.effects;
 public struct Effect
 {
 
-    string name;    
+    string name;
     ubyte id;
     uint color;
 
