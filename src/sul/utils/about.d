@@ -5,4 +5,6 @@
  * License: https://github.com/sel-project/sel-utils/blob/master/LICENSE
  * Repository: https://github.com/sel-project/sel-utils
  */
-public enum __sul = 415;
+module sul.utils.about;
+
+public enum __sul = 427;
