@@ -4815,26 +4815,26 @@ class CommandStep : Buffer {
 	public enum bool CLIENTBOUND = false;
 	public enum bool SERVERBOUND = true;
 
-	public enum string[] FIELDS = ["command", "overload", "unknown2", "unknown3", "isOutput", "unknown5", "input", "output"];
+	public enum string[] FIELDS = ["command", "overload", "unknown2", "currentStep", "done", "clientId", "input", "output"];
 
 	public string command;
 	public string overload;
 	public uint unknown2;
-	public uint unknown3;
-	public bool isOutput;
-	public ulong unknown5;
+	public uint currentStep;
+	public bool done;
+	public ulong clientId;
 	public string input;
 	public string output;
 
 	public pure nothrow @safe @nogc this() {}
 
-	public pure nothrow @safe @nogc this(string command, string overload=string.init, uint unknown2=uint.init, uint unknown3=uint.init, bool isOutput=bool.init, ulong unknown5=ulong.init, string input=string.init, string output=string.init) {
+	public pure nothrow @safe @nogc this(string command, string overload=string.init, uint unknown2=uint.init, uint currentStep=uint.init, bool done=bool.init, ulong clientId=ulong.init, string input=string.init, string output=string.init) {
 		this.command = command;
 		this.overload = overload;
 		this.unknown2 = unknown2;
-		this.unknown3 = unknown3;
-		this.isOutput = isOutput;
-		this.unknown5 = unknown5;
+		this.currentStep = currentStep;
+		this.done = done;
+		this.clientId = clientId;
 		this.input = input;
 		this.output = output;
 	}
@@ -4845,9 +4845,9 @@ class CommandStep : Buffer {
 		writeBytes(varuint.encode(cast(uint)command.length)); writeString(command);
 		writeBytes(varuint.encode(cast(uint)overload.length)); writeString(overload);
 		writeBytes(varuint.encode(unknown2));
-		writeBytes(varuint.encode(unknown3));
-		writeBigEndianBool(isOutput);
-		writeBytes(varulong.encode(unknown5));
+		writeBytes(varuint.encode(currentStep));
+		writeBigEndianBool(done);
+		writeBytes(varulong.encode(clientId));
 		writeBytes(varuint.encode(cast(uint)input.length)); writeString(input);
 		writeBytes(varuint.encode(cast(uint)output.length)); writeString(output);
 		return _buffer;
@@ -4858,9 +4858,9 @@ class CommandStep : Buffer {
 		uint y9bfz=varuint.decode(_buffer, &_index); command=readString(y9bfz);
 		uint bzcxyq=varuint.decode(_buffer, &_index); overload=readString(bzcxyq);
 		unknown2=varuint.decode(_buffer, &_index);
-		unknown3=varuint.decode(_buffer, &_index);
-		isOutput=readBigEndianBool();
-		unknown5=varulong.decode(_buffer, &_index);
+		currentStep=varuint.decode(_buffer, &_index);
+		done=readBigEndianBool();
+		clientId=varulong.decode(_buffer, &_index);
 		uint a5dq=varuint.decode(_buffer, &_index); input=readString(a5dq);
 		uint bvcv=varuint.decode(_buffer, &_index); output=readString(bvcv);
 	}
@@ -4873,7 +4873,7 @@ class CommandStep : Buffer {
 	}
 
 	public override string toString() {
-		return "CommandStep(command: " ~ std.conv.to!string(this.command) ~ ", overload: " ~ std.conv.to!string(this.overload) ~ ", unknown2: " ~ std.conv.to!string(this.unknown2) ~ ", unknown3: " ~ std.conv.to!string(this.unknown3) ~ ", isOutput: " ~ std.conv.to!string(this.isOutput) ~ ", unknown5: " ~ std.conv.to!string(this.unknown5) ~ ", input: " ~ std.conv.to!string(this.input) ~ ", output: " ~ std.conv.to!string(this.output) ~ ")";
+		return "CommandStep(command: " ~ std.conv.to!string(this.command) ~ ", overload: " ~ std.conv.to!string(this.overload) ~ ", unknown2: " ~ std.conv.to!string(this.unknown2) ~ ", currentStep: " ~ std.conv.to!string(this.currentStep) ~ ", done: " ~ std.conv.to!string(this.done) ~ ", clientId: " ~ std.conv.to!string(this.clientId) ~ ", input: " ~ std.conv.to!string(this.input) ~ ", output: " ~ std.conv.to!string(this.output) ~ ")";
 	}
 
 }

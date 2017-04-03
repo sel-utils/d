@@ -4,9 +4,14 @@
  * 
  * License: https://github.com/sel-project/sel-utils/blob/master/LICENSE
  * Repository: https://github.com/sel-project/sel-utils
- * Generated from https://github.com/sel-project/sel-utils/blob/master/xml/protocol/pocket100.xml
+ * Generated from https://github.com/sel-project/sel-utils/blob/master/xml/protocol/pocket110.xml
  */
-module sul.protocol.pocket100.play;
+/**
+ * Packets related to the gameplay. Network-related packets (encapsulation, acks, nacks)
+ * are managed by RakNet and every packet in this section is encapsualted in an Encapsualted
+ * packet.
+ */
+module sul.protocol.pocket110.play;
 
 import std.bitmanip : write, peek;
 static import std.conv;
@@ -18,12 +23,16 @@ import std.uuid : UUID;
 import sul.utils.buffer;
 import sul.utils.var;
 
-static import sul.protocol.pocket100.types;
+static import sul.protocol.pocket110.types;
 
-static if(__traits(compiles, { import sul.metadata.pocket100; })) import sul.metadata.pocket100;
+static if(__traits(compiles, { import sul.metadata.pocket110; })) import sul.metadata.pocket110;
 
-alias Packets = TypeTuple!(Login, PlayStatus, ServerToClientHandshake, ClientToServerHandshake, Disconnect, Batch, ResourcePacksInfo, ResourcePacksStackPacket, ResourcePackClientResponse, Text, SetTime, StartGame, AddPlayer, AddEntity, RemoveEntity, AddItemEntity, AddHangingEntity, TakeItemEntity, MoveEntity, MovePlayer, RiderJump, RemoveBlock, UpdateBlock, AddPainting, Explode, LevelSoundEvent, LevelEvent, BlockEvent, EntityEvent, MobEffect, UpdateAttributes, MobEquipment, MobArmorEquipment, Interact, UseItem, PlayerAction, PlayerFall, HurtArmor, SetEntityData, SetEntityMotion, SetEntityLink, SetHealth, SetSpawnPosition, Animate, Respawn, DropItem, InventoryAction, ContainerOpen, ContainerClose, ContainerSetSlot, ContainerSetData, ContainerSetContent, CraftingData, CraftingEvent, AdventureSettings, BlockEntityData, PlayerInput, FullChunkData, SetCommandsEnabled, SetDifficulty, ChangeDimension, SetPlayerGameType, PlayerList, TelemetryEvent, SpawnExperienceOrb, ClientboundMapItemData, MapInfoRequest, RequestChunkRadius, ChunkRadiusUpdated, ItemFrameDropItem, ReplaceSelectedItem, GameRulesChanged, Camera, AddItem, BossEvent, ShowCredits, AvailableCommands, CommandStep, ResourcePackDataInfo, ResourcePackChunkData, ResourcePackChunkRequest);
+alias Packets = TypeTuple!(Login, PlayStatus, ServerToClientHandshake, ClientToServerHandshake, Disconnect, ResourcePacksInfo, ResourcePacksStackPacket, ResourcePackClientResponse, Text, SetTime, StartGame, AddPlayer, AddEntity, RemoveEntity, AddItemEntity, AddHangingEntity, TakeItemEntity, MoveEntity, MovePlayer, RiderJump, RemoveBlock, UpdateBlock, AddPainting, Explode, LevelSoundEvent, LevelEvent, BlockEvent, EntityEvent, MobEffect, UpdateAttributes, MobEquipment, MobArmorEquipment, Interact, BlockPickRequest, UseItem, PlayerAction, EntityFall, HurtArmor, SetEntityData, SetEntityMotion, SetEntityLink, SetHealth, SetSpawnPosition, Animate, Respawn, DropItem, InventoryAction, ContainerOpen, ContainerClose, ContainerSetSlot, ContainerSetData, ContainerSetContent, CraftingData, CraftingEvent, AdventureSettings, BlockEntityData, PlayerInput, FullChunkData, SetCommandsEnabled, SetDifficulty, ChangeDimension, SetPlayerGameType, PlayerList, SimpleEvent, TelemetryEvent, SpawnExperienceOrb, ClientboundMapItemData, MapInfoRequest, RequestChunkRadius, ChunkRadiusUpdated, ItemFrameDropItem, ReplaceItemInSlot, GameRulesChanged, Camera, AddItem, BossEvent, ShowCredits, AvailableCommands, CommandStep, CommandBlockUpdate, UpdateTrade, UpdateEquip, ResourcePackDataInfo, ResourcePackChunkData, ResourcePackChunkRequest, Transfer, PlaySound, StopSound, SetTitle, AddBehaviorTree, StructureBlockUpdate);
 
+/**
+ * First MCPE packet sent after the establishment of the connection through raknet.
+ * It contains informations about the player.
+ */
 class Login : Buffer {
 
 	public enum ubyte ID = 1;
@@ -37,8 +46,23 @@ class Login : Buffer {
 
 	public enum string[] FIELDS = ["protocol", "edition", "body_"];
 
+	/**
+	 * Version of the protocol used by the player.
+	 */
 	public uint protocol;
+
+	/**
+	 * Edition that the player is using to join the server. The different editions may
+	 * have different features and servers may block the access from unaccepted editions
+	 * of the game.
+	 */
 	public ubyte edition;
+
+	/**
+	 * Zlib-compressed bytes that contains 2 JWTs with more informations about the player
+	 * and its account. Once uncompressed the resulting payload will contain 2 JWTs which
+	 * length is indicated by a little-endian unsigned integer each.
+	 */
 	public ubyte[] body_;
 
 	public pure nothrow @safe @nogc this() {}
@@ -78,6 +102,10 @@ class Login : Buffer {
 
 }
 
+/**
+ * Packet sent as response to Login to indicate whether the connection has been accepted
+ * and when the player is ready to spawn in the world.
+ */
 class PlayStatus : Buffer {
 
 	public enum ubyte ID = 2;
@@ -91,7 +119,8 @@ class PlayStatus : Buffer {
 	public enum uint OUTDATED_SERVER = 2;
 	public enum uint SPAWNED = 3;
 	public enum uint INVALID_TENANT = 4;
-	public enum uint EDITION_MISMATCH = 5;
+	public enum uint EDU_REQUIRED = 5;
+	public enum uint VANILLA_REQUIRED = 6;
 
 	public enum string[] FIELDS = ["status"];
 
@@ -206,6 +235,9 @@ class ClientToServerHandshake : Buffer {
 
 }
 
+/**
+ * Disconnects the player from the server.
+ */
 class Disconnect : Buffer {
 
 	public enum ubyte ID = 5;
@@ -215,7 +247,15 @@ class Disconnect : Buffer {
 
 	public enum string[] FIELDS = ["hideDisconnectionScreen", "message"];
 
+	/**
+	 * Indicates whether to display the main menu screen or a disconnection message.
+	 */
 	public bool hideDisconnectionScreen;
+
+	/**
+	 * The message to display in the disconnection screen. If the message is in the game's
+	 * language file it will be translated client-side.
+	 */
 	public string message;
 
 	public pure nothrow @safe @nogc this() {}
@@ -252,51 +292,9 @@ class Disconnect : Buffer {
 
 }
 
-class Batch : Buffer {
-
-	public enum ubyte ID = 6;
-
-	public enum bool CLIENTBOUND = true;
-	public enum bool SERVERBOUND = true;
-
-	public enum string[] FIELDS = ["data"];
-
-	public ubyte[] data;
-
-	public pure nothrow @safe @nogc this() {}
-
-	public pure nothrow @safe @nogc this(ubyte[] data) {
-		this.data = data;
-	}
-
-	public pure nothrow @safe ubyte[] encode(bool writeId=true)() {
-		_buffer.length = 0;
-		static if(writeId){ writeBigEndianUbyte(ID); }
-		writeBytes(varuint.encode(cast(uint)data.length)); writeBytes(data);
-		return _buffer;
-	}
-
-	public pure nothrow @safe void decode(bool readId=true)() {
-		static if(readId){ ubyte _id; _id=readBigEndianUbyte(); }
-		data.length=varuint.decode(_buffer, &_index); if(_buffer.length>=_index+data.length){ data=_buffer[_index.._index+data.length].dup; _index+=data.length; }
-	}
-
-	public static pure nothrow @safe Batch fromBuffer(bool readId=true)(ubyte[] buffer) {
-		Batch ret = new Batch();
-		ret._buffer = buffer;
-		ret.decode!readId();
-		return ret;
-	}
-
-	public override string toString() {
-		return "Batch(data: " ~ std.conv.to!string(this.data) ~ ")";
-	}
-
-}
-
 class ResourcePacksInfo : Buffer {
 
-	public enum ubyte ID = 7;
+	public enum ubyte ID = 6;
 
 	public enum bool CLIENTBOUND = true;
 	public enum bool SERVERBOUND = false;
@@ -304,12 +302,12 @@ class ResourcePacksInfo : Buffer {
 	public enum string[] FIELDS = ["mustAccept", "behaviourPacks", "resourcePacks"];
 
 	public bool mustAccept;
-	public sul.protocol.pocket100.types.PackWithSize[] behaviourPacks;
-	public sul.protocol.pocket100.types.PackWithSize[] resourcePacks;
+	public sul.protocol.pocket110.types.PackWithSize[] behaviourPacks;
+	public sul.protocol.pocket110.types.PackWithSize[] resourcePacks;
 
 	public pure nothrow @safe @nogc this() {}
 
-	public pure nothrow @safe @nogc this(bool mustAccept, sul.protocol.pocket100.types.PackWithSize[] behaviourPacks=(sul.protocol.pocket100.types.PackWithSize[]).init, sul.protocol.pocket100.types.PackWithSize[] resourcePacks=(sul.protocol.pocket100.types.PackWithSize[]).init) {
+	public pure nothrow @safe @nogc this(bool mustAccept, sul.protocol.pocket110.types.PackWithSize[] behaviourPacks=(sul.protocol.pocket110.types.PackWithSize[]).init, sul.protocol.pocket110.types.PackWithSize[] resourcePacks=(sul.protocol.pocket110.types.PackWithSize[]).init) {
 		this.mustAccept = mustAccept;
 		this.behaviourPacks = behaviourPacks;
 		this.resourcePacks = resourcePacks;
@@ -346,7 +344,7 @@ class ResourcePacksInfo : Buffer {
 
 class ResourcePacksStackPacket : Buffer {
 
-	public enum ubyte ID = 8;
+	public enum ubyte ID = 7;
 
 	public enum bool CLIENTBOUND = true;
 	public enum bool SERVERBOUND = false;
@@ -354,12 +352,12 @@ class ResourcePacksStackPacket : Buffer {
 	public enum string[] FIELDS = ["mustAccept", "behaviourPacks", "resourcePacks"];
 
 	public bool mustAccept;
-	public sul.protocol.pocket100.types.Pack[] behaviourPacks;
-	public sul.protocol.pocket100.types.Pack[] resourcePacks;
+	public sul.protocol.pocket110.types.Pack[] behaviourPacks;
+	public sul.protocol.pocket110.types.Pack[] resourcePacks;
 
 	public pure nothrow @safe @nogc this() {}
 
-	public pure nothrow @safe @nogc this(bool mustAccept, sul.protocol.pocket100.types.Pack[] behaviourPacks=(sul.protocol.pocket100.types.Pack[]).init, sul.protocol.pocket100.types.Pack[] resourcePacks=(sul.protocol.pocket100.types.Pack[]).init) {
+	public pure nothrow @safe @nogc this(bool mustAccept, sul.protocol.pocket110.types.Pack[] behaviourPacks=(sul.protocol.pocket110.types.Pack[]).init, sul.protocol.pocket110.types.Pack[] resourcePacks=(sul.protocol.pocket110.types.Pack[]).init) {
 		this.mustAccept = mustAccept;
 		this.behaviourPacks = behaviourPacks;
 		this.resourcePacks = resourcePacks;
@@ -396,7 +394,7 @@ class ResourcePacksStackPacket : Buffer {
 
 class ResourcePackClientResponse : Buffer {
 
-	public enum ubyte ID = 9;
+	public enum ubyte ID = 8;
 
 	public enum bool CLIENTBOUND = false;
 	public enum bool SERVERBOUND = true;
@@ -446,9 +444,16 @@ class ResourcePackClientResponse : Buffer {
 
 }
 
+/**
+ * Sends or receives a message from the player. Every variant's field can contain Minecraft's
+ * formatting codes.
+ * Every packet sent in the same game tick should be joined together with `\n§r` (line
+ * break and reset formatting), otherwise the messages will be displayed multiple times
+ * on the client's chat (see [MCPE-17631](https://bugs.mojang.com/browse/MCPE-17631)).
+ */
 class Text : Buffer {
 
-	public enum ubyte ID = 10;
+	public enum ubyte ID = 9;
 
 	public enum bool CLIENTBOUND = true;
 	public enum bool SERVERBOUND = true;
@@ -492,6 +497,9 @@ class Text : Buffer {
 
 	alias Variants = TypeTuple!(Raw, Chat, Translation, Popup, Tip, System, Whisper);
 
+	/**
+	 * Raw message that will be printed in the chat as it is.
+	 */
 	public class Raw {
 
 		public enum typeof(type) TYPE = 0;
@@ -523,13 +531,25 @@ class Text : Buffer {
 
 	}
 
+	/**
+	 * Chat message sent by the player to the server. If sent from the server it will display
+	 * as `&lt;sender&gt; message`.
+	 */
 	public class Chat {
 
 		public enum typeof(type) TYPE = 1;
 
 		public enum string[] FIELDS = ["sender", "message"];
 
+		/**
+		 * Case sensitive name of the player that has sent the message.
+		 */
 		public string sender;
+
+		/**
+		 * Message sent by the player. It should be unformatted (regular expression: `§[a-fA-F0-9k-or]`)
+		 * before being processed as chat message by the server.
+		 */
 		public string message;
 
 		public pure nothrow @safe @nogc this() {}
@@ -558,13 +578,23 @@ class Text : Buffer {
 
 	}
 
+	/**
+	 * Sends a message that will be translated client-side using the player's language.
+	 */
 	public class Translation {
 
 		public enum typeof(type) TYPE = 2;
 
 		public enum string[] FIELDS = ["message", "parameters"];
 
+		/**
+		 * A message in the game's language file.
+		 */
 		public string message;
+
+		/**
+		 * Parameters that will be placed instead of the replacement symbols (%1, %2, etc...).
+		 */
 		public string[] parameters;
 
 		public pure nothrow @safe @nogc this() {}
@@ -593,6 +623,10 @@ class Text : Buffer {
 
 	}
 
+	/**
+	 * Displays popups messages for one tick before fading out. The popup messages are
+	 * displayed at the centre of the screen and are not automatically aligned horizontally.
+	 */
 	public class Popup {
 
 		public enum typeof(type) TYPE = 3;
@@ -628,6 +662,10 @@ class Text : Buffer {
 
 	}
 
+	/**
+	 * Displays a tip message for one tick before fading out. The tip message is displayed
+	 * on top of the inventory bar and can contain multiple lines separated with `\n`.
+	 */
 	public class Tip {
 
 		public enum typeof(type) TYPE = 4;
@@ -690,6 +728,10 @@ class Text : Buffer {
 
 	}
 
+	/**
+	 * Sends a whisper message to the client that will be displayed in the format `<i>sender
+	 * has whispered to you:</i> message`.
+	 */
 	public class Whisper {
 
 		public enum typeof(type) TYPE = 6;
@@ -727,16 +769,28 @@ class Text : Buffer {
 
 }
 
+/**
+ * Sets the time.
+ */
 class SetTime : Buffer {
 
-	public enum ubyte ID = 11;
+	public enum ubyte ID = 10;
 
 	public enum bool CLIENTBOUND = true;
 	public enum bool SERVERBOUND = false;
 
 	public enum string[] FIELDS = ["time", "daylightCycle"];
 
+	/**
+	 * Time of the day in a range from 0 to 24000. If higher or lower it will be moduled
+	 * to 24000.
+	 */
 	public int time;
+
+	/**
+	 * Indicates whether the daylight cycle is active. If not, the time will be stopped
+	 * at the value given in the previous field.
+	 */
 	public bool daylightCycle;
 
 	public pure nothrow @safe @nogc this() {}
@@ -775,7 +829,7 @@ class SetTime : Buffer {
 
 class StartGame : Buffer {
 
-	public enum ubyte ID = 12;
+	public enum ubyte ID = 11;
 
 	public enum bool CLIENTBOUND = true;
 	public enum bool SERVERBOUND = false;
@@ -806,30 +860,91 @@ class StartGame : Buffer {
 
 	public enum string[] FIELDS = ["entityId", "runtimeId", "position", "yaw", "pitch", "seed", "dimension", "generator", "worldGamemode", "difficulty", "spawnPosition", "loadedInCreative", "time", "edition", "rainLevel", "lightingLevel", "commandsEnabled", "textureRequired", "levelId", "worldName"];
 
+	/**
+	 * Player's entity id that uniquely identifies the entity of the server.
+	 */
 	public long entityId;
 	public long runtimeId;
+
+	/**
+	 * Position where the player will spawn.
+	 */
 	public Tuple!(float, "x", float, "y", float, "z") position;
 	public float yaw;
 	public float pitch;
+
+	/**
+	 * World's seed. It's displayed in the game's world settings and in beta's debug informations
+	 * on top of the screen.
+	 */
 	public int seed;
-	public int dimension;
-	public int generator;
+
+	/**
+	 * World's dimension. Different dimensions have different sky colours and render distances.
+	 */
+	public int dimension = 0;
+
+	/**
+	 * World's type. It's displayed in the game's world settings.
+	 * In old and infinite world the sky becomes darker at 32 blocks of altitude and in
+	 * flat worlds it only becomes darker under 0.
+	 */
+	public int generator = 1;
+
+	/**
+	 * Default's world gamemode. If the player's gamemode is different from the default's
+	 * one a SetPlayerGameType should be sent after this.
+	 */
 	public int worldGamemode;
+
+	/**
+	 * World's difficulty. The value is visible in the client's world settings.
+	 */
 	public int difficulty;
+
+	/**
+	 * Position where the client's compass will point to.
+	 */
 	public Tuple!(int, "x", int, "y", int, "z") spawnPosition;
 	public bool loadedInCreative;
+
+	/**
+	 * Time of the day that should be in a range from 0 to 24000. If not the absolute value
+	 * is moduled per 24000.
+	 * If the world's time is stopped a SetTime packet should be sent after this.
+	 */
 	public int time;
+
+	/**
+	 * Game's edition. Some behaviours (some entities for example) may only work in a version
+	 * and not in the other.
+	 */
 	public ubyte edition;
+
+	/**
+	 * Intensity of the rain or the snow. Any value lower than or equals to 0 means no
+	 * rain.
+	 */
 	public float rainLevel;
 	public float lightingLevel;
+
+	/**
+	 * Indicates whether the cheats are enabled. If the cheats are disabled the player
+	 * cannot send commands.
+	 */
 	public bool commandsEnabled;
 	public bool textureRequired;
 	public string levelId;
+
+	/**
+	 * World's name that will be displayed in the game's world settings. It can contain
+	 * formatting codes.
+	 */
 	public string worldName;
 
 	public pure nothrow @safe @nogc this() {}
 
-	public pure nothrow @safe @nogc this(long entityId, long runtimeId=long.init, Tuple!(float, "x", float, "y", float, "z") position=Tuple!(float, "x", float, "y", float, "z").init, float yaw=float.init, float pitch=float.init, int seed=int.init, int dimension=int.init, int generator=int.init, int worldGamemode=int.init, int difficulty=int.init, Tuple!(int, "x", int, "y", int, "z") spawnPosition=Tuple!(int, "x", int, "y", int, "z").init, bool loadedInCreative=bool.init, int time=int.init, ubyte edition=ubyte.init, float rainLevel=float.init, float lightingLevel=float.init, bool commandsEnabled=bool.init, bool textureRequired=bool.init, string levelId=string.init, string worldName=string.init) {
+	public pure nothrow @safe @nogc this(long entityId, long runtimeId=long.init, Tuple!(float, "x", float, "y", float, "z") position=Tuple!(float, "x", float, "y", float, "z").init, float yaw=float.init, float pitch=float.init, int seed=int.init, int dimension=0, int generator=1, int worldGamemode=int.init, int difficulty=int.init, Tuple!(int, "x", int, "y", int, "z") spawnPosition=Tuple!(int, "x", int, "y", int, "z").init, bool loadedInCreative=bool.init, int time=int.init, ubyte edition=ubyte.init, float rainLevel=float.init, float lightingLevel=float.init, bool commandsEnabled=bool.init, bool textureRequired=bool.init, string levelId=string.init, string worldName=string.init) {
 		this.entityId = entityId;
 		this.runtimeId = runtimeId;
 		this.position = position;
@@ -915,16 +1030,31 @@ class StartGame : Buffer {
 
 }
 
+/**
+ * Spawns a player after adding it to the player's list using PlayerList. If PlayerList
+ * is sent after this packet the player will appear to have the same skin as the player
+ * who receives this packet.
+ * Spawning a player to itself (using the same entity id given in the StartGame packet)
+ * will crash the client's game.
+ */
 class AddPlayer : Buffer {
 
-	public enum ubyte ID = 13;
+	public enum ubyte ID = 12;
 
 	public enum bool CLIENTBOUND = true;
 	public enum bool SERVERBOUND = false;
 
 	public enum string[] FIELDS = ["uuid", "username", "entityId", "runtimeId", "position", "motion", "pitch", "headYaw", "yaw", "heldItem", "metadata"];
 
+	/**
+	 * Player's UUID, should match an UUID of a player in the list added through PlayerList.
+	 */
 	public UUID uuid;
+
+	/**
+	 * Player's username and text displayed on the nametag if something else is not specified
+	 * in the metadata.
+	 */
 	public string username;
 	public long entityId;
 	public long runtimeId;
@@ -933,12 +1063,12 @@ class AddPlayer : Buffer {
 	public float pitch;
 	public float headYaw;
 	public float yaw;
-	public sul.protocol.pocket100.types.Slot heldItem;
+	public sul.protocol.pocket110.types.Slot heldItem;
 	public Metadata metadata;
 
 	public pure nothrow @safe @nogc this() {}
 
-	public pure nothrow @safe @nogc this(UUID uuid, string username=string.init, long entityId=long.init, long runtimeId=long.init, Tuple!(float, "x", float, "y", float, "z") position=Tuple!(float, "x", float, "y", float, "z").init, Tuple!(float, "x", float, "y", float, "z") motion=Tuple!(float, "x", float, "y", float, "z").init, float pitch=float.init, float headYaw=float.init, float yaw=float.init, sul.protocol.pocket100.types.Slot heldItem=sul.protocol.pocket100.types.Slot.init, Metadata metadata=Metadata.init) {
+	public pure nothrow @safe @nogc this(UUID uuid, string username=string.init, long entityId=long.init, long runtimeId=long.init, Tuple!(float, "x", float, "y", float, "z") position=Tuple!(float, "x", float, "y", float, "z").init, Tuple!(float, "x", float, "y", float, "z") motion=Tuple!(float, "x", float, "y", float, "z").init, float pitch=float.init, float headYaw=float.init, float yaw=float.init, sul.protocol.pocket110.types.Slot heldItem=sul.protocol.pocket110.types.Slot.init, Metadata metadata=Metadata.init) {
 		this.uuid = uuid;
 		this.username = username;
 		this.entityId = entityId;
@@ -999,7 +1129,7 @@ class AddPlayer : Buffer {
 
 class AddEntity : Buffer {
 
-	public enum ubyte ID = 14;
+	public enum ubyte ID = 13;
 
 	public enum bool CLIENTBOUND = true;
 	public enum bool SERVERBOUND = false;
@@ -1013,13 +1143,13 @@ class AddEntity : Buffer {
 	public Tuple!(float, "x", float, "y", float, "z") motion;
 	public float pitch;
 	public float yaw;
-	public sul.protocol.pocket100.types.Attribute[] attributes;
+	public sul.protocol.pocket110.types.Attribute[] attributes;
 	public Metadata metadata;
-	public sul.protocol.pocket100.types.Link[] links;
+	public sul.protocol.pocket110.types.Link[] links;
 
 	public pure nothrow @safe @nogc this() {}
 
-	public pure nothrow @safe @nogc this(long entityId, long runtimeId=long.init, uint type=uint.init, Tuple!(float, "x", float, "y", float, "z") position=Tuple!(float, "x", float, "y", float, "z").init, Tuple!(float, "x", float, "y", float, "z") motion=Tuple!(float, "x", float, "y", float, "z").init, float pitch=float.init, float yaw=float.init, sul.protocol.pocket100.types.Attribute[] attributes=(sul.protocol.pocket100.types.Attribute[]).init, Metadata metadata=Metadata.init, sul.protocol.pocket100.types.Link[] links=(sul.protocol.pocket100.types.Link[]).init) {
+	public pure nothrow @safe @nogc this(long entityId, long runtimeId=long.init, uint type=uint.init, Tuple!(float, "x", float, "y", float, "z") position=Tuple!(float, "x", float, "y", float, "z").init, Tuple!(float, "x", float, "y", float, "z") motion=Tuple!(float, "x", float, "y", float, "z").init, float pitch=float.init, float yaw=float.init, sul.protocol.pocket110.types.Attribute[] attributes=(sul.protocol.pocket110.types.Attribute[]).init, Metadata metadata=Metadata.init, sul.protocol.pocket110.types.Link[] links=(sul.protocol.pocket110.types.Link[]).init) {
 		this.entityId = entityId;
 		this.runtimeId = runtimeId;
 		this.type = type;
@@ -1075,9 +1205,12 @@ class AddEntity : Buffer {
 
 }
 
+/**
+ * Despawns an entity or a player.
+ */
 class RemoveEntity : Buffer {
 
-	public enum ubyte ID = 15;
+	public enum ubyte ID = 14;
 
 	public enum bool CLIENTBOUND = true;
 	public enum bool SERVERBOUND = false;
@@ -1117,9 +1250,12 @@ class RemoveEntity : Buffer {
 
 }
 
+/**
+ * Spawns a dropped item.
+ */
 class AddItemEntity : Buffer {
 
-	public enum ubyte ID = 16;
+	public enum ubyte ID = 15;
 
 	public enum bool CLIENTBOUND = true;
 	public enum bool SERVERBOUND = false;
@@ -1128,13 +1264,13 @@ class AddItemEntity : Buffer {
 
 	public long entityId;
 	public long runtimeId;
-	public sul.protocol.pocket100.types.Slot item;
+	public sul.protocol.pocket110.types.Slot item;
 	public Tuple!(float, "x", float, "y", float, "z") position;
 	public Tuple!(float, "x", float, "y", float, "z") motion;
 
 	public pure nothrow @safe @nogc this() {}
 
-	public pure nothrow @safe @nogc this(long entityId, long runtimeId=long.init, sul.protocol.pocket100.types.Slot item=sul.protocol.pocket100.types.Slot.init, Tuple!(float, "x", float, "y", float, "z") position=Tuple!(float, "x", float, "y", float, "z").init, Tuple!(float, "x", float, "y", float, "z") motion=Tuple!(float, "x", float, "y", float, "z").init) {
+	public pure nothrow @safe @nogc this(long entityId, long runtimeId=long.init, sul.protocol.pocket110.types.Slot item=sul.protocol.pocket110.types.Slot.init, Tuple!(float, "x", float, "y", float, "z") position=Tuple!(float, "x", float, "y", float, "z").init, Tuple!(float, "x", float, "y", float, "z") motion=Tuple!(float, "x", float, "y", float, "z").init) {
 		this.entityId = entityId;
 		this.runtimeId = runtimeId;
 		this.item = item;
@@ -1177,7 +1313,7 @@ class AddItemEntity : Buffer {
 
 class AddHangingEntity : Buffer {
 
-	public enum ubyte ID = 17;
+	public enum ubyte ID = 16;
 
 	public enum bool CLIENTBOUND = true;
 	public enum bool SERVERBOUND = false;
@@ -1186,12 +1322,12 @@ class AddHangingEntity : Buffer {
 
 	public long entityId;
 	public long runtimeId;
-	public sul.protocol.pocket100.types.BlockPosition position;
+	public sul.protocol.pocket110.types.BlockPosition position;
 	public int unknown3;
 
 	public pure nothrow @safe @nogc this() {}
 
-	public pure nothrow @safe @nogc this(long entityId, long runtimeId=long.init, sul.protocol.pocket100.types.BlockPosition position=sul.protocol.pocket100.types.BlockPosition.init, int unknown3=int.init) {
+	public pure nothrow @safe @nogc this(long entityId, long runtimeId=long.init, sul.protocol.pocket110.types.BlockPosition position=sul.protocol.pocket110.types.BlockPosition.init, int unknown3=int.init) {
 		this.entityId = entityId;
 		this.runtimeId = runtimeId;
 		this.position = position;
@@ -1229,16 +1365,27 @@ class AddHangingEntity : Buffer {
 
 }
 
+/**
+ * Plays the collection animation and despawns the entity that has been collected.
+ */
 class TakeItemEntity : Buffer {
 
-	public enum ubyte ID = 18;
+	public enum ubyte ID = 17;
 
 	public enum bool CLIENTBOUND = true;
 	public enum bool SERVERBOUND = false;
 
 	public enum string[] FIELDS = ["collected", "collector"];
 
+	/**
+	 * Collected entity, usually an item entity or an arrow, that will float toward the
+	 * collector and despawn.
+	 */
 	public long collected;
+
+	/**
+	 * Entity that collects, usually a player or another entity with an inventory.
+	 */
 	public long collector;
 
 	public pure nothrow @safe @nogc this() {}
@@ -1277,7 +1424,7 @@ class TakeItemEntity : Buffer {
 
 class MoveEntity : Buffer {
 
-	public enum ubyte ID = 19;
+	public enum ubyte ID = 18;
 
 	public enum bool CLIENTBOUND = true;
 	public enum bool SERVERBOUND = false;
@@ -1335,7 +1482,7 @@ class MoveEntity : Buffer {
 
 class MovePlayer : Buffer {
 
-	public enum ubyte ID = 20;
+	public enum ubyte ID = 19;
 
 	public enum bool CLIENTBOUND = true;
 	public enum bool SERVERBOUND = true;
@@ -1406,7 +1553,7 @@ class MovePlayer : Buffer {
 
 class RiderJump : Buffer {
 
-	public enum ubyte ID = 21;
+	public enum ubyte ID = 20;
 
 	public enum bool CLIENTBOUND = true;
 	public enum bool SERVERBOUND = true;
@@ -1446,20 +1593,24 @@ class RiderJump : Buffer {
 
 }
 
+/**
+ * Instantly removes a block, either because the player is in creative mode or because
+ * the target block's hardness is 0 or lower (after all enchantments are applied).
+ */
 class RemoveBlock : Buffer {
 
-	public enum ubyte ID = 22;
+	public enum ubyte ID = 21;
 
 	public enum bool CLIENTBOUND = false;
 	public enum bool SERVERBOUND = true;
 
 	public enum string[] FIELDS = ["position"];
 
-	public sul.protocol.pocket100.types.BlockPosition position;
+	public sul.protocol.pocket110.types.BlockPosition position;
 
 	public pure nothrow @safe @nogc this() {}
 
-	public pure nothrow @safe @nogc this(sul.protocol.pocket100.types.BlockPosition position) {
+	public pure nothrow @safe @nogc this(sul.protocol.pocket110.types.BlockPosition position) {
 		this.position = position;
 	}
 
@@ -1490,7 +1641,7 @@ class RemoveBlock : Buffer {
 
 class UpdateBlock : Buffer {
 
-	public enum ubyte ID = 23;
+	public enum ubyte ID = 22;
 
 	public enum bool CLIENTBOUND = true;
 	public enum bool SERVERBOUND = false;
@@ -1503,13 +1654,13 @@ class UpdateBlock : Buffer {
 
 	public enum string[] FIELDS = ["position", "block", "flagsAndMeta"];
 
-	public sul.protocol.pocket100.types.BlockPosition position;
+	public sul.protocol.pocket110.types.BlockPosition position;
 	public uint block;
 	public uint flagsAndMeta;
 
 	public pure nothrow @safe @nogc this() {}
 
-	public pure nothrow @safe @nogc this(sul.protocol.pocket100.types.BlockPosition position, uint block=uint.init, uint flagsAndMeta=uint.init) {
+	public pure nothrow @safe @nogc this(sul.protocol.pocket110.types.BlockPosition position, uint block=uint.init, uint flagsAndMeta=uint.init) {
 		this.position = position;
 		this.block = block;
 		this.flagsAndMeta = flagsAndMeta;
@@ -1544,9 +1695,12 @@ class UpdateBlock : Buffer {
 
 }
 
+/**
+ * Spawns a painting entity in the world.
+ */
 class AddPainting : Buffer {
 
-	public enum ubyte ID = 24;
+	public enum ubyte ID = 23;
 
 	public enum bool CLIENTBOUND = true;
 	public enum bool SERVERBOUND = false;
@@ -1555,13 +1709,13 @@ class AddPainting : Buffer {
 
 	public long entityId;
 	public long runtimeId;
-	public sul.protocol.pocket100.types.BlockPosition position;
+	public sul.protocol.pocket110.types.BlockPosition position;
 	public int direction;
 	public string title;
 
 	public pure nothrow @safe @nogc this() {}
 
-	public pure nothrow @safe @nogc this(long entityId, long runtimeId=long.init, sul.protocol.pocket100.types.BlockPosition position=sul.protocol.pocket100.types.BlockPosition.init, int direction=int.init, string title=string.init) {
+	public pure nothrow @safe @nogc this(long entityId, long runtimeId=long.init, sul.protocol.pocket110.types.BlockPosition position=sul.protocol.pocket110.types.BlockPosition.init, int direction=int.init, string title=string.init) {
 		this.entityId = entityId;
 		this.runtimeId = runtimeId;
 		this.position = position;
@@ -1604,7 +1758,7 @@ class AddPainting : Buffer {
 
 class Explode : Buffer {
 
-	public enum ubyte ID = 25;
+	public enum ubyte ID = 24;
 
 	public enum bool CLIENTBOUND = true;
 	public enum bool SERVERBOUND = false;
@@ -1613,11 +1767,11 @@ class Explode : Buffer {
 
 	public Tuple!(float, "x", float, "y", float, "z") position;
 	public float radius;
-	public sul.protocol.pocket100.types.BlockPosition[] destroyedBlocks;
+	public sul.protocol.pocket110.types.BlockPosition[] destroyedBlocks;
 
 	public pure nothrow @safe @nogc this() {}
 
-	public pure nothrow @safe @nogc this(Tuple!(float, "x", float, "y", float, "z") position, float radius=float.init, sul.protocol.pocket100.types.BlockPosition[] destroyedBlocks=(sul.protocol.pocket100.types.BlockPosition[]).init) {
+	public pure nothrow @safe @nogc this(Tuple!(float, "x", float, "y", float, "z") position, float radius=float.init, sul.protocol.pocket110.types.BlockPosition[] destroyedBlocks=(sul.protocol.pocket110.types.BlockPosition[]).init) {
 		this.position = position;
 		this.radius = radius;
 		this.destroyedBlocks = destroyedBlocks;
@@ -1652,9 +1806,12 @@ class Explode : Buffer {
 
 }
 
+/**
+ * Plays a sound at a certain position.
+ */
 class LevelSoundEvent : Buffer {
 
-	public enum ubyte ID = 26;
+	public enum ubyte ID = 25;
 
 	public enum bool CLIENTBOUND = true;
 	public enum bool SERVERBOUND = true;
@@ -1750,12 +1907,21 @@ class LevelSoundEvent : Buffer {
 	public enum ubyte TELEPORT = 87;
 	public enum ubyte SHULKER_OPEN = 88;
 	public enum ubyte SHULKER_CLOSE = 89;
-	public enum ubyte DEFAULT = 90;
-	public enum ubyte UNDEFINED = 91;
+	public enum ubyte HAGGLE = 90;
+	public enum ubyte HAGGLE_YES = 91;
+	public enum ubyte HAGGLE_NO = 92;
+	public enum ubyte HAGGLE_IDLE = 93;
+	public enum ubyte DEFAULT = 94;
+	public enum ubyte UNDEFINED = 95;
 
 	public enum string[] FIELDS = ["sound", "position", "volume", "pitch", "unknown4"];
 
 	public ubyte sound;
+
+	/**
+	 * Position where the sound was generated. The closer to the player the more intense
+	 * will be on the client.
+	 */
 	public Tuple!(float, "x", float, "y", float, "z") position;
 	public uint volume;
 	public int pitch;
@@ -1806,7 +1972,7 @@ class LevelSoundEvent : Buffer {
 
 class LevelEvent : Buffer {
 
-	public enum ubyte ID = 27;
+	public enum ubyte ID = 26;
 
 	public enum bool CLIENTBOUND = true;
 	public enum bool SERVERBOUND = false;
@@ -1906,19 +2072,19 @@ class LevelEvent : Buffer {
 
 class BlockEvent : Buffer {
 
-	public enum ubyte ID = 28;
+	public enum ubyte ID = 27;
 
 	public enum bool CLIENTBOUND = true;
 	public enum bool SERVERBOUND = false;
 
 	public enum string[] FIELDS = ["position", "data"];
 
-	public sul.protocol.pocket100.types.BlockPosition position;
+	public sul.protocol.pocket110.types.BlockPosition position;
 	public int[2] data;
 
 	public pure nothrow @safe @nogc this() {}
 
-	public pure nothrow @safe @nogc this(sul.protocol.pocket100.types.BlockPosition position, int[2] data=(int[2]).init) {
+	public pure nothrow @safe @nogc this(sul.protocol.pocket110.types.BlockPosition position, int[2] data=(int[2]).init) {
 		this.position = position;
 		this.data = data;
 	}
@@ -1952,7 +2118,7 @@ class BlockEvent : Buffer {
 
 class EntityEvent : Buffer {
 
-	public enum ubyte ID = 29;
+	public enum ubyte ID = 28;
 
 	public enum bool CLIENTBOUND = true;
 	public enum bool SERVERBOUND = true;
@@ -2018,7 +2184,7 @@ class EntityEvent : Buffer {
 
 class MobEffect : Buffer {
 
-	public enum ubyte ID = 30;
+	public enum ubyte ID = 29;
 
 	public enum bool CLIENTBOUND = true;
 	public enum bool SERVERBOUND = false;
@@ -2083,9 +2249,14 @@ class MobEffect : Buffer {
 
 }
 
+/**
+ * Updates an entity's attributes. This packet should be used when a value must be
+ * modified but it cannot be done using another packet (for example controlling the
+ * player's experience and level).
+ */
 class UpdateAttributes : Buffer {
 
-	public enum ubyte ID = 31;
+	public enum ubyte ID = 30;
 
 	public enum bool CLIENTBOUND = true;
 	public enum bool SERVERBOUND = false;
@@ -2093,11 +2264,11 @@ class UpdateAttributes : Buffer {
 	public enum string[] FIELDS = ["entityId", "attributes"];
 
 	public long entityId;
-	public sul.protocol.pocket100.types.Attribute[] attributes;
+	public sul.protocol.pocket110.types.Attribute[] attributes;
 
 	public pure nothrow @safe @nogc this() {}
 
-	public pure nothrow @safe @nogc this(long entityId, sul.protocol.pocket100.types.Attribute[] attributes=(sul.protocol.pocket100.types.Attribute[]).init) {
+	public pure nothrow @safe @nogc this(long entityId, sul.protocol.pocket110.types.Attribute[] attributes=(sul.protocol.pocket110.types.Attribute[]).init) {
 		this.entityId = entityId;
 		this.attributes = attributes;
 	}
@@ -2129,9 +2300,12 @@ class UpdateAttributes : Buffer {
 
 }
 
+/**
+ * Sent when the client puts an item in its hotbar or selects a new hotbar slot.
+ */
 class MobEquipment : Buffer {
 
-	public enum ubyte ID = 32;
+	public enum ubyte ID = 31;
 
 	public enum bool CLIENTBOUND = true;
 	public enum bool SERVERBOUND = true;
@@ -2139,14 +2313,23 @@ class MobEquipment : Buffer {
 	public enum string[] FIELDS = ["entityId", "item", "inventorySlot", "hotbarSlot", "unknown4"];
 
 	public long entityId;
-	public sul.protocol.pocket100.types.Slot item;
+	public sul.protocol.pocket110.types.Slot item;
+
+	/**
+	 * Slot of the inventory where the item is. The hotbat slots (0-8) are not counted.
+	 * 255 means that a generic empty slot has been selected.
+	 */
 	public ubyte inventorySlot;
+
+	/**
+	 * Slot of the hotbar where the item is being moved.
+	 */
 	public ubyte hotbarSlot;
 	public ubyte unknown4;
 
 	public pure nothrow @safe @nogc this() {}
 
-	public pure nothrow @safe @nogc this(long entityId, sul.protocol.pocket100.types.Slot item=sul.protocol.pocket100.types.Slot.init, ubyte inventorySlot=ubyte.init, ubyte hotbarSlot=ubyte.init, ubyte unknown4=ubyte.init) {
+	public pure nothrow @safe @nogc this(long entityId, sul.protocol.pocket110.types.Slot item=sul.protocol.pocket110.types.Slot.init, ubyte inventorySlot=ubyte.init, ubyte hotbarSlot=ubyte.init, ubyte unknown4=ubyte.init) {
 		this.entityId = entityId;
 		this.item = item;
 		this.inventorySlot = inventorySlot;
@@ -2189,7 +2372,7 @@ class MobEquipment : Buffer {
 
 class MobArmorEquipment : Buffer {
 
-	public enum ubyte ID = 33;
+	public enum ubyte ID = 32;
 
 	public enum bool CLIENTBOUND = true;
 	public enum bool SERVERBOUND = true;
@@ -2197,11 +2380,11 @@ class MobArmorEquipment : Buffer {
 	public enum string[] FIELDS = ["entityId", "armor"];
 
 	public long entityId;
-	public sul.protocol.pocket100.types.Slot[4] armor;
+	public sul.protocol.pocket110.types.Slot[4] armor;
 
 	public pure nothrow @safe @nogc this() {}
 
-	public pure nothrow @safe @nogc this(long entityId, sul.protocol.pocket100.types.Slot[4] armor=(sul.protocol.pocket100.types.Slot[4]).init) {
+	public pure nothrow @safe @nogc this(long entityId, sul.protocol.pocket110.types.Slot[4] armor=(sul.protocol.pocket110.types.Slot[4]).init) {
 		this.entityId = entityId;
 		this.armor = armor;
 	}
@@ -2235,7 +2418,7 @@ class MobArmorEquipment : Buffer {
 
 class Interact : Buffer {
 
-	public enum ubyte ID = 34;
+	public enum ubyte ID = 33;
 
 	public enum bool CLIENTBOUND = false;
 	public enum bool SERVERBOUND = true;
@@ -2285,6 +2468,52 @@ class Interact : Buffer {
 
 }
 
+class BlockPickRequest : Buffer {
+
+	public enum ubyte ID = 34;
+
+	public enum bool CLIENTBOUND = false;
+	public enum bool SERVERBOUND = true;
+
+	public enum string[] FIELDS = ["position", "slot"];
+
+	public Tuple!(int, "x", int, "y", int, "z") position;
+	public ubyte slot;
+
+	public pure nothrow @safe @nogc this() {}
+
+	public pure nothrow @safe @nogc this(Tuple!(int, "x", int, "y", int, "z") position, ubyte slot=ubyte.init) {
+		this.position = position;
+		this.slot = slot;
+	}
+
+	public pure nothrow @safe ubyte[] encode(bool writeId=true)() {
+		_buffer.length = 0;
+		static if(writeId){ writeBigEndianUbyte(ID); }
+		writeBytes(varint.encode(position.x)); writeBytes(varint.encode(position.y)); writeBytes(varint.encode(position.z));
+		writeBigEndianUbyte(slot);
+		return _buffer;
+	}
+
+	public pure nothrow @safe void decode(bool readId=true)() {
+		static if(readId){ ubyte _id; _id=readBigEndianUbyte(); }
+		position.x=varint.decode(_buffer, &_index); position.y=varint.decode(_buffer, &_index); position.z=varint.decode(_buffer, &_index);
+		slot=readBigEndianUbyte();
+	}
+
+	public static pure nothrow @safe BlockPickRequest fromBuffer(bool readId=true)(ubyte[] buffer) {
+		BlockPickRequest ret = new BlockPickRequest();
+		ret._buffer = buffer;
+		ret.decode!readId();
+		return ret;
+	}
+
+	public override string toString() {
+		return "BlockPickRequest(position: " ~ std.conv.to!string(this.position) ~ ", slot: " ~ std.conv.to!string(this.slot) ~ ")";
+	}
+
+}
+
 class UseItem : Buffer {
 
 	public enum ubyte ID = 35;
@@ -2294,17 +2523,17 @@ class UseItem : Buffer {
 
 	public enum string[] FIELDS = ["blockPosition", "hotbarSlot", "face", "facePosition", "position", "slot", "item"];
 
-	public sul.protocol.pocket100.types.BlockPosition blockPosition;
+	public sul.protocol.pocket110.types.BlockPosition blockPosition;
 	public uint hotbarSlot;
 	public int face;
 	public Tuple!(float, "x", float, "y", float, "z") facePosition;
 	public Tuple!(float, "x", float, "y", float, "z") position;
 	public int slot;
-	public sul.protocol.pocket100.types.Slot item;
+	public sul.protocol.pocket110.types.Slot item;
 
 	public pure nothrow @safe @nogc this() {}
 
-	public pure nothrow @safe @nogc this(sul.protocol.pocket100.types.BlockPosition blockPosition, uint hotbarSlot=uint.init, int face=int.init, Tuple!(float, "x", float, "y", float, "z") facePosition=Tuple!(float, "x", float, "y", float, "z").init, Tuple!(float, "x", float, "y", float, "z") position=Tuple!(float, "x", float, "y", float, "z").init, int slot=int.init, sul.protocol.pocket100.types.Slot item=sul.protocol.pocket100.types.Slot.init) {
+	public pure nothrow @safe @nogc this(sul.protocol.pocket110.types.BlockPosition blockPosition, uint hotbarSlot=uint.init, int face=int.init, Tuple!(float, "x", float, "y", float, "z") facePosition=Tuple!(float, "x", float, "y", float, "z").init, Tuple!(float, "x", float, "y", float, "z") position=Tuple!(float, "x", float, "y", float, "z").init, int slot=int.init, sul.protocol.pocket110.types.Slot item=sul.protocol.pocket110.types.Slot.init) {
 		this.blockPosition = blockPosition;
 		this.hotbarSlot = hotbarSlot;
 		this.face = face;
@@ -2377,12 +2606,12 @@ class PlayerAction : Buffer {
 
 	public long entityId;
 	public int action;
-	public sul.protocol.pocket100.types.BlockPosition position;
+	public sul.protocol.pocket110.types.BlockPosition position;
 	public int face;
 
 	public pure nothrow @safe @nogc this() {}
 
-	public pure nothrow @safe @nogc this(long entityId, int action=int.init, sul.protocol.pocket100.types.BlockPosition position=sul.protocol.pocket100.types.BlockPosition.init, int face=int.init) {
+	public pure nothrow @safe @nogc this(long entityId, int action=int.init, sul.protocol.pocket110.types.BlockPosition position=sul.protocol.pocket110.types.BlockPosition.init, int face=int.init) {
 		this.entityId = entityId;
 		this.action = action;
 		this.position = position;
@@ -2420,44 +2649,60 @@ class PlayerAction : Buffer {
 
 }
 
-class PlayerFall : Buffer {
+/**
+ * Sent by the player when it falls from a distance that causes damage, that can be
+ * influenced by its armour and its effects.
+ */
+class EntityFall : Buffer {
 
 	public enum ubyte ID = 37;
 
 	public enum bool CLIENTBOUND = false;
 	public enum bool SERVERBOUND = true;
 
-	public enum string[] FIELDS = ["distance"];
+	public enum string[] FIELDS = ["entityId", "distance", "unknown2"];
 
+	public long entityId;
+
+	/**
+	 * Number of blocks the player has been in free falling before hitting the ground.
+	 */
 	public float distance;
+	public bool unknown2;
 
 	public pure nothrow @safe @nogc this() {}
 
-	public pure nothrow @safe @nogc this(float distance) {
+	public pure nothrow @safe @nogc this(long entityId, float distance=float.init, bool unknown2=bool.init) {
+		this.entityId = entityId;
 		this.distance = distance;
+		this.unknown2 = unknown2;
 	}
 
 	public pure nothrow @safe ubyte[] encode(bool writeId=true)() {
 		_buffer.length = 0;
 		static if(writeId){ writeBigEndianUbyte(ID); }
+		writeBytes(varlong.encode(entityId));
 		writeLittleEndianFloat(distance);
+		writeBigEndianBool(unknown2);
 		return _buffer;
 	}
 
 	public pure nothrow @safe void decode(bool readId=true)() {
 		static if(readId){ ubyte _id; _id=readBigEndianUbyte(); }
+		entityId=varlong.decode(_buffer, &_index);
 		distance=readLittleEndianFloat();
+		unknown2=readBigEndianBool();
 	}
 
-	public static pure nothrow @safe PlayerFall fromBuffer(bool readId=true)(ubyte[] buffer) {
-		PlayerFall ret = new PlayerFall();
+	public static pure nothrow @safe EntityFall fromBuffer(bool readId=true)(ubyte[] buffer) {
+		EntityFall ret = new EntityFall();
 		ret._buffer = buffer;
 		ret.decode!readId();
 		return ret;
 	}
 
 	public override string toString() {
-		return "PlayerFall(distance: " ~ std.conv.to!string(this.distance) ~ ")";
+		return "EntityFall(entityId: " ~ std.conv.to!string(this.entityId) ~ ", distance: " ~ std.conv.to!string(this.distance) ~ ", unknown2: " ~ std.conv.to!string(this.unknown2) ~ ")";
 	}
 
 }
@@ -2504,6 +2749,9 @@ class HurtArmor : Buffer {
 
 }
 
+/**
+ * Updates an entity's metadata.
+ */
 class SetEntityData : Buffer {
 
 	public enum ubyte ID = 39;
@@ -2550,6 +2798,9 @@ class SetEntityData : Buffer {
 
 }
 
+/**
+ * Updates an entity's motion.
+ */
 class SetEntityMotion : Buffer {
 
 	public enum ubyte ID = 40;
@@ -2559,7 +2810,18 @@ class SetEntityMotion : Buffer {
 
 	public enum string[] FIELDS = ["entityId", "motion"];
 
+	/**
+	 * Entity which motion is updated. If the entity id is the player's, its motion is
+	 * updated client-side and the player will send movement packets to the server (meaning
+	 * that the server has no physical calculations to do). If not an animation will be
+	 * done client-side but the server will have to calculate the new position applying
+	 * the item's movement rules.
+	 */
 	public long entityId;
+
+	/**
+	 * New motion for the entity that will influence its movement.
+	 */
 	public Tuple!(float, "x", float, "y", float, "z") motion;
 
 	public pure nothrow @safe @nogc this() {}
@@ -2703,12 +2965,12 @@ class SetSpawnPosition : Buffer {
 	public enum string[] FIELDS = ["unknown0", "position", "unknown2"];
 
 	public int unknown0;
-	public sul.protocol.pocket100.types.BlockPosition position;
+	public sul.protocol.pocket110.types.BlockPosition position;
 	public bool unknown2;
 
 	public pure nothrow @safe @nogc this() {}
 
-	public pure nothrow @safe @nogc this(int unknown0, sul.protocol.pocket100.types.BlockPosition position=sul.protocol.pocket100.types.BlockPosition.init, bool unknown2=bool.init) {
+	public pure nothrow @safe @nogc this(int unknown0, sul.protocol.pocket110.types.BlockPosition position=sul.protocol.pocket110.types.BlockPosition.init, bool unknown2=bool.init) {
 		this.unknown0 = unknown0;
 		this.position = position;
 		this.unknown2 = unknown2;
@@ -2848,11 +3110,11 @@ class DropItem : Buffer {
 	public enum string[] FIELDS = ["action", "item"];
 
 	public ubyte action;
-	public sul.protocol.pocket100.types.Slot item;
+	public sul.protocol.pocket110.types.Slot item;
 
 	public pure nothrow @safe @nogc this() {}
 
-	public pure nothrow @safe @nogc this(ubyte action, sul.protocol.pocket100.types.Slot item=sul.protocol.pocket100.types.Slot.init) {
+	public pure nothrow @safe @nogc this(ubyte action, sul.protocol.pocket110.types.Slot item=sul.protocol.pocket110.types.Slot.init) {
 		this.action = action;
 		this.item = item;
 	}
@@ -2891,16 +3153,20 @@ class InventoryAction : Buffer {
 	public enum bool CLIENTBOUND = false;
 	public enum bool SERVERBOUND = true;
 
-	public enum string[] FIELDS = ["action", "item"];
+	public enum string[] FIELDS = ["action", "item", "unknown2", "unknown3"];
 
 	public int action;
-	public sul.protocol.pocket100.types.Slot item;
+	public sul.protocol.pocket110.types.Slot item;
+	public int unknown2;
+	public int unknown3;
 
 	public pure nothrow @safe @nogc this() {}
 
-	public pure nothrow @safe @nogc this(int action, sul.protocol.pocket100.types.Slot item=sul.protocol.pocket100.types.Slot.init) {
+	public pure nothrow @safe @nogc this(int action, sul.protocol.pocket110.types.Slot item=sul.protocol.pocket110.types.Slot.init, int unknown2=int.init, int unknown3=int.init) {
 		this.action = action;
 		this.item = item;
+		this.unknown2 = unknown2;
+		this.unknown3 = unknown3;
 	}
 
 	public pure nothrow @safe ubyte[] encode(bool writeId=true)() {
@@ -2908,6 +3174,8 @@ class InventoryAction : Buffer {
 		static if(writeId){ writeBigEndianUbyte(ID); }
 		writeBytes(varint.encode(action));
 		item.encode(bufferInstance);
+		writeBytes(varint.encode(unknown2));
+		writeBytes(varint.encode(unknown3));
 		return _buffer;
 	}
 
@@ -2915,6 +3183,8 @@ class InventoryAction : Buffer {
 		static if(readId){ ubyte _id; _id=readBigEndianUbyte(); }
 		action=varint.decode(_buffer, &_index);
 		item.decode(bufferInstance);
+		unknown2=varint.decode(_buffer, &_index);
+		unknown3=varint.decode(_buffer, &_index);
 	}
 
 	public static pure nothrow @safe InventoryAction fromBuffer(bool readId=true)(ubyte[] buffer) {
@@ -2925,7 +3195,7 @@ class InventoryAction : Buffer {
 	}
 
 	public override string toString() {
-		return "InventoryAction(action: " ~ std.conv.to!string(this.action) ~ ", item: " ~ std.conv.to!string(this.item) ~ ")";
+		return "InventoryAction(action: " ~ std.conv.to!string(this.action) ~ ", item: " ~ std.conv.to!string(this.item) ~ ", unknown2: " ~ std.conv.to!string(this.unknown2) ~ ", unknown3: " ~ std.conv.to!string(this.unknown3) ~ ")";
 	}
 
 }
@@ -2937,20 +3207,18 @@ class ContainerOpen : Buffer {
 	public enum bool CLIENTBOUND = true;
 	public enum bool SERVERBOUND = false;
 
-	public enum string[] FIELDS = ["window", "type", "slotCount", "position", "entityId"];
+	public enum string[] FIELDS = ["window", "type", "position", "entityId"];
 
 	public ubyte window;
 	public ubyte type;
-	public int slotCount;
-	public sul.protocol.pocket100.types.BlockPosition position;
+	public sul.protocol.pocket110.types.BlockPosition position;
 	public long entityId;
 
 	public pure nothrow @safe @nogc this() {}
 
-	public pure nothrow @safe @nogc this(ubyte window, ubyte type=ubyte.init, int slotCount=int.init, sul.protocol.pocket100.types.BlockPosition position=sul.protocol.pocket100.types.BlockPosition.init, long entityId=long.init) {
+	public pure nothrow @safe @nogc this(ubyte window, ubyte type=ubyte.init, sul.protocol.pocket110.types.BlockPosition position=sul.protocol.pocket110.types.BlockPosition.init, long entityId=long.init) {
 		this.window = window;
 		this.type = type;
-		this.slotCount = slotCount;
 		this.position = position;
 		this.entityId = entityId;
 	}
@@ -2960,7 +3228,6 @@ class ContainerOpen : Buffer {
 		static if(writeId){ writeBigEndianUbyte(ID); }
 		writeBigEndianUbyte(window);
 		writeBigEndianUbyte(type);
-		writeBytes(varint.encode(slotCount));
 		position.encode(bufferInstance);
 		writeBytes(varlong.encode(entityId));
 		return _buffer;
@@ -2970,7 +3237,6 @@ class ContainerOpen : Buffer {
 		static if(readId){ ubyte _id; _id=readBigEndianUbyte(); }
 		window=readBigEndianUbyte();
 		type=readBigEndianUbyte();
-		slotCount=varint.decode(_buffer, &_index);
 		position.decode(bufferInstance);
 		entityId=varlong.decode(_buffer, &_index);
 	}
@@ -2983,7 +3249,7 @@ class ContainerOpen : Buffer {
 	}
 
 	public override string toString() {
-		return "ContainerOpen(window: " ~ std.conv.to!string(this.window) ~ ", type: " ~ std.conv.to!string(this.type) ~ ", slotCount: " ~ std.conv.to!string(this.slotCount) ~ ", position: " ~ std.conv.to!string(this.position) ~ ", entityId: " ~ std.conv.to!string(this.entityId) ~ ")";
+		return "ContainerOpen(window: " ~ std.conv.to!string(this.window) ~ ", type: " ~ std.conv.to!string(this.type) ~ ", position: " ~ std.conv.to!string(this.position) ~ ", entityId: " ~ std.conv.to!string(this.entityId) ~ ")";
 	}
 
 }
@@ -3042,12 +3308,12 @@ class ContainerSetSlot : Buffer {
 	public ubyte window;
 	public int slot;
 	public int hotbarSlot;
-	public sul.protocol.pocket100.types.Slot item;
+	public sul.protocol.pocket110.types.Slot item;
 	public ubyte unknown4;
 
 	public pure nothrow @safe @nogc this() {}
 
-	public pure nothrow @safe @nogc this(ubyte window, int slot=int.init, int hotbarSlot=int.init, sul.protocol.pocket100.types.Slot item=sul.protocol.pocket100.types.Slot.init, ubyte unknown4=ubyte.init) {
+	public pure nothrow @safe @nogc this(ubyte window, int slot=int.init, int hotbarSlot=int.init, sul.protocol.pocket110.types.Slot item=sul.protocol.pocket110.types.Slot.init, ubyte unknown4=ubyte.init) {
 		this.window = window;
 		this.slot = slot;
 		this.hotbarSlot = hotbarSlot;
@@ -3145,16 +3411,18 @@ class ContainerSetContent : Buffer {
 	public enum bool CLIENTBOUND = true;
 	public enum bool SERVERBOUND = false;
 
-	public enum string[] FIELDS = ["window", "slots", "hotbar"];
+	public enum string[] FIELDS = ["window", "entityId", "slots", "hotbar"];
 
-	public ubyte window;
-	public sul.protocol.pocket100.types.Slot[] slots;
+	public uint window;
+	public long entityId;
+	public sul.protocol.pocket110.types.Slot[] slots;
 	public int[] hotbar;
 
 	public pure nothrow @safe @nogc this() {}
 
-	public pure nothrow @safe @nogc this(ubyte window, sul.protocol.pocket100.types.Slot[] slots=(sul.protocol.pocket100.types.Slot[]).init, int[] hotbar=(int[]).init) {
+	public pure nothrow @safe @nogc this(uint window, long entityId=long.init, sul.protocol.pocket110.types.Slot[] slots=(sul.protocol.pocket110.types.Slot[]).init, int[] hotbar=(int[]).init) {
 		this.window = window;
+		this.entityId = entityId;
 		this.slots = slots;
 		this.hotbar = hotbar;
 	}
@@ -3162,17 +3430,19 @@ class ContainerSetContent : Buffer {
 	public pure nothrow @safe ubyte[] encode(bool writeId=true)() {
 		_buffer.length = 0;
 		static if(writeId){ writeBigEndianUbyte(ID); }
-		writeBigEndianUbyte(window);
+		writeBytes(varuint.encode(window));
+		writeBytes(varlong.encode(entityId));
 		writeBytes(varuint.encode(cast(uint)slots.length)); foreach(cxdm;slots){ cxdm.encode(bufferInstance); }
-		writeBytes(varuint.encode(cast(uint)hotbar.length)); foreach(a9yf;hotbar){ writeBytes(varint.encode(a9yf)); }
+		if(window==0){ writeBytes(varuint.encode(cast(uint)hotbar.length)); foreach(a9yf;hotbar){ writeBytes(varint.encode(a9yf)); } }
 		return _buffer;
 	}
 
 	public pure nothrow @safe void decode(bool readId=true)() {
 		static if(readId){ ubyte _id; _id=readBigEndianUbyte(); }
-		window=readBigEndianUbyte();
+		window=varuint.decode(_buffer, &_index);
+		entityId=varlong.decode(_buffer, &_index);
 		slots.length=varuint.decode(_buffer, &_index); foreach(ref cxdm;slots){ cxdm.decode(bufferInstance); }
-		hotbar.length=varuint.decode(_buffer, &_index); foreach(ref a9yf;hotbar){ a9yf=varint.decode(_buffer, &_index); }
+		if(window==0){ hotbar.length=varuint.decode(_buffer, &_index); foreach(ref a9yf;hotbar){ a9yf=varint.decode(_buffer, &_index); } }
 	}
 
 	public static pure nothrow @safe ContainerSetContent fromBuffer(bool readId=true)(ubyte[] buffer) {
@@ -3183,7 +3453,7 @@ class ContainerSetContent : Buffer {
 	}
 
 	public override string toString() {
-		return "ContainerSetContent(window: " ~ std.conv.to!string(this.window) ~ ", slots: " ~ std.conv.to!string(this.slots) ~ ", hotbar: " ~ std.conv.to!string(this.hotbar) ~ ")";
+		return "ContainerSetContent(window: " ~ std.conv.to!string(this.window) ~ ", entityId: " ~ std.conv.to!string(this.entityId) ~ ", slots: " ~ std.conv.to!string(this.slots) ~ ", hotbar: " ~ std.conv.to!string(this.hotbar) ~ ")";
 	}
 
 }
@@ -3197,11 +3467,11 @@ class CraftingData : Buffer {
 
 	public enum string[] FIELDS = ["recipes"];
 
-	public sul.protocol.pocket100.types.Recipe[] recipes;
+	public sul.protocol.pocket110.types.Recipe[] recipes;
 
 	public pure nothrow @safe @nogc this() {}
 
-	public pure nothrow @safe @nogc this(sul.protocol.pocket100.types.Recipe[] recipes) {
+	public pure nothrow @safe @nogc this(sul.protocol.pocket110.types.Recipe[] recipes) {
 		this.recipes = recipes;
 	}
 
@@ -3242,12 +3512,12 @@ class CraftingEvent : Buffer {
 	public ubyte window;
 	public int type;
 	public UUID uuid;
-	public sul.protocol.pocket100.types.Slot[] input;
-	public sul.protocol.pocket100.types.Slot[] output;
+	public sul.protocol.pocket110.types.Slot[] input;
+	public sul.protocol.pocket110.types.Slot[] output;
 
 	public pure nothrow @safe @nogc this() {}
 
-	public pure nothrow @safe @nogc this(ubyte window, int type=int.init, UUID uuid=UUID.init, sul.protocol.pocket100.types.Slot[] input=(sul.protocol.pocket100.types.Slot[]).init, sul.protocol.pocket100.types.Slot[] output=(sul.protocol.pocket100.types.Slot[]).init) {
+	public pure nothrow @safe @nogc this(ubyte window, int type=int.init, UUID uuid=UUID.init, sul.protocol.pocket110.types.Slot[] input=(sul.protocol.pocket110.types.Slot[]).init, sul.protocol.pocket110.types.Slot[] output=(sul.protocol.pocket110.types.Slot[]).init) {
 		this.window = window;
 		this.type = type;
 		this.uuid = uuid;
@@ -3288,6 +3558,9 @@ class CraftingEvent : Buffer {
 
 }
 
+/**
+ * Updates the world's settings and client's permissions.
+ */
 class AdventureSettings : Buffer {
 
 	public enum ubyte ID = 55;
@@ -3305,6 +3578,7 @@ class AdventureSettings : Buffer {
 	public enum uint ALLOW_FLIGHT = 64;
 	public enum uint NO_CLIP = 128;
 	public enum uint FLYING = 512;
+	public enum uint MUTED = 1024;
 
 	// permissions
 	public enum uint USER = 0;
@@ -3352,6 +3626,11 @@ class AdventureSettings : Buffer {
 
 }
 
+/**
+ * Sets a block entity's nbt tag, block's additional data that cannot be indicated
+ * in the block's meta. More informations about block entities and their tag format
+ * can be found on Minecraft Wiki.
+ */
 class BlockEntityData : Buffer {
 
 	public enum ubyte ID = 56;
@@ -3361,12 +3640,27 @@ class BlockEntityData : Buffer {
 
 	public enum string[] FIELDS = ["position", "nbt"];
 
-	public sul.protocol.pocket100.types.BlockPosition position;
+	/**
+	 * Position of the block that will be associated with tag.
+	 */
+	public sul.protocol.pocket110.types.BlockPosition position;
+
+	/**
+	 * Named binary tag of the block. The format varies from the classic format of Minecraft:
+	 * Pocket Edition (which is like Minecraft's but little endian) introducing the use
+	 * of varints for some types:
+	 * + The tag `Int` is encoded as a signed varint instead of a simple signed 32-bits
+	 * integer
+	 * + The length of the `ByteArray` and the `IntArray` is encoded as an unsigned varint
+	 * instead of a 32-bits integer
+	 * + The length of the `String` tag and the named tag's name length are encoded as
+	 * an unisgned varint instead of a 16-bits integer
+	 */
 	public ubyte[] nbt;
 
 	public pure nothrow @safe @nogc this() {}
 
-	public pure nothrow @safe @nogc this(sul.protocol.pocket100.types.BlockPosition position, ubyte[] nbt=(ubyte[]).init) {
+	public pure nothrow @safe @nogc this(sul.protocol.pocket110.types.BlockPosition position, ubyte[] nbt=(ubyte[]).init) {
 		this.position = position;
 		this.nbt = nbt;
 	}
@@ -3448,6 +3742,9 @@ class PlayerInput : Buffer {
 
 }
 
+/**
+ * Sends a 16x16 chunk to the client with its blocks, lights and block entities (tiles).
+ */
 class FullChunkData : Buffer {
 
 	public enum ubyte ID = 58;
@@ -3457,12 +3754,15 @@ class FullChunkData : Buffer {
 
 	public enum string[] FIELDS = ["position", "data"];
 
+	/**
+	 * Coordinates of the chunk.
+	 */
 	public Tuple!(int, "x", int, "z") position;
-	public sul.protocol.pocket100.types.ChunkData data;
+	public sul.protocol.pocket110.types.ChunkData data;
 
 	public pure nothrow @safe @nogc this() {}
 
-	public pure nothrow @safe @nogc this(Tuple!(int, "x", int, "z") position, sul.protocol.pocket100.types.ChunkData data=sul.protocol.pocket100.types.ChunkData.init) {
+	public pure nothrow @safe @nogc this(Tuple!(int, "x", int, "z") position, sul.protocol.pocket110.types.ChunkData data=sul.protocol.pocket110.types.ChunkData.init) {
 		this.position = position;
 		this.data = data;
 	}
@@ -3494,6 +3794,9 @@ class FullChunkData : Buffer {
 
 }
 
+/**
+ * Indicates whether the cheats are enabled. If not the client cannot send commands.
+ */
 class SetCommandsEnabled : Buffer {
 
 	public enum ubyte ID = 59;
@@ -3536,6 +3839,9 @@ class SetCommandsEnabled : Buffer {
 
 }
 
+/**
+ * Sets the world's difficulty.
+ */
 class SetDifficulty : Buffer {
 
 	public enum ubyte ID = 60;
@@ -3639,6 +3945,11 @@ class ChangeDimension : Buffer {
 
 }
 
+/**
+ * Sets the player's gamemode. This packet is sent by the player when it has the operator
+ * status (set in AdventureSettings.permissions) and it changes the gamemode in the
+ * settings screen.
+ */
 class SetPlayerGameType : Buffer {
 
 	public enum ubyte ID = 62;
@@ -3685,6 +3996,11 @@ class SetPlayerGameType : Buffer {
 
 }
 
+/**
+ * Adds or removes a player from the player's list displayed in the pause menu. This
+ * packet should be sent before spawning a player with AddPlayer, otherwise the skin
+ * is not applied.
+ */
 class PlayerList : Buffer {
 
 	public enum ubyte ID = 63;
@@ -3737,11 +4053,11 @@ class PlayerList : Buffer {
 
 		public enum string[] FIELDS = ["players"];
 
-		public sul.protocol.pocket100.types.PlayerList[] players;
+		public sul.protocol.pocket110.types.PlayerList[] players;
 
 		public pure nothrow @safe @nogc this() {}
 
-		public pure nothrow @safe @nogc this(sul.protocol.pocket100.types.PlayerList[] players) {
+		public pure nothrow @safe @nogc this(sul.protocol.pocket110.types.PlayerList[] players) {
 			this.players = players;
 		}
 
@@ -3795,6 +4111,38 @@ class PlayerList : Buffer {
 
 }
 
+class SimpleEvent : Buffer {
+
+	public enum ubyte ID = 63;
+
+	public enum bool CLIENTBOUND = true;
+	public enum bool SERVERBOUND = true;
+
+	public enum string[] FIELDS = [];
+
+	public pure nothrow @safe ubyte[] encode(bool writeId=true)() {
+		_buffer.length = 0;
+		static if(writeId){ writeBigEndianUbyte(ID); }
+		return _buffer;
+	}
+
+	public pure nothrow @safe void decode(bool readId=true)() {
+		static if(readId){ ubyte _id; _id=readBigEndianUbyte(); }
+	}
+
+	public static pure nothrow @safe SimpleEvent fromBuffer(bool readId=true)(ubyte[] buffer) {
+		SimpleEvent ret = new SimpleEvent();
+		ret._buffer = buffer;
+		ret.decode!readId();
+		return ret;
+	}
+
+	public override string toString() {
+		return "SimpleEvent()";
+	}
+
+}
+
 class TelemetryEvent : Buffer {
 
 	public enum ubyte ID = 64;
@@ -3843,7 +4191,7 @@ class TelemetryEvent : Buffer {
 
 class SpawnExperienceOrb : Buffer {
 
-	public enum ubyte ID = 65;
+	public enum ubyte ID = 66;
 
 	public enum bool CLIENTBOUND = true;
 	public enum bool SERVERBOUND = false;
@@ -3889,7 +4237,7 @@ class SpawnExperienceOrb : Buffer {
 
 class ClientboundMapItemData : Buffer {
 
-	public enum ubyte ID = 66;
+	public enum ubyte ID = 67;
 
 	public enum bool CLIENTBOUND = true;
 	public enum bool SERVERBOUND = false;
@@ -3904,14 +4252,22 @@ class ClientboundMapItemData : Buffer {
 	public long mapId;
 	public uint update;
 	public ubyte scale;
+
+	/**
+	 * Colums and rows.
+	 */
 	public Tuple!(int, "x", int, "z") size;
 	public Tuple!(int, "x", int, "z") offset;
+
+	/**
+	 * ARGB colours encoded as unsigned varints.
+	 */
 	public ubyte[] data;
-	public sul.protocol.pocket100.types.Decoration[] decorations;
+	public sul.protocol.pocket110.types.Decoration[] decorations;
 
 	public pure nothrow @safe @nogc this() {}
 
-	public pure nothrow @safe @nogc this(long mapId, uint update=uint.init, ubyte scale=ubyte.init, Tuple!(int, "x", int, "z") size=Tuple!(int, "x", int, "z").init, Tuple!(int, "x", int, "z") offset=Tuple!(int, "x", int, "z").init, ubyte[] data=(ubyte[]).init, sul.protocol.pocket100.types.Decoration[] decorations=(sul.protocol.pocket100.types.Decoration[]).init) {
+	public pure nothrow @safe @nogc this(long mapId, uint update=uint.init, ubyte scale=ubyte.init, Tuple!(int, "x", int, "z") size=Tuple!(int, "x", int, "z").init, Tuple!(int, "x", int, "z") offset=Tuple!(int, "x", int, "z").init, ubyte[] data=(ubyte[]).init, sul.protocol.pocket110.types.Decoration[] decorations=(sul.protocol.pocket110.types.Decoration[]).init) {
 		this.mapId = mapId;
 		this.update = update;
 		this.scale = scale;
@@ -3960,7 +4316,7 @@ class ClientboundMapItemData : Buffer {
 
 class MapInfoRequest : Buffer {
 
-	public enum ubyte ID = 67;
+	public enum ubyte ID = 68;
 
 	public enum bool CLIENTBOUND = false;
 	public enum bool SERVERBOUND = true;
@@ -4000,15 +4356,24 @@ class MapInfoRequest : Buffer {
 
 }
 
+/**
+ * Packet sent by the client when its view-distance is updated and when it spawns for
+ * the first time a world. A ChunkRadiusUpdate should always be sent in response, otherwise
+ * the player will not update its view distance.
+ */
 class RequestChunkRadius : Buffer {
 
-	public enum ubyte ID = 68;
+	public enum ubyte ID = 69;
 
 	public enum bool CLIENTBOUND = false;
 	public enum bool SERVERBOUND = true;
 
 	public enum string[] FIELDS = ["radius"];
 
+	/**
+	 * Number of chunks before the fog starts to appear in the client's view. The value
+	 * of this field is usually between 8 and 14.
+	 */
 	public int radius;
 
 	public pure nothrow @safe @nogc this() {}
@@ -4042,15 +4407,23 @@ class RequestChunkRadius : Buffer {
 
 }
 
+/**
+ * Packet sent always and only in response to RequestChunkRadius to change the client's
+ * view distance.
+ */
 class ChunkRadiusUpdated : Buffer {
 
-	public enum ubyte ID = 69;
+	public enum ubyte ID = 70;
 
 	public enum bool CLIENTBOUND = true;
 	public enum bool SERVERBOUND = false;
 
 	public enum string[] FIELDS = ["radius"];
 
+	/**
+	 * View distance that may be different from the client's one if the server sets a limit
+	 * on the view distance.
+	 */
 	public int radius;
 
 	public pure nothrow @safe @nogc this() {}
@@ -4086,19 +4459,19 @@ class ChunkRadiusUpdated : Buffer {
 
 class ItemFrameDropItem : Buffer {
 
-	public enum ubyte ID = 70;
+	public enum ubyte ID = 71;
 
 	public enum bool CLIENTBOUND = true;
 	public enum bool SERVERBOUND = false;
 
 	public enum string[] FIELDS = ["position", "item"];
 
-	public sul.protocol.pocket100.types.BlockPosition position;
-	public sul.protocol.pocket100.types.Slot item;
+	public sul.protocol.pocket110.types.BlockPosition position;
+	public sul.protocol.pocket110.types.Slot item;
 
 	public pure nothrow @safe @nogc this() {}
 
-	public pure nothrow @safe @nogc this(sul.protocol.pocket100.types.BlockPosition position, sul.protocol.pocket100.types.Slot item=sul.protocol.pocket100.types.Slot.init) {
+	public pure nothrow @safe @nogc this(sul.protocol.pocket110.types.BlockPosition position, sul.protocol.pocket110.types.Slot item=sul.protocol.pocket110.types.Slot.init) {
 		this.position = position;
 		this.item = item;
 	}
@@ -4130,20 +4503,20 @@ class ItemFrameDropItem : Buffer {
 
 }
 
-class ReplaceSelectedItem : Buffer {
+class ReplaceItemInSlot : Buffer {
 
-	public enum ubyte ID = 71;
+	public enum ubyte ID = 72;
 
 	public enum bool CLIENTBOUND = false;
 	public enum bool SERVERBOUND = true;
 
 	public enum string[] FIELDS = ["item"];
 
-	public sul.protocol.pocket100.types.Slot item;
+	public sul.protocol.pocket110.types.Slot item;
 
 	public pure nothrow @safe @nogc this() {}
 
-	public pure nothrow @safe @nogc this(sul.protocol.pocket100.types.Slot item) {
+	public pure nothrow @safe @nogc this(sul.protocol.pocket110.types.Slot item) {
 		this.item = item;
 	}
 
@@ -4159,33 +4532,38 @@ class ReplaceSelectedItem : Buffer {
 		item.decode(bufferInstance);
 	}
 
-	public static pure nothrow @safe ReplaceSelectedItem fromBuffer(bool readId=true)(ubyte[] buffer) {
-		ReplaceSelectedItem ret = new ReplaceSelectedItem();
+	public static pure nothrow @safe ReplaceItemInSlot fromBuffer(bool readId=true)(ubyte[] buffer) {
+		ReplaceItemInSlot ret = new ReplaceItemInSlot();
 		ret._buffer = buffer;
 		ret.decode!readId();
 		return ret;
 	}
 
 	public override string toString() {
-		return "ReplaceSelectedItem(item: " ~ std.conv.to!string(this.item) ~ ")";
+		return "ReplaceItemInSlot(item: " ~ std.conv.to!string(this.item) ~ ")";
 	}
 
 }
 
+/**
+ * Updates client's game rules. This packet is ignored if the game is not launched
+ * as Education Edition and should be avoid in favour of AdventureSettings, with which
+ * the same result can be obtained with less data.
+ */
 class GameRulesChanged : Buffer {
 
-	public enum ubyte ID = 72;
+	public enum ubyte ID = 73;
 
 	public enum bool CLIENTBOUND = true;
 	public enum bool SERVERBOUND = false;
 
 	public enum string[] FIELDS = ["rules"];
 
-	public sul.protocol.pocket100.types.Rule[] rules;
+	public sul.protocol.pocket110.types.Rule[] rules;
 
 	public pure nothrow @safe @nogc this() {}
 
-	public pure nothrow @safe @nogc this(sul.protocol.pocket100.types.Rule[] rules) {
+	public pure nothrow @safe @nogc this(sul.protocol.pocket110.types.Rule[] rules) {
 		this.rules = rules;
 	}
 
@@ -4216,7 +4594,7 @@ class GameRulesChanged : Buffer {
 
 class Camera : Buffer {
 
-	public enum ubyte ID = 73;
+	public enum ubyte ID = 74;
 
 	public enum bool CLIENTBOUND = true;
 	public enum bool SERVERBOUND = false;
@@ -4262,18 +4640,18 @@ class Camera : Buffer {
 
 class AddItem : Buffer {
 
-	public enum ubyte ID = 74;
+	public enum ubyte ID = 75;
 
 	public enum bool CLIENTBOUND = true;
 	public enum bool SERVERBOUND = false;
 
 	public enum string[] FIELDS = ["item"];
 
-	public sul.protocol.pocket100.types.Slot item;
+	public sul.protocol.pocket110.types.Slot item;
 
 	public pure nothrow @safe @nogc this() {}
 
-	public pure nothrow @safe @nogc this(sul.protocol.pocket100.types.Slot item) {
+	public pure nothrow @safe @nogc this(sul.protocol.pocket110.types.Slot item) {
 		this.item = item;
 	}
 
@@ -4302,9 +4680,13 @@ class AddItem : Buffer {
 
 }
 
+/**
+ * Adds, removes or modifies an entity's boss bar. The percentage of the bar is calculated
+ * using the entity's attributes for the health and the max health, updated with UpdateAttributes.
+ */
 class BossEvent : Buffer {
 
-	public enum ubyte ID = 75;
+	public enum ubyte ID = 76;
 
 	public enum bool CLIENTBOUND = true;
 	public enum bool SERVERBOUND = false;
@@ -4355,7 +4737,7 @@ class BossEvent : Buffer {
 
 class ShowCredits : Buffer {
 
-	public enum ubyte ID = 76;
+	public enum ubyte ID = 77;
 
 	public enum bool CLIENTBOUND = true;
 	public enum bool SERVERBOUND = true;
@@ -4403,15 +4785,21 @@ class ShowCredits : Buffer {
 
 }
 
+/**
+ * Sends a list of the commands that the player can use through the CommandStep packet.
+ */
 class AvailableCommands : Buffer {
 
-	public enum ubyte ID = 77;
+	public enum ubyte ID = 78;
 
 	public enum bool CLIENTBOUND = true;
 	public enum bool SERVERBOUND = false;
 
 	public enum string[] FIELDS = ["commands", "unknown1"];
 
+	/**
+	 * JSON object with the commands.
+	 */
 	public string commands;
 	public string unknown1;
 
@@ -4451,7 +4839,7 @@ class AvailableCommands : Buffer {
 
 class CommandStep : Buffer {
 
-	public enum ubyte ID = 78;
+	public enum ubyte ID = 79;
 
 	public enum bool CLIENTBOUND = false;
 	public enum bool SERVERBOUND = true;
@@ -4464,12 +4852,12 @@ class CommandStep : Buffer {
 	public uint currentStep;
 	public bool done;
 	public ulong clientId;
-	public sul.protocol.pocket100.types.Json input;
-	public sul.protocol.pocket100.types.Json output;
+	public string input;
+	public string output;
 
 	public pure nothrow @safe @nogc this() {}
 
-	public pure nothrow @safe @nogc this(string command, string overload=string.init, uint unknown2=uint.init, uint currentStep=uint.init, bool done=bool.init, ulong clientId=ulong.init, sul.protocol.pocket100.types.Json input=sul.protocol.pocket100.types.Json.init, sul.protocol.pocket100.types.Json output=sul.protocol.pocket100.types.Json.init) {
+	public pure nothrow @safe @nogc this(string command, string overload=string.init, uint unknown2=uint.init, uint currentStep=uint.init, bool done=bool.init, ulong clientId=ulong.init, string input=string.init, string output=string.init) {
 		this.command = command;
 		this.overload = overload;
 		this.unknown2 = unknown2;
@@ -4489,8 +4877,8 @@ class CommandStep : Buffer {
 		writeBytes(varuint.encode(currentStep));
 		writeBigEndianBool(done);
 		writeBytes(varulong.encode(clientId));
-		input.encode(bufferInstance);
-		output.encode(bufferInstance);
+		writeBytes(varuint.encode(cast(uint)input.length)); writeString(input);
+		writeBytes(varuint.encode(cast(uint)output.length)); writeString(output);
 		return _buffer;
 	}
 
@@ -4502,8 +4890,8 @@ class CommandStep : Buffer {
 		currentStep=varuint.decode(_buffer, &_index);
 		done=readBigEndianBool();
 		clientId=varulong.decode(_buffer, &_index);
-		input.decode(bufferInstance);
-		output.decode(bufferInstance);
+		uint a5dq=varuint.decode(_buffer, &_index); input=readString(a5dq);
+		uint bvcv=varuint.decode(_buffer, &_index); output=readString(bvcv);
 	}
 
 	public static pure nothrow @safe CommandStep fromBuffer(bool readId=true)(ubyte[] buffer) {
@@ -4519,9 +4907,193 @@ class CommandStep : Buffer {
 
 }
 
+class CommandBlockUpdate : Buffer {
+
+	public enum ubyte ID = 80;
+
+	public enum bool CLIENTBOUND = true;
+	public enum bool SERVERBOUND = true;
+
+	public enum string[] FIELDS = ["updateBlock", "position", "mode", "redstoneMode", "conditional", "minecart", "command", "lastOutput", "hover", "trackOutput"];
+
+	public bool updateBlock;
+	public sul.protocol.pocket110.types.BlockPosition position;
+	public uint mode;
+	public bool redstoneMode;
+	public bool conditional;
+	public long minecart;
+	public string command;
+	public string lastOutput;
+	public string hover;
+	public bool trackOutput;
+
+	public pure nothrow @safe @nogc this() {}
+
+	public pure nothrow @safe @nogc this(bool updateBlock, sul.protocol.pocket110.types.BlockPosition position=sul.protocol.pocket110.types.BlockPosition.init, uint mode=uint.init, bool redstoneMode=bool.init, bool conditional=bool.init, long minecart=long.init, string command=string.init, string lastOutput=string.init, string hover=string.init, bool trackOutput=bool.init) {
+		this.updateBlock = updateBlock;
+		this.position = position;
+		this.mode = mode;
+		this.redstoneMode = redstoneMode;
+		this.conditional = conditional;
+		this.minecart = minecart;
+		this.command = command;
+		this.lastOutput = lastOutput;
+		this.hover = hover;
+		this.trackOutput = trackOutput;
+	}
+
+	public pure nothrow @safe ubyte[] encode(bool writeId=true)() {
+		_buffer.length = 0;
+		static if(writeId){ writeBigEndianUbyte(ID); }
+		writeBigEndianBool(updateBlock);
+		if(updateBlock==true){ position.encode(bufferInstance); }
+		if(updateBlock==true){ writeBytes(varuint.encode(mode)); }
+		if(updateBlock==true){ writeBigEndianBool(redstoneMode); }
+		if(updateBlock==true){ writeBigEndianBool(conditional); }
+		if(updateBlock==false){ writeBytes(varlong.encode(minecart)); }
+		writeBytes(varuint.encode(cast(uint)command.length)); writeString(command);
+		writeBytes(varuint.encode(cast(uint)lastOutput.length)); writeString(lastOutput);
+		writeBytes(varuint.encode(cast(uint)hover.length)); writeString(hover);
+		writeBigEndianBool(trackOutput);
+		return _buffer;
+	}
+
+	public pure nothrow @safe void decode(bool readId=true)() {
+		static if(readId){ ubyte _id; _id=readBigEndianUbyte(); }
+		updateBlock=readBigEndianBool();
+		if(updateBlock==true){ position.decode(bufferInstance); }
+		if(updateBlock==true){ mode=varuint.decode(_buffer, &_index); }
+		if(updateBlock==true){ redstoneMode=readBigEndianBool(); }
+		if(updateBlock==true){ conditional=readBigEndianBool(); }
+		if(updateBlock==false){ minecart=varlong.decode(_buffer, &_index); }
+		uint y9bfz=varuint.decode(_buffer, &_index); command=readString(y9bfz);
+		uint bfd9dbd=varuint.decode(_buffer, &_index); lastOutput=readString(bfd9dbd);
+		uint a9zi=varuint.decode(_buffer, &_index); hover=readString(a9zi);
+		trackOutput=readBigEndianBool();
+	}
+
+	public static pure nothrow @safe CommandBlockUpdate fromBuffer(bool readId=true)(ubyte[] buffer) {
+		CommandBlockUpdate ret = new CommandBlockUpdate();
+		ret._buffer = buffer;
+		ret.decode!readId();
+		return ret;
+	}
+
+	public override string toString() {
+		return "CommandBlockUpdate(updateBlock: " ~ std.conv.to!string(this.updateBlock) ~ ", position: " ~ std.conv.to!string(this.position) ~ ", mode: " ~ std.conv.to!string(this.mode) ~ ", redstoneMode: " ~ std.conv.to!string(this.redstoneMode) ~ ", conditional: " ~ std.conv.to!string(this.conditional) ~ ", minecart: " ~ std.conv.to!string(this.minecart) ~ ", command: " ~ std.conv.to!string(this.command) ~ ", lastOutput: " ~ std.conv.to!string(this.lastOutput) ~ ", hover: " ~ std.conv.to!string(this.hover) ~ ", trackOutput: " ~ std.conv.to!string(this.trackOutput) ~ ")";
+	}
+
+}
+
+class UpdateTrade : Buffer {
+
+	public enum ubyte ID = 81;
+
+	public enum bool CLIENTBOUND = true;
+	public enum bool SERVERBOUND = false;
+
+	public enum string[] FIELDS = ["unknown0", "unknown1", "unknown2", "unknown3", "unknown4", "trader", "player", "unknown7", "offers"];
+
+	public ubyte unknown0;
+	public ubyte unknown1;
+	public int unknown2;
+	public int unknown3;
+	public bool unknown4;
+	public long trader;
+	public long player;
+	public string unknown7;
+	public ubyte[] offers;
+
+	public pure nothrow @safe @nogc this() {}
+
+	public pure nothrow @safe @nogc this(ubyte unknown0, ubyte unknown1=ubyte.init, int unknown2=int.init, int unknown3=int.init, bool unknown4=bool.init, long trader=long.init, long player=long.init, string unknown7=string.init, ubyte[] offers=(ubyte[]).init) {
+		this.unknown0 = unknown0;
+		this.unknown1 = unknown1;
+		this.unknown2 = unknown2;
+		this.unknown3 = unknown3;
+		this.unknown4 = unknown4;
+		this.trader = trader;
+		this.player = player;
+		this.unknown7 = unknown7;
+		this.offers = offers;
+	}
+
+	public pure nothrow @safe ubyte[] encode(bool writeId=true)() {
+		_buffer.length = 0;
+		static if(writeId){ writeBigEndianUbyte(ID); }
+		writeBigEndianUbyte(unknown0);
+		writeBigEndianUbyte(unknown1);
+		writeBytes(varint.encode(unknown2));
+		writeBytes(varint.encode(unknown3));
+		writeBigEndianBool(unknown4);
+		writeBytes(varlong.encode(trader));
+		writeBytes(varlong.encode(player));
+		writeBytes(varuint.encode(cast(uint)unknown7.length)); writeString(unknown7);
+		writeBytes(offers);
+		return _buffer;
+	}
+
+	public pure nothrow @safe void decode(bool readId=true)() {
+		static if(readId){ ubyte _id; _id=readBigEndianUbyte(); }
+		unknown0=readBigEndianUbyte();
+		unknown1=readBigEndianUbyte();
+		unknown2=varint.decode(_buffer, &_index);
+		unknown3=varint.decode(_buffer, &_index);
+		unknown4=readBigEndianBool();
+		trader=varlong.decode(_buffer, &_index);
+		player=varlong.decode(_buffer, &_index);
+		uint d5b9bc=varuint.decode(_buffer, &_index); unknown7=readString(d5b9bc);
+		offers=_buffer[_index..$].dup; _index=_buffer.length;
+	}
+
+	public static pure nothrow @safe UpdateTrade fromBuffer(bool readId=true)(ubyte[] buffer) {
+		UpdateTrade ret = new UpdateTrade();
+		ret._buffer = buffer;
+		ret.decode!readId();
+		return ret;
+	}
+
+	public override string toString() {
+		return "UpdateTrade(unknown0: " ~ std.conv.to!string(this.unknown0) ~ ", unknown1: " ~ std.conv.to!string(this.unknown1) ~ ", unknown2: " ~ std.conv.to!string(this.unknown2) ~ ", unknown3: " ~ std.conv.to!string(this.unknown3) ~ ", unknown4: " ~ std.conv.to!string(this.unknown4) ~ ", trader: " ~ std.conv.to!string(this.trader) ~ ", player: " ~ std.conv.to!string(this.player) ~ ", unknown7: " ~ std.conv.to!string(this.unknown7) ~ ", offers: " ~ std.conv.to!string(this.offers) ~ ")";
+	}
+
+}
+
+class UpdateEquip : Buffer {
+
+	public enum ubyte ID = 82;
+
+	public enum bool CLIENTBOUND = true;
+	public enum bool SERVERBOUND = false;
+
+	public enum string[] FIELDS = [];
+
+	public pure nothrow @safe ubyte[] encode(bool writeId=true)() {
+		_buffer.length = 0;
+		static if(writeId){ writeBigEndianUbyte(ID); }
+		return _buffer;
+	}
+
+	public pure nothrow @safe void decode(bool readId=true)() {
+		static if(readId){ ubyte _id; _id=readBigEndianUbyte(); }
+	}
+
+	public static pure nothrow @safe UpdateEquip fromBuffer(bool readId=true)(ubyte[] buffer) {
+		UpdateEquip ret = new UpdateEquip();
+		ret._buffer = buffer;
+		ret.decode!readId();
+		return ret;
+	}
+
+	public override string toString() {
+		return "UpdateEquip()";
+	}
+
+}
+
 class ResourcePackDataInfo : Buffer {
 
-	public enum ubyte ID = 79;
+	public enum ubyte ID = 83;
 
 	public enum bool CLIENTBOUND = true;
 	public enum bool SERVERBOUND = false;
@@ -4579,7 +5151,7 @@ class ResourcePackDataInfo : Buffer {
 
 class ResourcePackChunkData : Buffer {
 
-	public enum ubyte ID = 80;
+	public enum ubyte ID = 84;
 
 	public enum bool CLIENTBOUND = true;
 	public enum bool SERVERBOUND = false;
@@ -4633,7 +5205,7 @@ class ResourcePackChunkData : Buffer {
 
 class ResourcePackChunkRequest : Buffer {
 
-	public enum ubyte ID = 81;
+	public enum ubyte ID = 85;
 
 	public enum bool CLIENTBOUND = false;
 	public enum bool SERVERBOUND = true;
@@ -4673,6 +5245,296 @@ class ResourcePackChunkRequest : Buffer {
 
 	public override string toString() {
 		return "ResourcePackChunkRequest(id: " ~ std.conv.to!string(this.id) ~ ", chunkIndex: " ~ std.conv.to!string(this.chunkIndex) ~ ")";
+	}
+
+}
+
+/**
+ * Transfers the player to another server. Once transferred the player will immediately
+ * close the connection with the transferring server, try to resolve the ip and join
+ * the new server starting a new raknet session.
+ */
+class Transfer : Buffer {
+
+	public enum ubyte ID = 86;
+
+	public enum bool CLIENTBOUND = true;
+	public enum bool SERVERBOUND = false;
+
+	public enum string[] FIELDS = ["ip", "port"];
+
+	/**
+	 * Address of the new server. It can be an dotted ip (for example `127.0.0.1`) or an
+	 * URI (for example `localhost` or `play.example.com`). Only IP of version 4 are currently
+	 * allowed.
+	 */
+	public string ip;
+
+	/**
+	 * Port of the new server. If 0 the server will try to connect to the default port.
+	 */
+	public ushort port = 19132;
+
+	public pure nothrow @safe @nogc this() {}
+
+	public pure nothrow @safe @nogc this(string ip, ushort port=19132) {
+		this.ip = ip;
+		this.port = port;
+	}
+
+	public pure nothrow @safe ubyte[] encode(bool writeId=true)() {
+		_buffer.length = 0;
+		static if(writeId){ writeBigEndianUbyte(ID); }
+		writeBytes(varuint.encode(cast(uint)ip.length)); writeString(ip);
+		writeLittleEndianUshort(port);
+		return _buffer;
+	}
+
+	public pure nothrow @safe void decode(bool readId=true)() {
+		static if(readId){ ubyte _id; _id=readBigEndianUbyte(); }
+		uint aa=varuint.decode(_buffer, &_index); ip=readString(aa);
+		port=readLittleEndianUshort();
+	}
+
+	public static pure nothrow @safe Transfer fromBuffer(bool readId=true)(ubyte[] buffer) {
+		Transfer ret = new Transfer();
+		ret._buffer = buffer;
+		ret.decode!readId();
+		return ret;
+	}
+
+	public override string toString() {
+		return "Transfer(ip: " ~ std.conv.to!string(this.ip) ~ ", port: " ~ std.conv.to!string(this.port) ~ ")";
+	}
+
+}
+
+class PlaySound : Buffer {
+
+	public enum ubyte ID = 87;
+
+	public enum bool CLIENTBOUND = true;
+	public enum bool SERVERBOUND = false;
+
+	public enum string[] FIELDS = ["unknown0", "position", "unknown2", "unknown3"];
+
+	public string unknown0;
+	public sul.protocol.pocket110.types.BlockPosition position;
+	public float unknown2;
+	public float unknown3;
+
+	public pure nothrow @safe @nogc this() {}
+
+	public pure nothrow @safe @nogc this(string unknown0, sul.protocol.pocket110.types.BlockPosition position=sul.protocol.pocket110.types.BlockPosition.init, float unknown2=float.init, float unknown3=float.init) {
+		this.unknown0 = unknown0;
+		this.position = position;
+		this.unknown2 = unknown2;
+		this.unknown3 = unknown3;
+	}
+
+	public pure nothrow @safe ubyte[] encode(bool writeId=true)() {
+		_buffer.length = 0;
+		static if(writeId){ writeBigEndianUbyte(ID); }
+		writeBytes(varuint.encode(cast(uint)unknown0.length)); writeString(unknown0);
+		position.encode(bufferInstance);
+		writeLittleEndianFloat(unknown2);
+		writeLittleEndianFloat(unknown3);
+		return _buffer;
+	}
+
+	public pure nothrow @safe void decode(bool readId=true)() {
+		static if(readId){ ubyte _id; _id=readBigEndianUbyte(); }
+		uint d5b9ba=varuint.decode(_buffer, &_index); unknown0=readString(d5b9ba);
+		position.decode(bufferInstance);
+		unknown2=readLittleEndianFloat();
+		unknown3=readLittleEndianFloat();
+	}
+
+	public static pure nothrow @safe PlaySound fromBuffer(bool readId=true)(ubyte[] buffer) {
+		PlaySound ret = new PlaySound();
+		ret._buffer = buffer;
+		ret.decode!readId();
+		return ret;
+	}
+
+	public override string toString() {
+		return "PlaySound(unknown0: " ~ std.conv.to!string(this.unknown0) ~ ", position: " ~ std.conv.to!string(this.position) ~ ", unknown2: " ~ std.conv.to!string(this.unknown2) ~ ", unknown3: " ~ std.conv.to!string(this.unknown3) ~ ")";
+	}
+
+}
+
+class StopSound : Buffer {
+
+	public enum ubyte ID = 88;
+
+	public enum bool CLIENTBOUND = true;
+	public enum bool SERVERBOUND = false;
+
+	public enum string[] FIELDS = ["unknown0", "unknown1"];
+
+	public string unknown0;
+	public bool unknown1;
+
+	public pure nothrow @safe @nogc this() {}
+
+	public pure nothrow @safe @nogc this(string unknown0, bool unknown1=bool.init) {
+		this.unknown0 = unknown0;
+		this.unknown1 = unknown1;
+	}
+
+	public pure nothrow @safe ubyte[] encode(bool writeId=true)() {
+		_buffer.length = 0;
+		static if(writeId){ writeBigEndianUbyte(ID); }
+		writeBytes(varuint.encode(cast(uint)unknown0.length)); writeString(unknown0);
+		writeBigEndianBool(unknown1);
+		return _buffer;
+	}
+
+	public pure nothrow @safe void decode(bool readId=true)() {
+		static if(readId){ ubyte _id; _id=readBigEndianUbyte(); }
+		uint d5b9ba=varuint.decode(_buffer, &_index); unknown0=readString(d5b9ba);
+		unknown1=readBigEndianBool();
+	}
+
+	public static pure nothrow @safe StopSound fromBuffer(bool readId=true)(ubyte[] buffer) {
+		StopSound ret = new StopSound();
+		ret._buffer = buffer;
+		ret.decode!readId();
+		return ret;
+	}
+
+	public override string toString() {
+		return "StopSound(unknown0: " ~ std.conv.to!string(this.unknown0) ~ ", unknown1: " ~ std.conv.to!string(this.unknown1) ~ ")";
+	}
+
+}
+
+class SetTitle : Buffer {
+
+	public enum ubyte ID = 89;
+
+	public enum bool CLIENTBOUND = true;
+	public enum bool SERVERBOUND = false;
+
+	// action
+	public enum int HIDE = 0;
+	public enum int RESET = 1;
+	public enum int SET_TITLE = 2;
+	public enum int SET_SUBTITLE = 3;
+	public enum int SET_ACTION_BAR = 4;
+	public enum int SET_TIMINGS = 5;
+
+	public enum string[] FIELDS = ["action", "text", "fadeIn", "stay", "fadeOut"];
+
+	public int action;
+	public string text;
+	public int fadeIn;
+	public int stay;
+	public int fadeOut;
+
+	public pure nothrow @safe @nogc this() {}
+
+	public pure nothrow @safe @nogc this(int action, string text=string.init, int fadeIn=int.init, int stay=int.init, int fadeOut=int.init) {
+		this.action = action;
+		this.text = text;
+		this.fadeIn = fadeIn;
+		this.stay = stay;
+		this.fadeOut = fadeOut;
+	}
+
+	public pure nothrow @safe ubyte[] encode(bool writeId=true)() {
+		_buffer.length = 0;
+		static if(writeId){ writeBigEndianUbyte(ID); }
+		writeBytes(varint.encode(action));
+		writeBytes(varuint.encode(cast(uint)text.length)); writeString(text);
+		writeBytes(varint.encode(fadeIn));
+		writeBytes(varint.encode(stay));
+		writeBytes(varint.encode(fadeOut));
+		return _buffer;
+	}
+
+	public pure nothrow @safe void decode(bool readId=true)() {
+		static if(readId){ ubyte _id; _id=readBigEndianUbyte(); }
+		action=varint.decode(_buffer, &_index);
+		uint dvd=varuint.decode(_buffer, &_index); text=readString(dvd);
+		fadeIn=varint.decode(_buffer, &_index);
+		stay=varint.decode(_buffer, &_index);
+		fadeOut=varint.decode(_buffer, &_index);
+	}
+
+	public static pure nothrow @safe SetTitle fromBuffer(bool readId=true)(ubyte[] buffer) {
+		SetTitle ret = new SetTitle();
+		ret._buffer = buffer;
+		ret.decode!readId();
+		return ret;
+	}
+
+	public override string toString() {
+		return "SetTitle(action: " ~ std.conv.to!string(this.action) ~ ", text: " ~ std.conv.to!string(this.text) ~ ", fadeIn: " ~ std.conv.to!string(this.fadeIn) ~ ", stay: " ~ std.conv.to!string(this.stay) ~ ", fadeOut: " ~ std.conv.to!string(this.fadeOut) ~ ")";
+	}
+
+}
+
+class AddBehaviorTree : Buffer {
+
+	public enum ubyte ID = 90;
+
+	public enum bool CLIENTBOUND = true;
+	public enum bool SERVERBOUND = false;
+
+	public enum string[] FIELDS = [];
+
+	public pure nothrow @safe ubyte[] encode(bool writeId=true)() {
+		_buffer.length = 0;
+		static if(writeId){ writeBigEndianUbyte(ID); }
+		return _buffer;
+	}
+
+	public pure nothrow @safe void decode(bool readId=true)() {
+		static if(readId){ ubyte _id; _id=readBigEndianUbyte(); }
+	}
+
+	public static pure nothrow @safe AddBehaviorTree fromBuffer(bool readId=true)(ubyte[] buffer) {
+		AddBehaviorTree ret = new AddBehaviorTree();
+		ret._buffer = buffer;
+		ret.decode!readId();
+		return ret;
+	}
+
+	public override string toString() {
+		return "AddBehaviorTree()";
+	}
+
+}
+
+class StructureBlockUpdate : Buffer {
+
+	public enum ubyte ID = 91;
+
+	public enum bool CLIENTBOUND = true;
+	public enum bool SERVERBOUND = false;
+
+	public enum string[] FIELDS = [];
+
+	public pure nothrow @safe ubyte[] encode(bool writeId=true)() {
+		_buffer.length = 0;
+		static if(writeId){ writeBigEndianUbyte(ID); }
+		return _buffer;
+	}
+
+	public pure nothrow @safe void decode(bool readId=true)() {
+		static if(readId){ ubyte _id; _id=readBigEndianUbyte(); }
+	}
+
+	public static pure nothrow @safe StructureBlockUpdate fromBuffer(bool readId=true)(ubyte[] buffer) {
+		StructureBlockUpdate ret = new StructureBlockUpdate();
+		ret._buffer = buffer;
+		ret.decode!readId();
+		return ret;
+	}
+
+	public override string toString() {
+		return "StructureBlockUpdate()";
 	}
 
 }
