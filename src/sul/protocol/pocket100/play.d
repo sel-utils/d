@@ -4464,12 +4464,12 @@ class CommandStep : Buffer {
 	public uint currentStep;
 	public bool done;
 	public ulong clientId;
-	public sul.protocol.pocket100.types.Json input;
-	public sul.protocol.pocket100.types.Json output;
+	public string input;
+	public string output;
 
 	public pure nothrow @safe @nogc this() {}
 
-	public pure nothrow @safe @nogc this(string command, string overload=string.init, uint unknown2=uint.init, uint currentStep=uint.init, bool done=bool.init, ulong clientId=ulong.init, sul.protocol.pocket100.types.Json input=sul.protocol.pocket100.types.Json.init, sul.protocol.pocket100.types.Json output=sul.protocol.pocket100.types.Json.init) {
+	public pure nothrow @safe @nogc this(string command, string overload=string.init, uint unknown2=uint.init, uint currentStep=uint.init, bool done=bool.init, ulong clientId=ulong.init, string input=string.init, string output=string.init) {
 		this.command = command;
 		this.overload = overload;
 		this.unknown2 = unknown2;
@@ -4489,8 +4489,8 @@ class CommandStep : Buffer {
 		writeBytes(varuint.encode(currentStep));
 		writeBigEndianBool(done);
 		writeBytes(varulong.encode(clientId));
-		input.encode(bufferInstance);
-		output.encode(bufferInstance);
+		writeBytes(varuint.encode(cast(uint)input.length)); writeString(input);
+		writeBytes(varuint.encode(cast(uint)output.length)); writeString(output);
 		return _buffer;
 	}
 
@@ -4502,8 +4502,8 @@ class CommandStep : Buffer {
 		currentStep=varuint.decode(_buffer, &_index);
 		done=readBigEndianBool();
 		clientId=varulong.decode(_buffer, &_index);
-		input.decode(bufferInstance);
-		output.decode(bufferInstance);
+		uint a5dq=varuint.decode(_buffer, &_index); input=readString(a5dq);
+		uint bvcv=varuint.decode(_buffer, &_index); output=readString(bvcv);
 	}
 
 	public static pure nothrow @safe CommandStep fromBuffer(bool readId=true)(ubyte[] buffer) {

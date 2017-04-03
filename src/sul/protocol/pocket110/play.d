@@ -447,9 +447,6 @@ class ResourcePackClientResponse : Buffer {
 /**
  * Sends or receives a message from the player. Every variant's field can contain Minecraft's
  * formatting codes.
- * Every packet sent in the same game tick should be joined together with `\n§r` (line
- * break and reset formatting), otherwise the messages will be displayed multiple times
- * on the client's chat (see [MCPE-17631](https://bugs.mojang.com/browse/MCPE-17631)).
  */
 class Text : Buffer {
 
