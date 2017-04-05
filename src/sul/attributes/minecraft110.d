@@ -12,19 +12,21 @@ import std.typecons : Tuple;
 
 alias Attribute = Tuple!(string, "name", float, "min", float, "max", float, "def");
 
-public enum Attributes : Attribute
+public struct Attributes
 {
 
-    maxHealth = Attribute("generic.maxHealth", 0f, 1024f, 20f),
+    @disable this();
 
-    absorption = Attribute("generic.absorption", 0f, 4f, 0f),
+    enum maxHealth = Attribute("generic.maxHealth", 0f, 1024f, 20f),
 
-    movementSpeed = Attribute("generic.movementSpeed", 0f, 24791f, 0.1f),
+    enum absorption = Attribute("generic.absorption", 0f, 4f, 0f),
 
-    knockbackResistance = Attribute("generic.knockbackResistance", 0f, 1f, 0f),
+    enum movementSpeed = Attribute("generic.movementSpeed", 0f, 24791f, 0.1f),
 
-    attackDamage = Attribute("generic.attackDamage", 0f, 2048f, 2f),
+    enum knockbackResistance = Attribute("generic.knockbackResistance", 0f, 1f, 0f),
 
-    attackSpeed = Attribute("generic.attackSpeed", 0f, 1024f, 4f),
+    enum attackDamage = Attribute("generic.attackDamage", 0f, 2048f, 2f),
+
+    enum attackSpeed = Attribute("generic.attackSpeed", 0f, 1024f, 4f),
 
 }

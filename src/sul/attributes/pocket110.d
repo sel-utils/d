@@ -12,23 +12,25 @@ import std.typecons : Tuple;
 
 alias Attribute = Tuple!(string, "name", float, "min", float, "max", float, "def");
 
-public enum Attributes : Attribute
+public struct Attributes
 {
 
-    health = Attribute("minecraft:health", 0f, 20f, 20f),
+    @disable this();
 
-    absorption = Attribute("minecraft:generic.absorption", 0f, 4f, 0f),
+    enum health = Attribute("minecraft:health", 0f, 20f, 20f),
 
-    hunger = Attribute("minecraft:player.hunger", 0f, 20f, 20f),
+    enum absorption = Attribute("minecraft:generic.absorption", 0f, 4f, 0f),
 
-    saturation = Attribute("minecraft:player.saturation", 0f, 20f, 5f),
+    enum hunger = Attribute("minecraft:player.hunger", 0f, 20f, 20f),
 
-    experience = Attribute("minecraft:player.experience", 0f, 1f, 0f),
+    enum saturation = Attribute("minecraft:player.saturation", 0f, 20f, 5f),
 
-    level = Attribute("minecraft:player.level", 0f, 24791f, 0f),
+    enum experience = Attribute("minecraft:player.experience", 0f, 1f, 0f),
 
-    speed = Attribute("minecraft:movement", 0f, 24791f, 0.1f),
+    enum level = Attribute("minecraft:player.level", 0f, 24791f, 0f),
 
-    knockbackResistance = Attribute("minecraft:generic.knockback_resistance", 0f, 1f, 0f),
+    enum speed = Attribute("minecraft:movement", 0f, 24791f, 0.1f),
+
+    enum knockbackResistance = Attribute("minecraft:generic.knockback_resistance", 0f, 1f, 0f),
 
 }

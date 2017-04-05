@@ -13,7 +13,7 @@ public struct Effect
 
     string name;
     ubyte id;
-    uint color;
+    uint particles;
 
 }
 
