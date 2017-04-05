@@ -17,16 +17,16 @@ public struct Attributes
 
     @disable this();
 
-    enum maxHealth = Attribute("generic.maxHealth", 0f, 1024f, 20f),
+    enum maxHealth = Attribute("generic.maxHealth", 0f, 1024f, 20f);
 
-    enum absorption = Attribute("generic.absorption", 0f, 4f, 0f),
+    enum absorption = Attribute("generic.absorption", 0f, 4f, 0f);
 
-    enum movementSpeed = Attribute("generic.movementSpeed", 0f, 24791f, 0.1f),
+    enum movementSpeed = Attribute("generic.movementSpeed", 0f, 24791f, 0.1f);
 
-    enum knockbackResistance = Attribute("generic.knockbackResistance", 0f, 1f, 0f),
+    enum knockbackResistance = Attribute("generic.knockbackResistance", 0f, 1f, 0f);
 
-    enum attackDamage = Attribute("generic.attackDamage", 0f, 2048f, 2f),
+    enum attackDamage = Attribute("generic.attackDamage", 0f, 2048f, 2f);
 
-    enum attackSpeed = Attribute("generic.attackSpeed", 0f, 1024f, 4f),
+    enum attackSpeed = Attribute("generic.attackSpeed", 0f, 1024f, 4f);
 
 }
