@@ -8,7 +8,7 @@ To contribute at the project read the [contribution guidelines](https://github.c
 [![Build Status](https://travis-ci.org/sel-utils/d.svg?branch=master)](https://travis-ci.org/sel-utils/d)&nbsp;&nbsp;[![DUB Package](https://img.shields.io/dub/v/sel-utils.svg)](https://code.dlang.org/packages/sel-utils)&nbsp;&nbsp;[![DUB Downloads](https://img.shields.io/dub/dt/sel-utils.svg)](https://code.dlang.org/packages/sel-utils)
 
 - [ ] Protocol
-- [ ] Metadata
+- [x] Metadata
 - [x] Blocks
 - [x] Items
 - [x] Entities

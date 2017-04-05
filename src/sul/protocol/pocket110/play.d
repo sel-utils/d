@@ -119,8 +119,8 @@ class PlayStatus : Buffer {
 	public enum uint OUTDATED_SERVER = 2;
 	public enum uint SPAWNED = 3;
 	public enum uint INVALID_TENANT = 4;
-	public enum uint EDU_REQUIRED = 5;
-	public enum uint VANILLA_REQUIRED = 6;
+	public enum uint EDITION_MISMATCH_EDU_TO_VANILLA = 5;
+	public enum uint EDITION_MISMATCH_VANILLA_TO_EDU = 6;
 
 	public enum string[] FIELDS = ["status"];
 
