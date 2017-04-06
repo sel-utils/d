@@ -39,7 +39,7 @@ public enum Enchantments : Enchantment
     AQUA_AFFINITY = Enchantment("aqua affinity", EnchantmentData(true, 6), EnchantmentData(true, 8), 1),
     THORNS = Enchantment("thorns", EnchantmentData(true, 7), EnchantmentData(true, 5), 3),
     DEPTH_STRIDER = Enchantment("depth strider", EnchantmentData(true, 8), EnchantmentData(true, 7), 3),
-    FROST_WALKER = Enchantment("frost walker", EnchantmentData(true, 9), EnchantmentData(false, 0), 2),
+    FROST_WALKER = Enchantment("frost walker", EnchantmentData(true, 9), EnchantmentData(true, 25), 2),
     CURSE_OF_BINDING = Enchantment("curse of binding", EnchantmentData(true, 10), EnchantmentData(false, 0), 1),
     SHARPNESS = Enchantment("sharpness", EnchantmentData(true, 16), EnchantmentData(true, 9), 5),
     SMITE = Enchantment("smite", EnchantmentData(true, 17), EnchantmentData(true, 10), 5),
@@ -58,7 +58,7 @@ public enum Enchantments : Enchantment
     INFINITY = Enchantment("infinity", EnchantmentData(true, 51), EnchantmentData(true, 22), 1),
     LUCK_OF_THE_SEA = Enchantment("luck of the sea", EnchantmentData(true, 61), EnchantmentData(true, 23), 3),
     LURE = Enchantment("lure", EnchantmentData(true, 62), EnchantmentData(true, 24), 3),
-    MENDING = Enchantment("mending", EnchantmentData(true, 70), EnchantmentData(false, 0), 1),
+    MENDING = Enchantment("mending", EnchantmentData(true, 70), EnchantmentData(true, 26), 1),
     CURSE_OF_VANISHING = Enchantment("curse of vanishing", EnchantmentData(true, 71), EnchantmentData(false, 0), 1),
 
 }

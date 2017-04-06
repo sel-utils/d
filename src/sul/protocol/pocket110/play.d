@@ -3434,7 +3434,7 @@ class ContainerSetContent : Buffer {
 		writeBytes(varuint.encode(window));
 		writeBytes(varlong.encode(entityId));
 		writeBytes(varuint.encode(cast(uint)slots.length)); foreach(cxdm;slots){ cxdm.encode(bufferInstance); }
-		if(window==0){ writeBytes(varuint.encode(cast(uint)hotbar.length)); foreach(a9yf;hotbar){ writeBytes(varint.encode(a9yf)); } }
+		writeBytes(varuint.encode(cast(uint)hotbar.length)); foreach(a9yf;hotbar){ writeBytes(varint.encode(a9yf)); }
 		return _buffer;
 	}
 
@@ -3443,7 +3443,7 @@ class ContainerSetContent : Buffer {
 		window=varuint.decode(_buffer, &_index);
 		entityId=varlong.decode(_buffer, &_index);
 		slots.length=varuint.decode(_buffer, &_index); foreach(ref cxdm;slots){ cxdm.decode(bufferInstance); }
-		if(window==0){ hotbar.length=varuint.decode(_buffer, &_index); foreach(ref a9yf;hotbar){ a9yf=varint.decode(_buffer, &_index); } }
+		hotbar.length=varuint.decode(_buffer, &_index); foreach(ref a9yf;hotbar){ a9yf=varint.decode(_buffer, &_index); }
 	}
 
 	public static pure nothrow @safe ContainerSetContent fromBuffer(bool readId=true)(ubyte[] buffer) {
