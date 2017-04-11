@@ -1,4 +1,4 @@
-[![SEL](http://i.imgur.com/iiDRUQQ.png)](https://github.com/sel-project/sel-utils)
+[![SEL](https://i.imgur.com/iiDRUQQ.png)](https://github.com/sel-project/sel-utils)
 
 **Automatically generated libraries for Minecraft and Minecraft: Pocket Edition from [sel-project/sel-utils](https://github.com/sel-project/sel-utils)**
 
@@ -14,4 +14,7 @@ To contribute at the project read the [contribution guidelines](https://github.c
 - [x] Entities
 - [x] Effects
 - [x] Enchantments
+- [x] Biomes
+- [ ] Windows
+- [ ] Recipes
 
