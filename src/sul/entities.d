@@ -31,6 +31,7 @@ public enum Entities : Entity
 
     BOAT = Entity("boat", EntityData(true, 1), EntityData(true, 90), true, 1.5, 0.6),
     DROPPED_ITEM = Entity("dropped item", EntityData(true, 2), EntityData(true, 64), true, 0.25, 0.25),
+    EXPERIENCE_ORB = Entity("experience orb", EntityData(true, 2), EntityData(true, 69), true, 0.25, 0.25),
     AREA_EFFECT_CLOUD = Entity("area effect cloud", EntityData(true, 3), EntityData(true, 95), true, 2, 0.5),
     MINECART = Entity("minecart", EntityData(true, 10), EntityData(true, 84), true, 0.98, 0.7),
     MINECART_WITH_HOPPER = Entity("minecart with hopper", EntityData(false), EntityData(true, 96), true, 0.98, 0.7),
@@ -61,6 +62,8 @@ public enum Entities : Entity
     SPECTRAL_ARROW = Entity("spectral arrow", EntityData(true, 91), EntityData(false), true, 0.5, 0.5),
     DRAGON_FIREBALL = Entity("dragon fireball", EntityData(true, 93), EntityData(true, 79), true, 1, 1),
     CAMERA = Entity("camera", EntityData(false), EntityData(true, 62), true),
+    PAINTING = Entity("painting", EntityData(false), EntityData(true, 83), true),
+    LIGHTNING = Entity("lightning", EntityData(false), EntityData(true, 93), true),
     ELDER_GUARDIAN = Entity("elder guardian", EntityData(true, 4), EntityData(true, 50), false, 1.9975, 1.9975),
     WITHER_SKELETON = Entity("wither skeleton", EntityData(true, 5), EntityData(true, 48), false, 0.7, 2.4),
     STRAY = Entity("stray", EntityData(true, 6), EntityData(true, 46), false, 0.6, 1.99),
