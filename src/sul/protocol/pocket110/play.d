@@ -40,23 +40,23 @@ class Login : Buffer {
 	public enum bool CLIENTBOUND = false;
 	public enum bool SERVERBOUND = true;
 
-	// edition
-	public enum ubyte CLASSIC = 0;
+	// version
+	public enum ubyte VANILLA = 0;
 	public enum ubyte EDUCATION = 1;
 
-	public enum string[] FIELDS = ["protocol", "edition", "body_"];
+	public enum string[] FIELDS = ["protocol", "vers", "body_"];
 
 	/**
 	 * Version of the protocol used by the player.
 	 */
-	public uint protocol;
+	public uint protocol = 110;
 
 	/**
 	 * Edition that the player is using to join the server. The different editions may
 	 * have different features and servers may block the access from unaccepted editions
 	 * of the game.
 	 */
-	public ubyte edition;
+	public ubyte vers;
 
 	/**
 	 * Zlib-compressed bytes that contains 2 JWTs with more informations about the player
@@ -67,9 +67,9 @@ class Login : Buffer {
 
 	public pure nothrow @safe @nogc this() {}
 
-	public pure nothrow @safe @nogc this(uint protocol, ubyte edition=ubyte.init, ubyte[] body_=(ubyte[]).init) {
+	public pure nothrow @safe @nogc this(uint protocol, ubyte vers=ubyte.init, ubyte[] body_=(ubyte[]).init) {
 		this.protocol = protocol;
-		this.edition = edition;
+		this.vers = vers;
 		this.body_ = body_;
 	}
 
@@ -77,7 +77,7 @@ class Login : Buffer {
 		_buffer.length = 0;
 		static if(writeId){ writeBigEndianUbyte(ID); }
 		writeBigEndianUint(protocol);
-		writeBigEndianUbyte(edition);
+		writeBigEndianUbyte(vers);
 		writeBytes(varuint.encode(cast(uint)body_.length)); writeBytes(body_);
 		return _buffer;
 	}
@@ -85,7 +85,7 @@ class Login : Buffer {
 	public pure nothrow @safe void decode(bool readId=true)() {
 		static if(readId){ ubyte _id; _id=readBigEndianUbyte(); }
 		protocol=readBigEndianUint();
-		edition=readBigEndianUbyte();
+		vers=readBigEndianUbyte();
 		body_.length=varuint.decode(_buffer, &_index); if(_buffer.length>=_index+body_.length){ body_=_buffer[_index.._index+body_.length].dup; _index+=body_.length; }
 	}
 
@@ -97,7 +97,7 @@ class Login : Buffer {
 	}
 
 	public override string toString() {
-		return "Login(protocol: " ~ std.conv.to!string(this.protocol) ~ ", edition: " ~ std.conv.to!string(this.edition) ~ ", body_: " ~ std.conv.to!string(this.body_) ~ ")";
+		return "Login(protocol: " ~ std.conv.to!string(this.protocol) ~ ", vers: " ~ std.conv.to!string(this.vers) ~ ", body_: " ~ std.conv.to!string(this.body_) ~ ")";
 	}
 
 }
@@ -317,16 +317,16 @@ class ResourcePacksInfo : Buffer {
 		_buffer.length = 0;
 		static if(writeId){ writeBigEndianUbyte(ID); }
 		writeBigEndianBool(mustAccept);
-		writeLittleEndianUshort(cast(ushort)behaviourPacks.length); foreach(yvyzbvuf;behaviourPacks){ yvyzbvuf.encode(bufferInstance); }
-		writeLittleEndianUshort(cast(ushort)resourcePacks.length); foreach(cvbvyvyn;resourcePacks){ cvbvyvyn.encode(bufferInstance); }
+		writeBytes(varuint.encode(cast(uint)behaviourPacks.length)); foreach(yvyzbvuf;behaviourPacks){ yvyzbvuf.encode(bufferInstance); }
+		writeBytes(varuint.encode(cast(uint)resourcePacks.length)); foreach(cvbvyvyn;resourcePacks){ cvbvyvyn.encode(bufferInstance); }
 		return _buffer;
 	}
 
 	public pure nothrow @safe void decode(bool readId=true)() {
 		static if(readId){ ubyte _id; _id=readBigEndianUbyte(); }
 		mustAccept=readBigEndianBool();
-		behaviourPacks.length=readLittleEndianUshort(); foreach(ref yvyzbvuf;behaviourPacks){ yvyzbvuf.decode(bufferInstance); }
-		resourcePacks.length=readLittleEndianUshort(); foreach(ref cvbvyvyn;resourcePacks){ cvbvyvyn.decode(bufferInstance); }
+		behaviourPacks.length=varuint.decode(_buffer, &_index); foreach(ref yvyzbvuf;behaviourPacks){ yvyzbvuf.decode(bufferInstance); }
+		resourcePacks.length=varuint.decode(_buffer, &_index); foreach(ref cvbvyvyn;resourcePacks){ cvbvyvyn.decode(bufferInstance); }
 	}
 
 	public static pure nothrow @safe ResourcePacksInfo fromBuffer(bool readId=true)(ubyte[] buffer) {
@@ -367,16 +367,16 @@ class ResourcePacksStackPacket : Buffer {
 		_buffer.length = 0;
 		static if(writeId){ writeBigEndianUbyte(ID); }
 		writeBigEndianBool(mustAccept);
-		writeLittleEndianUshort(cast(ushort)behaviourPacks.length); foreach(yvyzbvuf;behaviourPacks){ yvyzbvuf.encode(bufferInstance); }
-		writeLittleEndianUshort(cast(ushort)resourcePacks.length); foreach(cvbvyvyn;resourcePacks){ cvbvyvyn.encode(bufferInstance); }
+		writeBytes(varuint.encode(cast(uint)behaviourPacks.length)); foreach(yvyzbvuf;behaviourPacks){ yvyzbvuf.encode(bufferInstance); }
+		writeBytes(varuint.encode(cast(uint)resourcePacks.length)); foreach(cvbvyvyn;resourcePacks){ cvbvyvyn.encode(bufferInstance); }
 		return _buffer;
 	}
 
 	public pure nothrow @safe void decode(bool readId=true)() {
 		static if(readId){ ubyte _id; _id=readBigEndianUbyte(); }
 		mustAccept=readBigEndianBool();
-		behaviourPacks.length=readLittleEndianUshort(); foreach(ref yvyzbvuf;behaviourPacks){ yvyzbvuf.decode(bufferInstance); }
-		resourcePacks.length=readLittleEndianUshort(); foreach(ref cvbvyvyn;resourcePacks){ cvbvyvyn.decode(bufferInstance); }
+		behaviourPacks.length=varuint.decode(_buffer, &_index); foreach(ref yvyzbvuf;behaviourPacks){ yvyzbvuf.decode(bufferInstance); }
+		resourcePacks.length=varuint.decode(_buffer, &_index); foreach(ref cvbvyvyn;resourcePacks){ cvbvyvyn.decode(bufferInstance); }
 	}
 
 	public static pure nothrow @safe ResourcePacksStackPacket fromBuffer(bool readId=true)(ubyte[] buffer) {
@@ -421,14 +421,14 @@ class ResourcePackClientResponse : Buffer {
 		_buffer.length = 0;
 		static if(writeId){ writeBigEndianUbyte(ID); }
 		writeBigEndianUbyte(status);
-		writeLittleEndianUshort(cast(ushort)packIds.length); foreach(cfalc;packIds){ writeBytes(varuint.encode(cast(uint)cfalc.length)); writeString(cfalc); }
+		writeBytes(varuint.encode(cast(uint)packIds.length)); foreach(cfalc;packIds){ writeBytes(varuint.encode(cast(uint)cfalc.length)); writeString(cfalc); }
 		return _buffer;
 	}
 
 	public pure nothrow @safe void decode(bool readId=true)() {
 		static if(readId){ ubyte _id; _id=readBigEndianUbyte(); }
 		status=readBigEndianUbyte();
-		packIds.length=readLittleEndianUshort(); foreach(ref cfalc;packIds){ uint yzbm=varuint.decode(_buffer, &_index); cfalc=readString(yzbm); }
+		packIds.length=varuint.decode(_buffer, &_index); foreach(ref cfalc;packIds){ uint yzbm=varuint.decode(_buffer, &_index); cfalc=readString(yzbm); }
 	}
 
 	public static pure nothrow @safe ResourcePackClientResponse fromBuffer(bool readId=true)(ubyte[] buffer) {
@@ -776,7 +776,7 @@ class SetTime : Buffer {
 	public enum bool CLIENTBOUND = true;
 	public enum bool SERVERBOUND = false;
 
-	public enum string[] FIELDS = ["time", "daylightCycle"];
+	public enum string[] FIELDS = ["time"];
 
 	/**
 	 * Time of the day in a range from 0 to 24000. If higher or lower it will be moduled
@@ -784,31 +784,22 @@ class SetTime : Buffer {
 	 */
 	public int time;
 
-	/**
-	 * Indicates whether the daylight cycle is active. If not, the time will be stopped
-	 * at the value given in the previous field.
-	 */
-	public bool daylightCycle;
-
 	public pure nothrow @safe @nogc this() {}
 
-	public pure nothrow @safe @nogc this(int time, bool daylightCycle=bool.init) {
+	public pure nothrow @safe @nogc this(int time) {
 		this.time = time;
-		this.daylightCycle = daylightCycle;
 	}
 
 	public pure nothrow @safe ubyte[] encode(bool writeId=true)() {
 		_buffer.length = 0;
 		static if(writeId){ writeBigEndianUbyte(ID); }
 		writeBytes(varint.encode(time));
-		writeBigEndianBool(daylightCycle);
 		return _buffer;
 	}
 
 	public pure nothrow @safe void decode(bool readId=true)() {
 		static if(readId){ ubyte _id; _id=readBigEndianUbyte(); }
 		time=varint.decode(_buffer, &_index);
-		daylightCycle=readBigEndianBool();
 	}
 
 	public static pure nothrow @safe SetTime fromBuffer(bool readId=true)(ubyte[] buffer) {
@@ -819,7 +810,7 @@ class SetTime : Buffer {
 	}
 
 	public override string toString() {
-		return "SetTime(time: " ~ std.conv.to!string(this.time) ~ ", daylightCycle: " ~ std.conv.to!string(this.daylightCycle) ~ ")";
+		return "SetTime(time: " ~ std.conv.to!string(this.time) ~ ")";
 	}
 
 }
@@ -844,6 +835,7 @@ class StartGame : Buffer {
 	// world gamemode
 	public enum int SURVIVAL = 0;
 	public enum int CREATIVE = 1;
+	public enum int ADVENTURE = 2;
 
 	// difficulty
 	public enum int PEACEFUL = 0;
@@ -851,11 +843,11 @@ class StartGame : Buffer {
 	public enum int NORMAL = 2;
 	public enum int HARD = 3;
 
-	// edition
-	public enum ubyte CLASSIC = 0;
+	// version
+	public enum ubyte VANILLA = 0;
 	public enum ubyte EDUCATION = 1;
 
-	public enum string[] FIELDS = ["entityId", "runtimeId", "position", "yaw", "pitch", "seed", "dimension", "generator", "worldGamemode", "difficulty", "spawnPosition", "loadedInCreative", "time", "edition", "rainLevel", "lightingLevel", "commandsEnabled", "textureRequired", "gameRules", "levelId", "worldName"];
+	public enum string[] FIELDS = ["entityId", "runtimeId", "position", "yaw", "pitch", "seed", "dimension", "generator", "worldGamemode", "difficulty", "spawnPosition", "loadedInCreative", "time", "vers", "rainLevel", "lightingLevel", "commandsEnabled", "textureRequired", "gameRules", "levelId", "worldName"];
 
 	/**
 	 * Player's entity id that uniquely identifies the entity of the server.
@@ -908,7 +900,6 @@ class StartGame : Buffer {
 	/**
 	 * Time of the day that should be in a range from 0 to 24000. If not the absolute value
 	 * is moduled per 24000.
-	 * If the world's time is stopped a SetTime packet should be sent after this.
 	 */
 	public int time;
 
@@ -916,7 +907,7 @@ class StartGame : Buffer {
 	 * Game's edition. Some behaviours (some entities for example) may only work in a version
 	 * and not in the other.
 	 */
-	public ubyte edition;
+	public ubyte vers;
 
 	/**
 	 * Intensity of the rain or the snow. Any value lower than or equals to 0 means no
@@ -942,7 +933,7 @@ class StartGame : Buffer {
 
 	public pure nothrow @safe @nogc this() {}
 
-	public pure nothrow @safe @nogc this(long entityId, long runtimeId=long.init, Tuple!(float, "x", float, "y", float, "z") position=Tuple!(float, "x", float, "y", float, "z").init, float yaw=float.init, float pitch=float.init, int seed=int.init, int dimension=0, int generator=1, int worldGamemode=int.init, int difficulty=int.init, Tuple!(int, "x", int, "y", int, "z") spawnPosition=Tuple!(int, "x", int, "y", int, "z").init, bool loadedInCreative=bool.init, int time=int.init, ubyte edition=ubyte.init, float rainLevel=float.init, float lightingLevel=float.init, bool commandsEnabled=bool.init, bool textureRequired=bool.init, sul.protocol.pocket110.types.Rule[] gameRules=(sul.protocol.pocket110.types.Rule[]).init, string levelId=string.init, string worldName=string.init) {
+	public pure nothrow @safe @nogc this(long entityId, long runtimeId=long.init, Tuple!(float, "x", float, "y", float, "z") position=Tuple!(float, "x", float, "y", float, "z").init, float yaw=float.init, float pitch=float.init, int seed=int.init, int dimension=0, int generator=1, int worldGamemode=int.init, int difficulty=int.init, Tuple!(int, "x", int, "y", int, "z") spawnPosition=Tuple!(int, "x", int, "y", int, "z").init, bool loadedInCreative=bool.init, int time=int.init, ubyte vers=ubyte.init, float rainLevel=float.init, float lightingLevel=float.init, bool commandsEnabled=bool.init, bool textureRequired=bool.init, sul.protocol.pocket110.types.Rule[] gameRules=(sul.protocol.pocket110.types.Rule[]).init, string levelId=string.init, string worldName=string.init) {
 		this.entityId = entityId;
 		this.runtimeId = runtimeId;
 		this.position = position;
@@ -956,7 +947,7 @@ class StartGame : Buffer {
 		this.spawnPosition = spawnPosition;
 		this.loadedInCreative = loadedInCreative;
 		this.time = time;
-		this.edition = edition;
+		this.vers = vers;
 		this.rainLevel = rainLevel;
 		this.lightingLevel = lightingLevel;
 		this.commandsEnabled = commandsEnabled;
@@ -982,7 +973,7 @@ class StartGame : Buffer {
 		writeBytes(varint.encode(spawnPosition.x)); writeBytes(varint.encode(spawnPosition.y)); writeBytes(varint.encode(spawnPosition.z));
 		writeBigEndianBool(loadedInCreative);
 		writeBytes(varint.encode(time));
-		writeBigEndianUbyte(edition);
+		writeBigEndianUbyte(vers);
 		writeLittleEndianFloat(rainLevel);
 		writeLittleEndianFloat(lightingLevel);
 		writeBigEndianBool(commandsEnabled);
@@ -1008,7 +999,7 @@ class StartGame : Buffer {
 		spawnPosition.x=varint.decode(_buffer, &_index); spawnPosition.y=varint.decode(_buffer, &_index); spawnPosition.z=varint.decode(_buffer, &_index);
 		loadedInCreative=readBigEndianBool();
 		time=varint.decode(_buffer, &_index);
-		edition=readBigEndianUbyte();
+		vers=readBigEndianUbyte();
 		rainLevel=readLittleEndianFloat();
 		lightingLevel=readLittleEndianFloat();
 		commandsEnabled=readBigEndianBool();
@@ -1026,7 +1017,7 @@ class StartGame : Buffer {
 	}
 
 	public override string toString() {
-		return "StartGame(entityId: " ~ std.conv.to!string(this.entityId) ~ ", runtimeId: " ~ std.conv.to!string(this.runtimeId) ~ ", position: " ~ std.conv.to!string(this.position) ~ ", yaw: " ~ std.conv.to!string(this.yaw) ~ ", pitch: " ~ std.conv.to!string(this.pitch) ~ ", seed: " ~ std.conv.to!string(this.seed) ~ ", dimension: " ~ std.conv.to!string(this.dimension) ~ ", generator: " ~ std.conv.to!string(this.generator) ~ ", worldGamemode: " ~ std.conv.to!string(this.worldGamemode) ~ ", difficulty: " ~ std.conv.to!string(this.difficulty) ~ ", spawnPosition: " ~ std.conv.to!string(this.spawnPosition) ~ ", loadedInCreative: " ~ std.conv.to!string(this.loadedInCreative) ~ ", time: " ~ std.conv.to!string(this.time) ~ ", edition: " ~ std.conv.to!string(this.edition) ~ ", rainLevel: " ~ std.conv.to!string(this.rainLevel) ~ ", lightingLevel: " ~ std.conv.to!string(this.lightingLevel) ~ ", commandsEnabled: " ~ std.conv.to!string(this.commandsEnabled) ~ ", textureRequired: " ~ std.conv.to!string(this.textureRequired) ~ ", gameRules: " ~ std.conv.to!string(this.gameRules) ~ ", levelId: " ~ std.conv.to!string(this.levelId) ~ ", worldName: " ~ std.conv.to!string(this.worldName) ~ ")";
+		return "StartGame(entityId: " ~ std.conv.to!string(this.entityId) ~ ", runtimeId: " ~ std.conv.to!string(this.runtimeId) ~ ", position: " ~ std.conv.to!string(this.position) ~ ", yaw: " ~ std.conv.to!string(this.yaw) ~ ", pitch: " ~ std.conv.to!string(this.pitch) ~ ", seed: " ~ std.conv.to!string(this.seed) ~ ", dimension: " ~ std.conv.to!string(this.dimension) ~ ", generator: " ~ std.conv.to!string(this.generator) ~ ", worldGamemode: " ~ std.conv.to!string(this.worldGamemode) ~ ", difficulty: " ~ std.conv.to!string(this.difficulty) ~ ", spawnPosition: " ~ std.conv.to!string(this.spawnPosition) ~ ", loadedInCreative: " ~ std.conv.to!string(this.loadedInCreative) ~ ", time: " ~ std.conv.to!string(this.time) ~ ", vers: " ~ std.conv.to!string(this.vers) ~ ", rainLevel: " ~ std.conv.to!string(this.rainLevel) ~ ", lightingLevel: " ~ std.conv.to!string(this.lightingLevel) ~ ", commandsEnabled: " ~ std.conv.to!string(this.commandsEnabled) ~ ", textureRequired: " ~ std.conv.to!string(this.textureRequired) ~ ", gameRules: " ~ std.conv.to!string(this.gameRules) ~ ", levelId: " ~ std.conv.to!string(this.levelId) ~ ", worldName: " ~ std.conv.to!string(this.worldName) ~ ")";
 	}
 
 }
@@ -1430,22 +1421,24 @@ class MoveEntity : Buffer {
 	public enum bool CLIENTBOUND = true;
 	public enum bool SERVERBOUND = false;
 
-	public enum string[] FIELDS = ["entityId", "position", "pitch", "headYaw", "yaw"];
+	public enum string[] FIELDS = ["entityId", "position", "pitch", "headYaw", "yaw", "onGround"];
 
 	public long entityId;
 	public Tuple!(float, "x", float, "y", float, "z") position;
 	public ubyte pitch;
 	public ubyte headYaw;
 	public ubyte yaw;
+	public bool onGround;
 
 	public pure nothrow @safe @nogc this() {}
 
-	public pure nothrow @safe @nogc this(long entityId, Tuple!(float, "x", float, "y", float, "z") position=Tuple!(float, "x", float, "y", float, "z").init, ubyte pitch=ubyte.init, ubyte headYaw=ubyte.init, ubyte yaw=ubyte.init) {
+	public pure nothrow @safe @nogc this(long entityId, Tuple!(float, "x", float, "y", float, "z") position=Tuple!(float, "x", float, "y", float, "z").init, ubyte pitch=ubyte.init, ubyte headYaw=ubyte.init, ubyte yaw=ubyte.init, bool onGround=bool.init) {
 		this.entityId = entityId;
 		this.position = position;
 		this.pitch = pitch;
 		this.headYaw = headYaw;
 		this.yaw = yaw;
+		this.onGround = onGround;
 	}
 
 	public pure nothrow @safe ubyte[] encode(bool writeId=true)() {
@@ -1456,6 +1449,7 @@ class MoveEntity : Buffer {
 		writeBigEndianUbyte(pitch);
 		writeBigEndianUbyte(headYaw);
 		writeBigEndianUbyte(yaw);
+		writeBigEndianBool(onGround);
 		return _buffer;
 	}
 
@@ -1466,6 +1460,7 @@ class MoveEntity : Buffer {
 		pitch=readBigEndianUbyte();
 		headYaw=readBigEndianUbyte();
 		yaw=readBigEndianUbyte();
+		onGround=readBigEndianBool();
 	}
 
 	public static pure nothrow @safe MoveEntity fromBuffer(bool readId=true)(ubyte[] buffer) {
@@ -1476,7 +1471,7 @@ class MoveEntity : Buffer {
 	}
 
 	public override string toString() {
-		return "MoveEntity(entityId: " ~ std.conv.to!string(this.entityId) ~ ", position: " ~ std.conv.to!string(this.position) ~ ", pitch: " ~ std.conv.to!string(this.pitch) ~ ", headYaw: " ~ std.conv.to!string(this.headYaw) ~ ", yaw: " ~ std.conv.to!string(this.yaw) ~ ")";
+		return "MoveEntity(entityId: " ~ std.conv.to!string(this.entityId) ~ ", position: " ~ std.conv.to!string(this.position) ~ ", pitch: " ~ std.conv.to!string(this.pitch) ~ ", headYaw: " ~ std.conv.to!string(this.headYaw) ~ ", yaw: " ~ std.conv.to!string(this.yaw) ~ ", onGround: " ~ std.conv.to!string(this.onGround) ~ ")";
 	}
 
 }
@@ -3961,6 +3956,7 @@ class SetPlayerGameType : Buffer {
 	// gamemode
 	public enum int SURVIVAL = 0;
 	public enum int CREATIVE = 1;
+	public enum int ADVENTURE = 2;
 
 	public enum string[] FIELDS = ["gamemode"];
 
@@ -5121,9 +5117,9 @@ class ResourcePackDataInfo : Buffer {
 		_buffer.length = 0;
 		static if(writeId){ writeBigEndianUbyte(ID); }
 		writeBytes(varuint.encode(cast(uint)id.length)); writeString(id);
-		writeLittleEndianUint(maxChunkSize);
-		writeLittleEndianUint(chunkCount);
-		writeLittleEndianUlong(compressedPackSize);
+		writeBytes(varuint.encode(maxChunkSize));
+		writeBytes(varuint.encode(chunkCount));
+		writeBytes(varulong.encode(compressedPackSize));
 		writeBytes(varuint.encode(cast(uint)sha256.length)); writeString(sha256);
 		return _buffer;
 	}
@@ -5131,9 +5127,9 @@ class ResourcePackDataInfo : Buffer {
 	public pure nothrow @safe void decode(bool readId=true)() {
 		static if(readId){ ubyte _id; _id=readBigEndianUbyte(); }
 		uint aq=varuint.decode(_buffer, &_index); id=readString(aq);
-		maxChunkSize=readLittleEndianUint();
-		chunkCount=readLittleEndianUint();
-		compressedPackSize=readLittleEndianUlong();
+		maxChunkSize=varuint.decode(_buffer, &_index);
+		chunkCount=varuint.decode(_buffer, &_index);
+		compressedPackSize=varulong.decode(_buffer, &_index);
 		uint chmu=varuint.decode(_buffer, &_index); sha256=readString(chmu);
 	}
 
@@ -5177,8 +5173,8 @@ class ResourcePackChunkData : Buffer {
 		_buffer.length = 0;
 		static if(writeId){ writeBigEndianUbyte(ID); }
 		writeBytes(varuint.encode(cast(uint)id.length)); writeString(id);
-		writeLittleEndianUint(chunkIndex);
-		writeLittleEndianUlong(progress);
+		writeBytes(varuint.encode(chunkIndex));
+		writeBytes(varulong.encode(progress));
 		writeBytes(varuint.encode(cast(uint)data.length)); writeBytes(data);
 		return _buffer;
 	}
@@ -5186,8 +5182,8 @@ class ResourcePackChunkData : Buffer {
 	public pure nothrow @safe void decode(bool readId=true)() {
 		static if(readId){ ubyte _id; _id=readBigEndianUbyte(); }
 		uint aq=varuint.decode(_buffer, &_index); id=readString(aq);
-		chunkIndex=readLittleEndianUint();
-		progress=readLittleEndianUlong();
+		chunkIndex=varuint.decode(_buffer, &_index);
+		progress=varulong.decode(_buffer, &_index);
 		data.length=varuint.decode(_buffer, &_index); if(_buffer.length>=_index+data.length){ data=_buffer[_index.._index+data.length].dup; _index+=data.length; }
 	}
 
@@ -5227,14 +5223,14 @@ class ResourcePackChunkRequest : Buffer {
 		_buffer.length = 0;
 		static if(writeId){ writeBigEndianUbyte(ID); }
 		writeBytes(varuint.encode(cast(uint)id.length)); writeString(id);
-		writeLittleEndianUint(chunkIndex);
+		writeBytes(varuint.encode(chunkIndex));
 		return _buffer;
 	}
 
 	public pure nothrow @safe void decode(bool readId=true)() {
 		static if(readId){ ubyte _id; _id=readBigEndianUbyte(); }
 		uint aq=varuint.decode(_buffer, &_index); id=readString(aq);
-		chunkIndex=readLittleEndianUint();
+		chunkIndex=varuint.decode(_buffer, &_index);
 	}
 
 	public static pure nothrow @safe ResourcePackChunkRequest fromBuffer(bool readId=true)(ubyte[] buffer) {

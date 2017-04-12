@@ -31,7 +31,7 @@ struct PackWithSize {
 		with(buffer) {
 			writeBytes(varuint.encode(cast(uint)id.length)); writeString(id);
 			writeBytes(varuint.encode(cast(uint)vers.length)); writeString(vers);
-			writeLittleEndianUlong(size);
+			writeBytes(varulong.encode(size));
 		}
 	}
 
@@ -39,7 +39,7 @@ struct PackWithSize {
 		with(buffer) {
 			uint aq=varuint.decode(_buffer, &_index); id=readString(aq);
 			uint dvc=varuint.decode(_buffer, &_index); vers=readString(dvc);
-			size=readLittleEndianUlong();
+			size=varulong.decode(_buffer, &_index);
 		}
 	}
 
