@@ -321,25 +321,38 @@ class Add : Buffer {
 	}
 
 	/**
-	 * A Minecraft client. Currently there are no additional fields.
+	 * A Minecraft client.
 	 */
 	public class Minecraft {
 
 		public enum typeof(type) TYPE = 2;
 
-		public enum string[] FIELDS = [];
+		public enum string[] FIELDS = ["properties"];
+
+		/**
+		 * Additional properties like textures when the server is on online mode.
+		 */
+		public sul.protocol.hncom2.types.Property[] properties;
+
+		public pure nothrow @safe @nogc this() {}
+
+		public pure nothrow @safe @nogc this(sul.protocol.hncom2.types.Property[] properties) {
+			this.properties = properties;
+		}
 
 		public pure nothrow @safe ubyte[] encode(bool writeId=true)() {
 			type = 2;
 			_encode!writeId();
+			writeBytes(varuint.encode(cast(uint)properties.length)); foreach(cjcvdlc;properties){ cjcvdlc.encode(bufferInstance); }
 			return _buffer;
 		}
 
 		public pure nothrow @safe void decode() {
+			properties.length=varuint.decode(_buffer, &_index); foreach(ref cjcvdlc;properties){ cjcvdlc.decode(bufferInstance); }
 		}
 
 		public override string toString() {
-			return "Add.Minecraft()";
+			return "Add.Minecraft(properties: " ~ std.conv.to!string(this.properties) ~ ")";
 		}
 
 	}

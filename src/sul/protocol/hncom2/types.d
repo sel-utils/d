@@ -255,3 +255,23 @@ struct Skin {
 
 }
 
+struct Property {
+
+	public enum string[] FIELDS = [];
+
+	public pure nothrow @safe void encode(Buffer buffer) {
+		with(buffer) {
+		}
+	}
+
+	public pure nothrow @safe void decode(Buffer buffer) {
+		with(buffer) {
+		}
+	}
+
+	public string toString() {
+		return "Property()";
+	}
+
+}
+

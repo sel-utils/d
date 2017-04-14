@@ -27,7 +27,7 @@ static import sul.protocol.pocket110.types;
 
 static if(__traits(compiles, { import sul.metadata.pocket110; })) import sul.metadata.pocket110;
 
-alias Packets = TypeTuple!(Login, PlayStatus, ServerToClientHandshake, ClientToServerHandshake, Disconnect, ResourcePacksInfo, ResourcePacksStackPacket, ResourcePackClientResponse, Text, SetTime, StartGame, AddPlayer, AddEntity, RemoveEntity, AddItemEntity, AddHangingEntity, TakeItemEntity, MoveEntity, MovePlayer, RiderJump, RemoveBlock, UpdateBlock, AddPainting, Explode, LevelSoundEvent, LevelEvent, BlockEvent, EntityEvent, MobEffect, UpdateAttributes, MobEquipment, MobArmorEquipment, Interact, BlockPickRequest, UseItem, PlayerAction, EntityFall, HurtArmor, SetEntityData, SetEntityMotion, SetEntityLink, SetHealth, SetSpawnPosition, Animate, Respawn, DropItem, InventoryAction, ContainerOpen, ContainerClose, ContainerSetSlot, ContainerSetData, ContainerSetContent, CraftingData, CraftingEvent, AdventureSettings, BlockEntityData, PlayerInput, FullChunkData, SetCommandsEnabled, SetDifficulty, ChangeDimension, SetPlayerGameType, PlayerList, SimpleEvent, TelemetryEvent, SpawnExperienceOrb, ClientboundMapItemData, MapInfoRequest, RequestChunkRadius, ChunkRadiusUpdated, ItemFrameDropItem, ReplaceItemInSlot, GameRulesChanged, Camera, AddItem, BossEvent, ShowCredits, AvailableCommands, CommandStep, CommandBlockUpdate, UpdateTrade, UpdateEquip, ResourcePackDataInfo, ResourcePackChunkData, ResourcePackChunkRequest, Transfer, PlaySound, StopSound, SetTitle, AddBehaviorTree, StructureBlockUpdate);
+alias Packets = TypeTuple!(Login, PlayStatus, ServerToClientHandshake, ClientToServerHandshake, Disconnect, ResourcePacksInfo, ResourcePacksStackPacket, ResourcePackClientResponse, Text, SetTime, StartGame, AddPlayer, AddEntity, RemoveEntity, AddItemEntity, AddHangingEntity, TakeItemEntity, MoveEntity, MovePlayer, RiderJump, RemoveBlock, UpdateBlock, AddPainting, Explode, LevelSoundEvent, LevelEvent, BlockEvent, EntityEvent, MobEffect, UpdateAttributes, MobEquipment, MobArmorEquipment, Interact, BlockPickRequest, UseItem, PlayerAction, EntityFall, HurtArmor, SetEntityData, SetEntityMotion, SetEntityLink, SetHealth, SetSpawnPosition, Animate, Respawn, DropItem, InventoryAction, ContainerOpen, ContainerClose, ContainerSetSlot, ContainerSetData, ContainerSetContent, CraftingData, CraftingEvent, AdventureSettings, BlockEntityData, PlayerInput, FullChunkData, SetCommandsEnabled, SetDifficulty, ChangeDimension, SetPlayerGameType, PlayerList, SimpleEvent, TelemetryEvent, SpawnExperienceOrb, ClientboundMapItemData, MapInfoRequest, RequestChunkRadius, ChunkRadiusUpdated, ItemFrameDropItem, ReplaceItemInSlot, GameRulesChanged, Camera, AddItem, BossEvent, ShowCredits, AvailableCommands, CommandStep, CommandBlockUpdate, UpdateTrade, UpdateEquip, ResourcePackDataInfo, ResourcePackChunkData, ResourcePackChunkRequest, Transfer, PlaySound, StopSound, SetTitle, AddBehaviorTree, StructureBlockUpdate, ShowStoreOffer, PurchaseReceipt);
 
 /**
  * First MCPE packet sent after the establishment of the connection through raknet.
@@ -5406,6 +5406,9 @@ class StopSound : Buffer {
 
 }
 
+/**
+ * Displays titles on the client's screen.
+ */
 class SetTitle : Buffer {
 
 	public enum ubyte ID = 89;
@@ -5424,6 +5427,10 @@ class SetTitle : Buffer {
 	public enum string[] FIELDS = ["action", "text", "fadeIn", "stay", "fadeOut"];
 
 	public int action;
+
+	/**
+	 * Text that will be displayed in the place specified in the action field.
+	 */
 	public string text;
 	public int fadeIn;
 	public int stay;
@@ -5532,6 +5539,70 @@ class StructureBlockUpdate : Buffer {
 
 	public override string toString() {
 		return "StructureBlockUpdate()";
+	}
+
+}
+
+class ShowStoreOffer : Buffer {
+
+	public enum ubyte ID = 92;
+
+	public enum bool CLIENTBOUND = true;
+	public enum bool SERVERBOUND = false;
+
+	public enum string[] FIELDS = [];
+
+	public pure nothrow @safe ubyte[] encode(bool writeId=true)() {
+		_buffer.length = 0;
+		static if(writeId){ writeBigEndianUbyte(ID); }
+		return _buffer;
+	}
+
+	public pure nothrow @safe void decode(bool readId=true)() {
+		static if(readId){ ubyte _id; _id=readBigEndianUbyte(); }
+	}
+
+	public static pure nothrow @safe ShowStoreOffer fromBuffer(bool readId=true)(ubyte[] buffer) {
+		ShowStoreOffer ret = new ShowStoreOffer();
+		ret._buffer = buffer;
+		ret.decode!readId();
+		return ret;
+	}
+
+	public override string toString() {
+		return "ShowStoreOffer()";
+	}
+
+}
+
+class PurchaseReceipt : Buffer {
+
+	public enum ubyte ID = 93;
+
+	public enum bool CLIENTBOUND = false;
+	public enum bool SERVERBOUND = true;
+
+	public enum string[] FIELDS = [];
+
+	public pure nothrow @safe ubyte[] encode(bool writeId=true)() {
+		_buffer.length = 0;
+		static if(writeId){ writeBigEndianUbyte(ID); }
+		return _buffer;
+	}
+
+	public pure nothrow @safe void decode(bool readId=true)() {
+		static if(readId){ ubyte _id; _id=readBigEndianUbyte(); }
+	}
+
+	public static pure nothrow @safe PurchaseReceipt fromBuffer(bool readId=true)(ubyte[] buffer) {
+		PurchaseReceipt ret = new PurchaseReceipt();
+		ret._buffer = buffer;
+		ret.decode!readId();
+		return ret;
+	}
+
+	public override string toString() {
+		return "PurchaseReceipt()";
 	}
 
 }
