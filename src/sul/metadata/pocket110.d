@@ -33,6 +33,7 @@ class Metadata {
 	private Changed!(int) _potionColor;
 	private Changed!(byte) _potionAmbient;
 	private Changed!(byte) _slimeSize = tuple(cast(byte)1, false);
+	private Changed!(short) _age;
 	private Changed!(byte) _playerFlags;
 	private Changed!(int) _playerIndex;
 	private Changed!(Tuple!(int, "x", int, "y", int, "z")) _bedPosition;
@@ -49,6 +50,8 @@ class Metadata {
 	private Changed!(int) _areaEffectCloudWaiting;
 	private Changed!(int) _areaEffectCloudParticle;
 	private Changed!(long) _tradingPlayer;
+	private Changed!(int) _strength;
+	private Changed!(int) _maxStrength;
 
 	public pure nothrow @safe this() {
 		this.reset();
@@ -410,6 +413,36 @@ class Metadata {
 		return value;
 	}
 
+	public pure nothrow @property @safe bool showbase() {
+		return (_entityFlags >>> 36) & 1;
+	}
+
+	public pure nothrow @property @safe bool showbase(bool value) {
+		if(value) entityFlags = cast(long)(_entityFlags | (cast(long)true << 36));
+		else entityFlags = cast(long)(_entityFlags & ~(cast(long)true << 36));
+		return value;
+	}
+
+	public pure nothrow @property @safe bool rearing() {
+		return (_entityFlags >>> 37) & 1;
+	}
+
+	public pure nothrow @property @safe bool rearing(bool value) {
+		if(value) entityFlags = cast(long)(_entityFlags | (cast(long)true << 37));
+		else entityFlags = cast(long)(_entityFlags & ~(cast(long)true << 37));
+		return value;
+	}
+
+	public pure nothrow @property @safe bool vibrating() {
+		return (_entityFlags >>> 38) & 1;
+	}
+
+	public pure nothrow @property @safe bool vibrating(bool value) {
+		if(value) entityFlags = cast(long)(_entityFlags | (cast(long)true << 38));
+		else entityFlags = cast(long)(_entityFlags & ~(cast(long)true << 38));
+		return value;
+	}
+
 	public pure nothrow @property @safe bool idling() {
 		return (_entityFlags >>> 39) & 1;
 	}
@@ -589,6 +622,28 @@ class Metadata {
 			writeBytes(varuint.encode(16));
 			writeBytes(varuint.encode(0));
 			writeBigEndianByte(this._slimeSize.value);
+		}
+	}
+
+	public pure nothrow @property @safe @nogc short age() {
+		return _age.value;
+	}
+
+	public pure nothrow @property @safe short age(short value) {
+		this._cached = false;
+		this._age.value = value;
+		if(!this._age.changed) {
+			this._age.changed = true;
+			this._changed ~= &this.encodeAge;
+		}
+		return value;
+	}
+
+	public pure nothrow @safe encodeAge(Buffer buffer) {
+		with(buffer) {
+			writeBytes(varuint.encode(25));
+			writeBytes(varuint.encode(1));
+			writeLittleEndianShort(this._age.value);
 		}
 	}
 
@@ -947,6 +1002,50 @@ class Metadata {
 			writeBytes(varuint.encode(68));
 			writeBytes(varuint.encode(7));
 			writeBytes(varlong.encode(this._tradingPlayer.value));
+		}
+	}
+
+	public pure nothrow @property @safe @nogc int strength() {
+		return _strength.value;
+	}
+
+	public pure nothrow @property @safe int strength(int value) {
+		this._cached = false;
+		this._strength.value = value;
+		if(!this._strength.changed) {
+			this._strength.changed = true;
+			this._changed ~= &this.encodeStrength;
+		}
+		return value;
+	}
+
+	public pure nothrow @safe encodeStrength(Buffer buffer) {
+		with(buffer) {
+			writeBytes(varuint.encode(76));
+			writeBytes(varuint.encode(2));
+			writeBytes(varint.encode(this._strength.value));
+		}
+	}
+
+	public pure nothrow @property @safe @nogc int maxStrength() {
+		return _maxStrength.value;
+	}
+
+	public pure nothrow @property @safe int maxStrength(int value) {
+		this._cached = false;
+		this._maxStrength.value = value;
+		if(!this._maxStrength.changed) {
+			this._maxStrength.changed = true;
+			this._changed ~= &this.encodeMaxStrength;
+		}
+		return value;
+	}
+
+	public pure nothrow @safe encodeMaxStrength(Buffer buffer) {
+		with(buffer) {
+			writeBytes(varuint.encode(77));
+			writeBytes(varuint.encode(2));
+			writeBytes(varint.encode(this._maxStrength.value));
 		}
 	}
 

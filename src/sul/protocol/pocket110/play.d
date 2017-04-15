@@ -822,6 +822,11 @@ class StartGame : Buffer {
 	public enum bool CLIENTBOUND = true;
 	public enum bool SERVERBOUND = false;
 
+	// gamemode
+	public enum int SURVIVAL = 0;
+	public enum int CREATIVE = 1;
+	public enum int ADVENTURE = 2;
+
 	// dimension
 	public enum int OVERWORLD = 0;
 	public enum int NETHER = 1;
@@ -831,11 +836,6 @@ class StartGame : Buffer {
 	public enum int OLD = 0;
 	public enum int INFINITE = 1;
 	public enum int FLAT = 2;
-
-	// world gamemode
-	public enum int SURVIVAL = 0;
-	public enum int CREATIVE = 1;
-	public enum int ADVENTURE = 2;
 
 	// difficulty
 	public enum int PEACEFUL = 0;
@@ -847,13 +847,18 @@ class StartGame : Buffer {
 	public enum ubyte VANILLA = 0;
 	public enum ubyte EDUCATION = 1;
 
-	public enum string[] FIELDS = ["entityId", "runtimeId", "position", "yaw", "pitch", "seed", "dimension", "generator", "worldGamemode", "difficulty", "spawnPosition", "loadedInCreative", "time", "vers", "rainLevel", "lightingLevel", "commandsEnabled", "textureRequired", "gameRules", "levelId", "worldName"];
+	public enum string[] FIELDS = ["entityId", "runtimeId", "gamemode", "position", "yaw", "pitch", "seed", "dimension", "generator", "worldGamemode", "difficulty", "spawnPosition", "loadedInCreative", "time", "vers", "rainLevel", "lightingLevel", "commandsEnabled", "textureRequired", "gameRules", "levelId", "worldName", "premiumWorldTemplate"];
 
 	/**
 	 * Player's entity id that uniquely identifies the entity of the server.
 	 */
 	public long entityId;
 	public long runtimeId;
+
+	/**
+	 * Player's gamemode that may differ from the world's gamemode.
+	 */
+	public int gamemode;
 
 	/**
 	 * Position where the player will spawn.
@@ -881,8 +886,7 @@ class StartGame : Buffer {
 	public int generator = 1;
 
 	/**
-	 * Default's world gamemode. If the player's gamemode is different from the default's
-	 * one a SetPlayerGameType should be sent after this.
+	 * Default's world gamemode.
 	 */
 	public int worldGamemode;
 
@@ -930,12 +934,14 @@ class StartGame : Buffer {
 	 * formatting codes.
 	 */
 	public string worldName;
+	public string premiumWorldTemplate;
 
 	public pure nothrow @safe @nogc this() {}
 
-	public pure nothrow @safe @nogc this(long entityId, long runtimeId=long.init, Tuple!(float, "x", float, "y", float, "z") position=Tuple!(float, "x", float, "y", float, "z").init, float yaw=float.init, float pitch=float.init, int seed=int.init, int dimension=0, int generator=1, int worldGamemode=int.init, int difficulty=int.init, Tuple!(int, "x", int, "y", int, "z") spawnPosition=Tuple!(int, "x", int, "y", int, "z").init, bool loadedInCreative=bool.init, int time=int.init, ubyte vers=ubyte.init, float rainLevel=float.init, float lightingLevel=float.init, bool commandsEnabled=bool.init, bool textureRequired=bool.init, sul.protocol.pocket110.types.Rule[] gameRules=(sul.protocol.pocket110.types.Rule[]).init, string levelId=string.init, string worldName=string.init) {
+	public pure nothrow @safe @nogc this(long entityId, long runtimeId=long.init, int gamemode=int.init, Tuple!(float, "x", float, "y", float, "z") position=Tuple!(float, "x", float, "y", float, "z").init, float yaw=float.init, float pitch=float.init, int seed=int.init, int dimension=0, int generator=1, int worldGamemode=int.init, int difficulty=int.init, Tuple!(int, "x", int, "y", int, "z") spawnPosition=Tuple!(int, "x", int, "y", int, "z").init, bool loadedInCreative=bool.init, int time=int.init, ubyte vers=ubyte.init, float rainLevel=float.init, float lightingLevel=float.init, bool commandsEnabled=bool.init, bool textureRequired=bool.init, sul.protocol.pocket110.types.Rule[] gameRules=(sul.protocol.pocket110.types.Rule[]).init, string levelId=string.init, string worldName=string.init, string premiumWorldTemplate=string.init) {
 		this.entityId = entityId;
 		this.runtimeId = runtimeId;
+		this.gamemode = gamemode;
 		this.position = position;
 		this.yaw = yaw;
 		this.pitch = pitch;
@@ -955,6 +961,7 @@ class StartGame : Buffer {
 		this.gameRules = gameRules;
 		this.levelId = levelId;
 		this.worldName = worldName;
+		this.premiumWorldTemplate = premiumWorldTemplate;
 	}
 
 	public pure nothrow @safe ubyte[] encode(bool writeId=true)() {
@@ -962,6 +969,7 @@ class StartGame : Buffer {
 		static if(writeId){ writeBigEndianUbyte(ID); }
 		writeBytes(varlong.encode(entityId));
 		writeBytes(varlong.encode(runtimeId));
+		writeBytes(varint.encode(gamemode));
 		writeLittleEndianFloat(position.x); writeLittleEndianFloat(position.y); writeLittleEndianFloat(position.z);
 		writeLittleEndianFloat(yaw);
 		writeLittleEndianFloat(pitch);
@@ -981,6 +989,7 @@ class StartGame : Buffer {
 		writeBytes(varuint.encode(cast(uint)gameRules.length)); foreach(zfzjbv;gameRules){ zfzjbv.encode(bufferInstance); }
 		writeBytes(varuint.encode(cast(uint)levelId.length)); writeString(levelId);
 		writeBytes(varuint.encode(cast(uint)worldName.length)); writeString(worldName);
+		writeBytes(varuint.encode(cast(uint)premiumWorldTemplate.length)); writeString(premiumWorldTemplate);
 		return _buffer;
 	}
 
@@ -988,6 +997,7 @@ class StartGame : Buffer {
 		static if(readId){ ubyte _id; _id=readBigEndianUbyte(); }
 		entityId=varlong.decode(_buffer, &_index);
 		runtimeId=varlong.decode(_buffer, &_index);
+		gamemode=varint.decode(_buffer, &_index);
 		position.x=readLittleEndianFloat(); position.y=readLittleEndianFloat(); position.z=readLittleEndianFloat();
 		yaw=readLittleEndianFloat();
 		pitch=readLittleEndianFloat();
@@ -1007,6 +1017,7 @@ class StartGame : Buffer {
 		gameRules.length=varuint.decode(_buffer, &_index); foreach(ref zfzjbv;gameRules){ zfzjbv.decode(bufferInstance); }
 		uint bvzxz=varuint.decode(_buffer, &_index); levelId=readString(bvzxz);
 		uint d9bry1=varuint.decode(_buffer, &_index); worldName=readString(d9bry1);
+		uint cjblbdcx=varuint.decode(_buffer, &_index); premiumWorldTemplate=readString(cjblbdcx);
 	}
 
 	public static pure nothrow @safe StartGame fromBuffer(bool readId=true)(ubyte[] buffer) {
@@ -1017,7 +1028,7 @@ class StartGame : Buffer {
 	}
 
 	public override string toString() {
-		return "StartGame(entityId: " ~ std.conv.to!string(this.entityId) ~ ", runtimeId: " ~ std.conv.to!string(this.runtimeId) ~ ", position: " ~ std.conv.to!string(this.position) ~ ", yaw: " ~ std.conv.to!string(this.yaw) ~ ", pitch: " ~ std.conv.to!string(this.pitch) ~ ", seed: " ~ std.conv.to!string(this.seed) ~ ", dimension: " ~ std.conv.to!string(this.dimension) ~ ", generator: " ~ std.conv.to!string(this.generator) ~ ", worldGamemode: " ~ std.conv.to!string(this.worldGamemode) ~ ", difficulty: " ~ std.conv.to!string(this.difficulty) ~ ", spawnPosition: " ~ std.conv.to!string(this.spawnPosition) ~ ", loadedInCreative: " ~ std.conv.to!string(this.loadedInCreative) ~ ", time: " ~ std.conv.to!string(this.time) ~ ", vers: " ~ std.conv.to!string(this.vers) ~ ", rainLevel: " ~ std.conv.to!string(this.rainLevel) ~ ", lightingLevel: " ~ std.conv.to!string(this.lightingLevel) ~ ", commandsEnabled: " ~ std.conv.to!string(this.commandsEnabled) ~ ", textureRequired: " ~ std.conv.to!string(this.textureRequired) ~ ", gameRules: " ~ std.conv.to!string(this.gameRules) ~ ", levelId: " ~ std.conv.to!string(this.levelId) ~ ", worldName: " ~ std.conv.to!string(this.worldName) ~ ")";
+		return "StartGame(entityId: " ~ std.conv.to!string(this.entityId) ~ ", runtimeId: " ~ std.conv.to!string(this.runtimeId) ~ ", gamemode: " ~ std.conv.to!string(this.gamemode) ~ ", position: " ~ std.conv.to!string(this.position) ~ ", yaw: " ~ std.conv.to!string(this.yaw) ~ ", pitch: " ~ std.conv.to!string(this.pitch) ~ ", seed: " ~ std.conv.to!string(this.seed) ~ ", dimension: " ~ std.conv.to!string(this.dimension) ~ ", generator: " ~ std.conv.to!string(this.generator) ~ ", worldGamemode: " ~ std.conv.to!string(this.worldGamemode) ~ ", difficulty: " ~ std.conv.to!string(this.difficulty) ~ ", spawnPosition: " ~ std.conv.to!string(this.spawnPosition) ~ ", loadedInCreative: " ~ std.conv.to!string(this.loadedInCreative) ~ ", time: " ~ std.conv.to!string(this.time) ~ ", vers: " ~ std.conv.to!string(this.vers) ~ ", rainLevel: " ~ std.conv.to!string(this.rainLevel) ~ ", lightingLevel: " ~ std.conv.to!string(this.lightingLevel) ~ ", commandsEnabled: " ~ std.conv.to!string(this.commandsEnabled) ~ ", textureRequired: " ~ std.conv.to!string(this.textureRequired) ~ ", gameRules: " ~ std.conv.to!string(this.gameRules) ~ ", levelId: " ~ std.conv.to!string(this.levelId) ~ ", worldName: " ~ std.conv.to!string(this.worldName) ~ ", premiumWorldTemplate: " ~ std.conv.to!string(this.premiumWorldTemplate) ~ ")";
 	}
 
 }
@@ -1488,7 +1499,7 @@ class MovePlayer : Buffer {
 	public enum ubyte NONE = 1;
 	public enum ubyte ROTATION = 2;
 
-	public enum string[] FIELDS = ["entityId", "position", "pitch", "headYaw", "yaw", "animation", "onGround"];
+	public enum string[] FIELDS = ["entityId", "position", "pitch", "headYaw", "yaw", "animation", "onGround", "unknown7"];
 
 	public long entityId;
 	public Tuple!(float, "x", float, "y", float, "z") position;
@@ -1497,10 +1508,11 @@ class MovePlayer : Buffer {
 	public float yaw;
 	public ubyte animation;
 	public bool onGround;
+	public long unknown7;
 
 	public pure nothrow @safe @nogc this() {}
 
-	public pure nothrow @safe @nogc this(long entityId, Tuple!(float, "x", float, "y", float, "z") position=Tuple!(float, "x", float, "y", float, "z").init, float pitch=float.init, float headYaw=float.init, float yaw=float.init, ubyte animation=ubyte.init, bool onGround=bool.init) {
+	public pure nothrow @safe @nogc this(long entityId, Tuple!(float, "x", float, "y", float, "z") position=Tuple!(float, "x", float, "y", float, "z").init, float pitch=float.init, float headYaw=float.init, float yaw=float.init, ubyte animation=ubyte.init, bool onGround=bool.init, long unknown7=long.init) {
 		this.entityId = entityId;
 		this.position = position;
 		this.pitch = pitch;
@@ -1508,6 +1520,7 @@ class MovePlayer : Buffer {
 		this.yaw = yaw;
 		this.animation = animation;
 		this.onGround = onGround;
+		this.unknown7 = unknown7;
 	}
 
 	public pure nothrow @safe ubyte[] encode(bool writeId=true)() {
@@ -1520,6 +1533,7 @@ class MovePlayer : Buffer {
 		writeLittleEndianFloat(yaw);
 		writeBigEndianUbyte(animation);
 		writeBigEndianBool(onGround);
+		writeBytes(varlong.encode(unknown7));
 		return _buffer;
 	}
 
@@ -1532,6 +1546,7 @@ class MovePlayer : Buffer {
 		yaw=readLittleEndianFloat();
 		animation=readBigEndianUbyte();
 		onGround=readBigEndianBool();
+		unknown7=varlong.decode(_buffer, &_index);
 	}
 
 	public static pure nothrow @safe MovePlayer fromBuffer(bool readId=true)(ubyte[] buffer) {
@@ -1542,7 +1557,7 @@ class MovePlayer : Buffer {
 	}
 
 	public override string toString() {
-		return "MovePlayer(entityId: " ~ std.conv.to!string(this.entityId) ~ ", position: " ~ std.conv.to!string(this.position) ~ ", pitch: " ~ std.conv.to!string(this.pitch) ~ ", headYaw: " ~ std.conv.to!string(this.headYaw) ~ ", yaw: " ~ std.conv.to!string(this.yaw) ~ ", animation: " ~ std.conv.to!string(this.animation) ~ ", onGround: " ~ std.conv.to!string(this.onGround) ~ ")";
+		return "MovePlayer(entityId: " ~ std.conv.to!string(this.entityId) ~ ", position: " ~ std.conv.to!string(this.position) ~ ", pitch: " ~ std.conv.to!string(this.pitch) ~ ", headYaw: " ~ std.conv.to!string(this.headYaw) ~ ", yaw: " ~ std.conv.to!string(this.yaw) ~ ", animation: " ~ std.conv.to!string(this.animation) ~ ", onGround: " ~ std.conv.to!string(this.onGround) ~ ", unknown7: " ~ std.conv.to!string(this.unknown7) ~ ")";
 	}
 
 }
