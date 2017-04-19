@@ -40,14 +40,14 @@ struct Address {
 	public pure nothrow @safe void encode(Buffer buffer) {
 		with(buffer) {
 			writeBytes(varuint.encode(cast(uint)bytes.length)); writeBytes(bytes);
-			writeLittleEndianUshort(port);
+			writeBigEndianUshort(port);
 		}
 	}
 
 	public pure nothrow @safe void decode(Buffer buffer) {
 		with(buffer) {
 			bytes.length=varuint.decode(_buffer, &_index); if(_buffer.length>=_index+bytes.length){ bytes=_buffer[_index.._index+bytes.length].dup; _index+=bytes.length; }
-			port=readLittleEndianUshort();
+			port=readBigEndianUshort();
 		}
 	}
 
@@ -105,7 +105,7 @@ struct Game {
  */
 struct GameInfo {
 
-	public enum string[] FIELDS = ["game", "motd", "port"];
+	public enum string[] FIELDS = ["game", "motd", "onlineMode", "port"];
 
 	/**
 	 * Informations about the the game and the protocols used.
@@ -119,6 +119,12 @@ struct GameInfo {
 	public string motd;
 
 	/**
+	 * Indicates whether the players are authenticated using the games' official authentication
+	 * services and their identity should be trusted.
+	 */
+	public bool onlineMode;
+
+	/**
 	 * Port, or main port if the server allows the connection from multiple ports, where
 	 * the socket is listening for connections.
 	 */
@@ -128,7 +134,8 @@ struct GameInfo {
 		with(buffer) {
 			game.encode(bufferInstance);
 			writeBytes(varuint.encode(cast(uint)motd.length)); writeString(motd);
-			writeLittleEndianUshort(port);
+			writeBigEndianBool(onlineMode);
+			writeBigEndianUshort(port);
 		}
 	}
 
@@ -136,12 +143,13 @@ struct GameInfo {
 		with(buffer) {
 			game.decode(bufferInstance);
 			uint b9z=varuint.decode(_buffer, &_index); motd=readString(b9z);
-			port=readLittleEndianUshort();
+			onlineMode=readBigEndianBool();
+			port=readBigEndianUshort();
 		}
 	}
 
 	public string toString() {
-		return "GameInfo(game: " ~ std.conv.to!string(this.game) ~ ", motd: " ~ std.conv.to!string(this.motd) ~ ", port: " ~ std.conv.to!string(this.port) ~ ")";
+		return "GameInfo(game: " ~ std.conv.to!string(this.game) ~ ", motd: " ~ std.conv.to!string(this.motd) ~ ", onlineMode: " ~ std.conv.to!string(this.onlineMode) ~ ", port: " ~ std.conv.to!string(this.port) ~ ")";
 	}
 
 }

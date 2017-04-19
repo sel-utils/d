@@ -183,7 +183,7 @@ class HubInfo : Buffer {
 	// max
 	public enum int UNLIMITED = -1;
 
-	public enum string[] FIELDS = ["time", "serverId", "reservedUuids", "displayName", "onlineMode", "gamesInfo", "online", "max", "language", "acceptedLanguages", "additionalJson"];
+	public enum string[] FIELDS = ["time", "serverId", "reservedUuids", "displayName", "gamesInfo", "online", "max", "language", "acceptedLanguages", "additionalJson"];
 
 	/**
 	 * Unix time with microseconds precision that indicates the exact moment when this
@@ -208,12 +208,6 @@ class HubInfo : Buffer {
 	 * Unformatted name of the server as indicated in the hub's configuration file.
 	 */
 	public string displayName;
-
-	/**
-	 * Indicates whether the player are authenticated using the games' official authentication
-	 * services and their identity should be trusted.
-	 */
-	public bool onlineMode;
 
 	/**
 	 * Informations about the games supported by the hub.
@@ -265,7 +259,7 @@ class HubInfo : Buffer {
 	 *       "twitter": "example_tweets",
 	 *       "youtube": "examplechannel",
 	 *       "instagram": "example",
-	 *       "google_plus": "example-plus"
+	 *       "google-plus": "example-plus"
 	 *    },
 	 *    "system": {
 	 *       "os": "Ubuntu 16.04",
@@ -280,12 +274,11 @@ class HubInfo : Buffer {
 
 	public pure nothrow @safe @nogc this() {}
 
-	public pure nothrow @safe @nogc this(ulong time, ulong serverId=ulong.init, ulong reservedUuids=ulong.init, string displayName=string.init, bool onlineMode=bool.init, sul.protocol.hncom2.types.GameInfo[] gamesInfo=(sul.protocol.hncom2.types.GameInfo[]).init, uint online=uint.init, int max=int.init, string language=string.init, string[] acceptedLanguages=(string[]).init, string additionalJson=string.init) {
+	public pure nothrow @safe @nogc this(ulong time, ulong serverId=ulong.init, ulong reservedUuids=ulong.init, string displayName=string.init, sul.protocol.hncom2.types.GameInfo[] gamesInfo=(sul.protocol.hncom2.types.GameInfo[]).init, uint online=uint.init, int max=int.init, string language=string.init, string[] acceptedLanguages=(string[]).init, string additionalJson=string.init) {
 		this.time = time;
 		this.serverId = serverId;
 		this.reservedUuids = reservedUuids;
 		this.displayName = displayName;
-		this.onlineMode = onlineMode;
 		this.gamesInfo = gamesInfo;
 		this.online = online;
 		this.max = max;
@@ -301,7 +294,6 @@ class HubInfo : Buffer {
 		writeBytes(varulong.encode(serverId));
 		writeBytes(varulong.encode(reservedUuids));
 		writeBytes(varuint.encode(cast(uint)displayName.length)); writeString(displayName);
-		writeBigEndianBool(onlineMode);
 		writeBytes(varuint.encode(cast(uint)gamesInfo.length)); foreach(zfznbz;gamesInfo){ zfznbz.encode(bufferInstance); }
 		writeBytes(varuint.encode(online));
 		writeBytes(varint.encode(max));
@@ -317,7 +309,6 @@ class HubInfo : Buffer {
 		serverId=varulong.decode(_buffer, &_index);
 		reservedUuids=varulong.decode(_buffer, &_index);
 		uint zlcxe5bu=varuint.decode(_buffer, &_index); displayName=readString(zlcxe5bu);
-		onlineMode=readBigEndianBool();
 		gamesInfo.length=varuint.decode(_buffer, &_index); foreach(ref zfznbz;gamesInfo){ zfznbz.decode(bufferInstance); }
 		online=varuint.decode(_buffer, &_index);
 		max=varint.decode(_buffer, &_index);
@@ -334,7 +325,7 @@ class HubInfo : Buffer {
 	}
 
 	public override string toString() {
-		return "HubInfo(time: " ~ std.conv.to!string(this.time) ~ ", serverId: " ~ std.conv.to!string(this.serverId) ~ ", reservedUuids: " ~ std.conv.to!string(this.reservedUuids) ~ ", displayName: " ~ std.conv.to!string(this.displayName) ~ ", onlineMode: " ~ std.conv.to!string(this.onlineMode) ~ ", gamesInfo: " ~ std.conv.to!string(this.gamesInfo) ~ ", online: " ~ std.conv.to!string(this.online) ~ ", max: " ~ std.conv.to!string(this.max) ~ ", language: " ~ std.conv.to!string(this.language) ~ ", acceptedLanguages: " ~ std.conv.to!string(this.acceptedLanguages) ~ ", additionalJson: " ~ std.conv.to!string(this.additionalJson) ~ ")";
+		return "HubInfo(time: " ~ std.conv.to!string(this.time) ~ ", serverId: " ~ std.conv.to!string(this.serverId) ~ ", reservedUuids: " ~ std.conv.to!string(this.reservedUuids) ~ ", displayName: " ~ std.conv.to!string(this.displayName) ~ ", gamesInfo: " ~ std.conv.to!string(this.gamesInfo) ~ ", online: " ~ std.conv.to!string(this.online) ~ ", max: " ~ std.conv.to!string(this.max) ~ ", language: " ~ std.conv.to!string(this.language) ~ ", acceptedLanguages: " ~ std.conv.to!string(this.acceptedLanguages) ~ ", additionalJson: " ~ std.conv.to!string(this.additionalJson) ~ ")";
 	}
 
 }

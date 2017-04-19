@@ -187,7 +187,7 @@ class Add : Buffer {
 		if(reason!=0){ writeBytes(varuint.encode(viewDistance)); }
 		clientAddress.encode(bufferInstance);
 		writeBytes(varuint.encode(cast(uint)serverAddress.length)); writeString(serverAddress);
-		writeLittleEndianUshort(serverPort);
+		writeBigEndianUshort(serverPort);
 		writeBytes(uuid.data);
 		skin.encode(bufferInstance);
 		writeBytes(varuint.encode(cast(uint)language.length)); writeString(language);
@@ -209,7 +209,7 @@ class Add : Buffer {
 		if(reason!=0){ viewDistance=varuint.decode(_buffer, &_index); }
 		clientAddress.decode(bufferInstance);
 		uint cvdvqrcv=varuint.decode(_buffer, &_index); serverAddress=readString(cvdvqrcv);
-		serverPort=readLittleEndianUshort();
+		serverPort=readBigEndianUshort();
 		if(_buffer.length>=_index+16){ ubyte[16] dvz=_buffer[_index.._index+16].dup; _index+=16; uuid=UUID(dvz); }
 		skin.decode(bufferInstance);
 		uint bfzvzu=varuint.decode(_buffer, &_index); language=readString(bfzvzu);
