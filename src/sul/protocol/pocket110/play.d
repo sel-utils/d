@@ -44,7 +44,7 @@ class Login : Buffer {
 	public enum ubyte VANILLA = 0;
 	public enum ubyte EDUCATION = 1;
 
-	public enum string[] FIELDS = ["protocol", "vers", "body_"];
+	public enum string[] FIELDS = ["protocol", "vers", "bodyLength", "body_"];
 
 	/**
 	 * Version of the protocol used by the player.
@@ -59,17 +59,23 @@ class Login : Buffer {
 	public ubyte vers;
 
 	/**
-	 * Zlib-compressed bytes that contains 2 JWTs with more informations about the player
-	 * and its account. Once uncompressed the resulting payload will contain 2 JWTs which
-	 * length is indicated by a little-endian unsigned integer each.
+	 * Length, in bytes, of the following field. This field was used when the body was
+	 * compressed.
 	 */
-	public ubyte[] body_;
+	public uint bodyLength;
+
+	/**
+	 * Payload that contains 2 JWTs (with each length indicated by an unsigned little-endian
+	 * 32-bits integer) with more informations about the player and its account.
+	 */
+	public sul.protocol.pocket110.types.LoginBody body_;
 
 	public pure nothrow @safe @nogc this() {}
 
-	public pure nothrow @safe @nogc this(uint protocol, ubyte vers=ubyte.init, ubyte[] body_=(ubyte[]).init) {
+	public pure nothrow @safe @nogc this(uint protocol, ubyte vers=ubyte.init, uint bodyLength=uint.init, sul.protocol.pocket110.types.LoginBody body_=sul.protocol.pocket110.types.LoginBody.init) {
 		this.protocol = protocol;
 		this.vers = vers;
+		this.bodyLength = bodyLength;
 		this.body_ = body_;
 	}
 
@@ -78,7 +84,8 @@ class Login : Buffer {
 		static if(writeId){ writeBigEndianUbyte(ID); }
 		writeBigEndianUint(protocol);
 		writeBigEndianUbyte(vers);
-		writeBytes(varuint.encode(cast(uint)body_.length)); writeBytes(body_);
+		writeBytes(varuint.encode(bodyLength));
+		body_.encode(bufferInstance);
 		return _buffer;
 	}
 
@@ -86,7 +93,8 @@ class Login : Buffer {
 		static if(readId){ ubyte _id; _id=readBigEndianUbyte(); }
 		protocol=readBigEndianUint();
 		vers=readBigEndianUbyte();
-		body_.length=varuint.decode(_buffer, &_index); if(_buffer.length>=_index+body_.length){ body_=_buffer[_index.._index+body_.length].dup; _index+=body_.length; }
+		bodyLength=varuint.decode(_buffer, &_index);
+		body_.decode(bufferInstance);
 	}
 
 	public static pure nothrow @safe Login fromBuffer(bool readId=true)(ubyte[] buffer) {
@@ -97,7 +105,7 @@ class Login : Buffer {
 	}
 
 	public override string toString() {
-		return "Login(protocol: " ~ std.conv.to!string(this.protocol) ~ ", vers: " ~ std.conv.to!string(this.vers) ~ ", body_: " ~ std.conv.to!string(this.body_) ~ ")";
+		return "Login(protocol: " ~ std.conv.to!string(this.protocol) ~ ", vers: " ~ std.conv.to!string(this.vers) ~ ", bodyLength: " ~ std.conv.to!string(this.bodyLength) ~ ", body_: " ~ std.conv.to!string(this.body_) ~ ")";
 	}
 
 }

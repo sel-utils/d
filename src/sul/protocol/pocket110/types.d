@@ -19,6 +19,33 @@ import sul.utils.var;
 
 static if(__traits(compiles, { import sul.metadata.pocket110; })) import sul.metadata.pocket110;
 
+struct LoginBody {
+
+	public enum string[] FIELDS = ["chain", "clientData"];
+
+	public ubyte[] chain;
+	public ubyte[] clientData;
+
+	public pure nothrow @safe void encode(Buffer buffer) {
+		with(buffer) {
+			writeLittleEndianUint(cast(uint)chain.length); writeBytes(chain);
+			writeLittleEndianUint(cast(uint)clientData.length); writeBytes(clientData);
+		}
+	}
+
+	public pure nothrow @safe void decode(Buffer buffer) {
+		with(buffer) {
+			chain.length=readLittleEndianUint(); if(_buffer.length>=_index+chain.length){ chain=_buffer[_index.._index+chain.length].dup; _index+=chain.length; }
+			clientData.length=readLittleEndianUint(); if(_buffer.length>=_index+clientData.length){ clientData=_buffer[_index.._index+clientData.length].dup; _index+=clientData.length; }
+		}
+	}
+
+	public string toString() {
+		return "LoginBody(chain: " ~ std.conv.to!string(this.chain) ~ ", clientData: " ~ std.conv.to!string(this.clientData) ~ ")";
+	}
+
+}
+
 struct PackWithSize {
 
 	public enum string[] FIELDS = ["id", "vers", "size"];
