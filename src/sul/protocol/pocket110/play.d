@@ -1271,22 +1271,24 @@ class AddItemEntity : Buffer {
 	public enum bool CLIENTBOUND = true;
 	public enum bool SERVERBOUND = false;
 
-	public enum string[] FIELDS = ["entityId", "runtimeId", "item", "position", "motion"];
+	public enum string[] FIELDS = ["entityId", "runtimeId", "item", "position", "motion", "metadata"];
 
 	public long entityId;
 	public long runtimeId;
 	public sul.protocol.pocket110.types.Slot item;
 	public Tuple!(float, "x", float, "y", float, "z") position;
 	public Tuple!(float, "x", float, "y", float, "z") motion;
+	public Metadata metadata;
 
 	public pure nothrow @safe @nogc this() {}
 
-	public pure nothrow @safe @nogc this(long entityId, long runtimeId=long.init, sul.protocol.pocket110.types.Slot item=sul.protocol.pocket110.types.Slot.init, Tuple!(float, "x", float, "y", float, "z") position=Tuple!(float, "x", float, "y", float, "z").init, Tuple!(float, "x", float, "y", float, "z") motion=Tuple!(float, "x", float, "y", float, "z").init) {
+	public pure nothrow @safe @nogc this(long entityId, long runtimeId=long.init, sul.protocol.pocket110.types.Slot item=sul.protocol.pocket110.types.Slot.init, Tuple!(float, "x", float, "y", float, "z") position=Tuple!(float, "x", float, "y", float, "z").init, Tuple!(float, "x", float, "y", float, "z") motion=Tuple!(float, "x", float, "y", float, "z").init, Metadata metadata=Metadata.init) {
 		this.entityId = entityId;
 		this.runtimeId = runtimeId;
 		this.item = item;
 		this.position = position;
 		this.motion = motion;
+		this.metadata = metadata;
 	}
 
 	public pure nothrow @safe ubyte[] encode(bool writeId=true)() {
@@ -1297,6 +1299,7 @@ class AddItemEntity : Buffer {
 		item.encode(bufferInstance);
 		writeLittleEndianFloat(position.x); writeLittleEndianFloat(position.y); writeLittleEndianFloat(position.z);
 		writeLittleEndianFloat(motion.x); writeLittleEndianFloat(motion.y); writeLittleEndianFloat(motion.z);
+		metadata.encode(bufferInstance);
 		return _buffer;
 	}
 
@@ -1307,6 +1310,7 @@ class AddItemEntity : Buffer {
 		item.decode(bufferInstance);
 		position.x=readLittleEndianFloat(); position.y=readLittleEndianFloat(); position.z=readLittleEndianFloat();
 		motion.x=readLittleEndianFloat(); motion.y=readLittleEndianFloat(); motion.z=readLittleEndianFloat();
+		metadata=Metadata.decode(bufferInstance);
 	}
 
 	public static pure nothrow @safe AddItemEntity fromBuffer(bool readId=true)(ubyte[] buffer) {
@@ -1317,7 +1321,7 @@ class AddItemEntity : Buffer {
 	}
 
 	public override string toString() {
-		return "AddItemEntity(entityId: " ~ std.conv.to!string(this.entityId) ~ ", runtimeId: " ~ std.conv.to!string(this.runtimeId) ~ ", item: " ~ std.conv.to!string(this.item) ~ ", position: " ~ std.conv.to!string(this.position) ~ ", motion: " ~ std.conv.to!string(this.motion) ~ ")";
+		return "AddItemEntity(entityId: " ~ std.conv.to!string(this.entityId) ~ ", runtimeId: " ~ std.conv.to!string(this.runtimeId) ~ ", item: " ~ std.conv.to!string(this.item) ~ ", position: " ~ std.conv.to!string(this.position) ~ ", motion: " ~ std.conv.to!string(this.motion) ~ ", metadata: " ~ std.conv.to!string(this.metadata) ~ ")";
 	}
 
 }
@@ -1440,7 +1444,7 @@ class MoveEntity : Buffer {
 	public enum bool CLIENTBOUND = true;
 	public enum bool SERVERBOUND = false;
 
-	public enum string[] FIELDS = ["entityId", "position", "pitch", "headYaw", "yaw", "onGround"];
+	public enum string[] FIELDS = ["entityId", "position", "pitch", "headYaw", "yaw", "onGround", "unknown6"];
 
 	public long entityId;
 	public Tuple!(float, "x", float, "y", float, "z") position;
@@ -1448,16 +1452,18 @@ class MoveEntity : Buffer {
 	public ubyte headYaw;
 	public ubyte yaw;
 	public bool onGround;
+	public bool unknown6;
 
 	public pure nothrow @safe @nogc this() {}
 
-	public pure nothrow @safe @nogc this(long entityId, Tuple!(float, "x", float, "y", float, "z") position=Tuple!(float, "x", float, "y", float, "z").init, ubyte pitch=ubyte.init, ubyte headYaw=ubyte.init, ubyte yaw=ubyte.init, bool onGround=bool.init) {
+	public pure nothrow @safe @nogc this(long entityId, Tuple!(float, "x", float, "y", float, "z") position=Tuple!(float, "x", float, "y", float, "z").init, ubyte pitch=ubyte.init, ubyte headYaw=ubyte.init, ubyte yaw=ubyte.init, bool onGround=bool.init, bool unknown6=bool.init) {
 		this.entityId = entityId;
 		this.position = position;
 		this.pitch = pitch;
 		this.headYaw = headYaw;
 		this.yaw = yaw;
 		this.onGround = onGround;
+		this.unknown6 = unknown6;
 	}
 
 	public pure nothrow @safe ubyte[] encode(bool writeId=true)() {
@@ -1469,6 +1475,7 @@ class MoveEntity : Buffer {
 		writeBigEndianUbyte(headYaw);
 		writeBigEndianUbyte(yaw);
 		writeBigEndianBool(onGround);
+		writeBigEndianBool(unknown6);
 		return _buffer;
 	}
 
@@ -1480,6 +1487,7 @@ class MoveEntity : Buffer {
 		headYaw=readBigEndianUbyte();
 		yaw=readBigEndianUbyte();
 		onGround=readBigEndianBool();
+		unknown6=readBigEndianBool();
 	}
 
 	public static pure nothrow @safe MoveEntity fromBuffer(bool readId=true)(ubyte[] buffer) {
@@ -1490,7 +1498,7 @@ class MoveEntity : Buffer {
 	}
 
 	public override string toString() {
-		return "MoveEntity(entityId: " ~ std.conv.to!string(this.entityId) ~ ", position: " ~ std.conv.to!string(this.position) ~ ", pitch: " ~ std.conv.to!string(this.pitch) ~ ", headYaw: " ~ std.conv.to!string(this.headYaw) ~ ", yaw: " ~ std.conv.to!string(this.yaw) ~ ", onGround: " ~ std.conv.to!string(this.onGround) ~ ")";
+		return "MoveEntity(entityId: " ~ std.conv.to!string(this.entityId) ~ ", position: " ~ std.conv.to!string(this.position) ~ ", pitch: " ~ std.conv.to!string(this.pitch) ~ ", headYaw: " ~ std.conv.to!string(this.headYaw) ~ ", yaw: " ~ std.conv.to!string(this.yaw) ~ ", onGround: " ~ std.conv.to!string(this.onGround) ~ ", unknown6: " ~ std.conv.to!string(this.unknown6) ~ ")";
 	}
 
 }
