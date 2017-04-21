@@ -3043,16 +3043,18 @@ class Animate : Buffer {
 	public enum int BREAKING = 1;
 	public enum int WAKE_UP = 3;
 
-	public enum string[] FIELDS = ["action", "entityId"];
+	public enum string[] FIELDS = ["action", "entityId", "unknown2"];
 
 	public int action;
 	public long entityId;
+	public float unknown2;
 
 	public pure nothrow @safe @nogc this() {}
 
-	public pure nothrow @safe @nogc this(int action, long entityId=long.init) {
+	public pure nothrow @safe @nogc this(int action, long entityId=long.init, float unknown2=float.init) {
 		this.action = action;
 		this.entityId = entityId;
+		this.unknown2 = unknown2;
 	}
 
 	public pure nothrow @safe ubyte[] encode(bool writeId=true)() {
@@ -3060,6 +3062,7 @@ class Animate : Buffer {
 		static if(writeId){ writeBigEndianUbyte(ID); }
 		writeBytes(varint.encode(action));
 		writeBytes(varlong.encode(entityId));
+		if(action>128){ writeLittleEndianFloat(unknown2); }
 		return _buffer;
 	}
 
@@ -3067,6 +3070,7 @@ class Animate : Buffer {
 		static if(readId){ ubyte _id; _id=readBigEndianUbyte(); }
 		action=varint.decode(_buffer, &_index);
 		entityId=varlong.decode(_buffer, &_index);
+		if(action>128){ unknown2=readLittleEndianFloat(); }
 	}
 
 	public static pure nothrow @safe Animate fromBuffer(bool readId=true)(ubyte[] buffer) {
@@ -3077,7 +3081,7 @@ class Animate : Buffer {
 	}
 
 	public override string toString() {
-		return "Animate(action: " ~ std.conv.to!string(this.action) ~ ", entityId: " ~ std.conv.to!string(this.entityId) ~ ")";
+		return "Animate(action: " ~ std.conv.to!string(this.action) ~ ", entityId: " ~ std.conv.to!string(this.entityId) ~ ", unknown2: " ~ std.conv.to!string(this.unknown2) ~ ")";
 	}
 
 }

@@ -36,6 +36,8 @@ class Metadata {
 	private Changed!(byte) _potionAmbient;
 	private Changed!(int) _hurtTime;
 	private Changed!(int) _hurtDirection;
+	private Changed!(float) _paddleTimeLeft;
+	private Changed!(float) _paddleTimeRight;
 	private Changed!(int) _experienceCount;
 	private Changed!(byte) _slimeSize = tuple(cast(byte)1, false);
 	private Changed!(short) _age;
@@ -50,13 +52,22 @@ class Metadata {
 	private Changed!(string) _interactiveTagUrl;
 	private Changed!(short) _maxAir;
 	private Changed!(int) _markVariant;
+	private Changed!(int) _invulnerableTime;
+	private Changed!(long) _centerHeadTarget;
+	private Changed!(long) _leftHeadTarget;
+	private Changed!(long) _rightHeadTarget;
 	private Changed!(float) _boundingBoxWidth;
 	private Changed!(float) _boundingBoxHeight;
 	private Changed!(int) _fuseLength;
 	private Changed!(Tuple!(float, "x", float, "y", float, "z")) _riderSeatPosition;
+	private Changed!(byte) _riderRotationLocked;
+	private Changed!(float) _riderMaxRotation;
+	private Changed!(float) _riderMinRotation;
 	private Changed!(float) _areaEffectCloudRadius = tuple(cast(float)0.5, false);
 	private Changed!(int) _areaEffectCloudWaiting;
 	private Changed!(int) _areaEffectCloudParticle;
+	private Changed!(byte) _shukerDirection;
+	private Changed!(Tuple!(int, "x", int, "y", int, "z")) _shulkerAttachment;
 	private Changed!(long) _tradingPlayer;
 	private Changed!(byte) _controllingRiderSeatNumber;
 	private Changed!(int) _strength;
@@ -279,6 +290,36 @@ class Metadata {
 	public pure nothrow @property @safe bool climbing(bool value) {
 		if(value) entityFlags = cast(long)(_entityFlags | (cast(long)true << 18));
 		else entityFlags = cast(long)(_entityFlags & ~(cast(long)true << 18));
+		return value;
+	}
+
+	public pure nothrow @property @safe bool canClimb() {
+		return (_entityFlags >>> 19) & 1;
+	}
+
+	public pure nothrow @property @safe bool canClimb(bool value) {
+		if(value) entityFlags = cast(long)(_entityFlags | (cast(long)true << 19));
+		else entityFlags = cast(long)(_entityFlags & ~(cast(long)true << 19));
+		return value;
+	}
+
+	public pure nothrow @property @safe bool canSwim() {
+		return (_entityFlags >>> 20) & 1;
+	}
+
+	public pure nothrow @property @safe bool canSwim(bool value) {
+		if(value) entityFlags = cast(long)(_entityFlags | (cast(long)true << 20));
+		else entityFlags = cast(long)(_entityFlags & ~(cast(long)true << 20));
+		return value;
+	}
+
+	public pure nothrow @property @safe bool canFly() {
+		return (_entityFlags >>> 21) & 1;
+	}
+
+	public pure nothrow @property @safe bool canFly(bool value) {
+		if(value) entityFlags = cast(long)(_entityFlags | (cast(long)true << 21));
+		else entityFlags = cast(long)(_entityFlags & ~(cast(long)true << 21));
 		return value;
 	}
 
@@ -700,6 +741,50 @@ class Metadata {
 		}
 	}
 
+	public pure nothrow @property @safe @nogc float paddleTimeLeft() {
+		return _paddleTimeLeft.value;
+	}
+
+	public pure nothrow @property @safe float paddleTimeLeft(float value) {
+		this._cached = false;
+		this._paddleTimeLeft.value = value;
+		if(!this._paddleTimeLeft.changed) {
+			this._paddleTimeLeft.changed = true;
+			this._changed ~= &this.encodePaddleTimeLeft;
+		}
+		return value;
+	}
+
+	public pure nothrow @safe encodePaddleTimeLeft(Buffer buffer) {
+		with(buffer) {
+			writeBytes(varuint.encode(13));
+			writeBytes(varuint.encode(3));
+			writeLittleEndianFloat(this._paddleTimeLeft.value);
+		}
+	}
+
+	public pure nothrow @property @safe @nogc float paddleTimeRight() {
+		return _paddleTimeRight.value;
+	}
+
+	public pure nothrow @property @safe float paddleTimeRight(float value) {
+		this._cached = false;
+		this._paddleTimeRight.value = value;
+		if(!this._paddleTimeRight.changed) {
+			this._paddleTimeRight.changed = true;
+			this._changed ~= &this.encodePaddleTimeRight;
+		}
+		return value;
+	}
+
+	public pure nothrow @safe encodePaddleTimeRight(Buffer buffer) {
+		with(buffer) {
+			writeBytes(varuint.encode(14));
+			writeBytes(varuint.encode(3));
+			writeLittleEndianFloat(this._paddleTimeRight.value);
+		}
+	}
+
 	public pure nothrow @property @safe @nogc int experienceCount() {
 		return _experienceCount.value;
 	}
@@ -1014,6 +1099,94 @@ class Metadata {
 		}
 	}
 
+	public pure nothrow @property @safe @nogc int invulnerableTime() {
+		return _invulnerableTime.value;
+	}
+
+	public pure nothrow @property @safe int invulnerableTime(int value) {
+		this._cached = false;
+		this._invulnerableTime.value = value;
+		if(!this._invulnerableTime.changed) {
+			this._invulnerableTime.changed = true;
+			this._changed ~= &this.encodeInvulnerableTime;
+		}
+		return value;
+	}
+
+	public pure nothrow @safe encodeInvulnerableTime(Buffer buffer) {
+		with(buffer) {
+			writeBytes(varuint.encode(49));
+			writeBytes(varuint.encode(2));
+			writeBytes(varint.encode(this._invulnerableTime.value));
+		}
+	}
+
+	public pure nothrow @property @safe @nogc long centerHeadTarget() {
+		return _centerHeadTarget.value;
+	}
+
+	public pure nothrow @property @safe long centerHeadTarget(long value) {
+		this._cached = false;
+		this._centerHeadTarget.value = value;
+		if(!this._centerHeadTarget.changed) {
+			this._centerHeadTarget.changed = true;
+			this._changed ~= &this.encodeCenterHeadTarget;
+		}
+		return value;
+	}
+
+	public pure nothrow @safe encodeCenterHeadTarget(Buffer buffer) {
+		with(buffer) {
+			writeBytes(varuint.encode(50));
+			writeBytes(varuint.encode(7));
+			writeBytes(varlong.encode(this._centerHeadTarget.value));
+		}
+	}
+
+	public pure nothrow @property @safe @nogc long leftHeadTarget() {
+		return _leftHeadTarget.value;
+	}
+
+	public pure nothrow @property @safe long leftHeadTarget(long value) {
+		this._cached = false;
+		this._leftHeadTarget.value = value;
+		if(!this._leftHeadTarget.changed) {
+			this._leftHeadTarget.changed = true;
+			this._changed ~= &this.encodeLeftHeadTarget;
+		}
+		return value;
+	}
+
+	public pure nothrow @safe encodeLeftHeadTarget(Buffer buffer) {
+		with(buffer) {
+			writeBytes(varuint.encode(51));
+			writeBytes(varuint.encode(7));
+			writeBytes(varlong.encode(this._leftHeadTarget.value));
+		}
+	}
+
+	public pure nothrow @property @safe @nogc long rightHeadTarget() {
+		return _rightHeadTarget.value;
+	}
+
+	public pure nothrow @property @safe long rightHeadTarget(long value) {
+		this._cached = false;
+		this._rightHeadTarget.value = value;
+		if(!this._rightHeadTarget.changed) {
+			this._rightHeadTarget.changed = true;
+			this._changed ~= &this.encodeRightHeadTarget;
+		}
+		return value;
+	}
+
+	public pure nothrow @safe encodeRightHeadTarget(Buffer buffer) {
+		with(buffer) {
+			writeBytes(varuint.encode(52));
+			writeBytes(varuint.encode(7));
+			writeBytes(varlong.encode(this._rightHeadTarget.value));
+		}
+	}
+
 	public pure nothrow @property @safe @nogc float boundingBoxWidth() {
 		return _boundingBoxWidth.value;
 	}
@@ -1030,7 +1203,7 @@ class Metadata {
 
 	public pure nothrow @safe encodeBoundingBoxWidth(Buffer buffer) {
 		with(buffer) {
-			writeBytes(varuint.encode(55));
+			writeBytes(varuint.encode(54));
 			writeBytes(varuint.encode(3));
 			writeLittleEndianFloat(this._boundingBoxWidth.value);
 		}
@@ -1052,7 +1225,7 @@ class Metadata {
 
 	public pure nothrow @safe encodeBoundingBoxHeight(Buffer buffer) {
 		with(buffer) {
-			writeBytes(varuint.encode(56));
+			writeBytes(varuint.encode(55));
 			writeBytes(varuint.encode(3));
 			writeLittleEndianFloat(this._boundingBoxHeight.value);
 		}
@@ -1074,7 +1247,7 @@ class Metadata {
 
 	public pure nothrow @safe encodeFuseLength(Buffer buffer) {
 		with(buffer) {
-			writeBytes(varuint.encode(57));
+			writeBytes(varuint.encode(56));
 			writeBytes(varuint.encode(2));
 			writeBytes(varint.encode(this._fuseLength.value));
 		}
@@ -1096,9 +1269,75 @@ class Metadata {
 
 	public pure nothrow @safe encodeRiderSeatPosition(Buffer buffer) {
 		with(buffer) {
-			writeBytes(varuint.encode(58));
+			writeBytes(varuint.encode(57));
 			writeBytes(varuint.encode(8));
 			writeLittleEndianFloat(this._riderSeatPosition.value.x); writeLittleEndianFloat(this._riderSeatPosition.value.y); writeLittleEndianFloat(this._riderSeatPosition.value.z);
+		}
+	}
+
+	public pure nothrow @property @safe @nogc byte riderRotationLocked() {
+		return _riderRotationLocked.value;
+	}
+
+	public pure nothrow @property @safe byte riderRotationLocked(byte value) {
+		this._cached = false;
+		this._riderRotationLocked.value = value;
+		if(!this._riderRotationLocked.changed) {
+			this._riderRotationLocked.changed = true;
+			this._changed ~= &this.encodeRiderRotationLocked;
+		}
+		return value;
+	}
+
+	public pure nothrow @safe encodeRiderRotationLocked(Buffer buffer) {
+		with(buffer) {
+			writeBytes(varuint.encode(58));
+			writeBytes(varuint.encode(0));
+			writeBigEndianByte(this._riderRotationLocked.value);
+		}
+	}
+
+	public pure nothrow @property @safe @nogc float riderMaxRotation() {
+		return _riderMaxRotation.value;
+	}
+
+	public pure nothrow @property @safe float riderMaxRotation(float value) {
+		this._cached = false;
+		this._riderMaxRotation.value = value;
+		if(!this._riderMaxRotation.changed) {
+			this._riderMaxRotation.changed = true;
+			this._changed ~= &this.encodeRiderMaxRotation;
+		}
+		return value;
+	}
+
+	public pure nothrow @safe encodeRiderMaxRotation(Buffer buffer) {
+		with(buffer) {
+			writeBytes(varuint.encode(59));
+			writeBytes(varuint.encode(3));
+			writeLittleEndianFloat(this._riderMaxRotation.value);
+		}
+	}
+
+	public pure nothrow @property @safe @nogc float riderMinRotation() {
+		return _riderMinRotation.value;
+	}
+
+	public pure nothrow @property @safe float riderMinRotation(float value) {
+		this._cached = false;
+		this._riderMinRotation.value = value;
+		if(!this._riderMinRotation.changed) {
+			this._riderMinRotation.changed = true;
+			this._changed ~= &this.encodeRiderMinRotation;
+		}
+		return value;
+	}
+
+	public pure nothrow @safe encodeRiderMinRotation(Buffer buffer) {
+		with(buffer) {
+			writeBytes(varuint.encode(60));
+			writeBytes(varuint.encode(3));
+			writeLittleEndianFloat(this._riderMinRotation.value);
 		}
 	}
 
@@ -1118,7 +1357,7 @@ class Metadata {
 
 	public pure nothrow @safe encodeAreaEffectCloudRadius(Buffer buffer) {
 		with(buffer) {
-			writeBytes(varuint.encode(62));
+			writeBytes(varuint.encode(61));
 			writeBytes(varuint.encode(3));
 			writeLittleEndianFloat(this._areaEffectCloudRadius.value);
 		}
@@ -1140,7 +1379,7 @@ class Metadata {
 
 	public pure nothrow @safe encodeAreaEffectCloudWaiting(Buffer buffer) {
 		with(buffer) {
-			writeBytes(varuint.encode(63));
+			writeBytes(varuint.encode(62));
 			writeBytes(varuint.encode(2));
 			writeBytes(varint.encode(this._areaEffectCloudWaiting.value));
 		}
@@ -1162,9 +1401,53 @@ class Metadata {
 
 	public pure nothrow @safe encodeAreaEffectCloudParticle(Buffer buffer) {
 		with(buffer) {
-			writeBytes(varuint.encode(64));
+			writeBytes(varuint.encode(63));
 			writeBytes(varuint.encode(2));
 			writeBytes(varint.encode(this._areaEffectCloudParticle.value));
+		}
+	}
+
+	public pure nothrow @property @safe @nogc byte shukerDirection() {
+		return _shukerDirection.value;
+	}
+
+	public pure nothrow @property @safe byte shukerDirection(byte value) {
+		this._cached = false;
+		this._shukerDirection.value = value;
+		if(!this._shukerDirection.changed) {
+			this._shukerDirection.changed = true;
+			this._changed ~= &this.encodeShukerDirection;
+		}
+		return value;
+	}
+
+	public pure nothrow @safe encodeShukerDirection(Buffer buffer) {
+		with(buffer) {
+			writeBytes(varuint.encode(65));
+			writeBytes(varuint.encode(0));
+			writeBigEndianByte(this._shukerDirection.value);
+		}
+	}
+
+	public pure nothrow @property @safe @nogc Tuple!(int, "x", int, "y", int, "z") shulkerAttachment() {
+		return _shulkerAttachment.value;
+	}
+
+	public pure nothrow @property @safe Tuple!(int, "x", int, "y", int, "z") shulkerAttachment(Tuple!(int, "x", int, "y", int, "z") value) {
+		this._cached = false;
+		this._shulkerAttachment.value = value;
+		if(!this._shulkerAttachment.changed) {
+			this._shulkerAttachment.changed = true;
+			this._changed ~= &this.encodeShulkerAttachment;
+		}
+		return value;
+	}
+
+	public pure nothrow @safe encodeShulkerAttachment(Buffer buffer) {
+		with(buffer) {
+			writeBytes(varuint.encode(67));
+			writeBytes(varuint.encode(6));
+			writeBytes(varint.encode(this._shulkerAttachment.value.x)); writeBytes(varint.encode(this._shulkerAttachment.value.y)); writeBytes(varint.encode(this._shulkerAttachment.value.z));
 		}
 	}
 
@@ -1184,7 +1467,7 @@ class Metadata {
 
 	public pure nothrow @safe encodeTradingPlayer(Buffer buffer) {
 		with(buffer) {
-			writeBytes(varuint.encode(69));
+			writeBytes(varuint.encode(68));
 			writeBytes(varuint.encode(7));
 			writeBytes(varlong.encode(this._tradingPlayer.value));
 		}
@@ -1206,7 +1489,7 @@ class Metadata {
 
 	public pure nothrow @safe encodeControllingRiderSeatNumber(Buffer buffer) {
 		with(buffer) {
-			writeBytes(varuint.encode(75));
+			writeBytes(varuint.encode(74));
 			writeBytes(varuint.encode(0));
 			writeBigEndianByte(this._controllingRiderSeatNumber.value);
 		}
@@ -1228,7 +1511,7 @@ class Metadata {
 
 	public pure nothrow @safe encodeStrength(Buffer buffer) {
 		with(buffer) {
-			writeBytes(varuint.encode(76));
+			writeBytes(varuint.encode(75));
 			writeBytes(varuint.encode(2));
 			writeBytes(varint.encode(this._strength.value));
 		}
@@ -1250,7 +1533,7 @@ class Metadata {
 
 	public pure nothrow @safe encodeMaxStrength(Buffer buffer) {
 		with(buffer) {
-			writeBytes(varuint.encode(77));
+			writeBytes(varuint.encode(76));
 			writeBytes(varuint.encode(2));
 			writeBytes(varint.encode(this._maxStrength.value));
 		}
