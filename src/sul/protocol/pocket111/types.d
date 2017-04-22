@@ -4,9 +4,9 @@
  * 
  * License: https://github.com/sel-project/sel-utils/blob/master/LICENSE
  * Repository: https://github.com/sel-project/sel-utils
- * Generated from https://github.com/sel-project/sel-utils/blob/master/xml/protocol/pocket110.xml
+ * Generated from https://github.com/sel-project/sel-utils/blob/master/xml/protocol/pocket111.xml
  */
-module sul.protocol.pocket110.types;
+module sul.protocol.pocket111.types;
 
 import std.bitmanip : write, peek;
 static import std.conv;
@@ -17,7 +17,7 @@ import std.uuid : UUID;
 import sul.utils.buffer;
 import sul.utils.var;
 
-static if(__traits(compiles, { import sul.metadata.pocket110; })) import sul.metadata.pocket110;
+static if(__traits(compiles, { import sul.metadata.pocket111; })) import sul.metadata.pocket111;
 
 struct LoginBody {
 
@@ -297,7 +297,7 @@ struct PlayerList {
 	/**
 	 * Player's skin usually given in the Login's packet body.
 	 */
-	public sul.protocol.pocket110.types.Skin skin;
+	public sul.protocol.pocket111.types.Skin skin;
 
 	public pure nothrow @safe void encode(Buffer buffer) {
 		with(buffer) {
@@ -404,7 +404,7 @@ struct ChunkData {
 	 * (the 3rd element of the array will be the 3rd section from bottom, starting at `y=24`).
 	 * The amount of sections should be in a range from 0 (empty chunk) to 16.
 	 */
-	public sul.protocol.pocket110.types.Section[] sections;
+	public sul.protocol.pocket111.types.Section[] sections;
 
 	/**
 	 * Coordinates of the highest block in the column that receives sky light (order `xz`).
@@ -422,7 +422,7 @@ struct ChunkData {
 	 * implemented in the game yet and crashes the client.
 	 */
 	public ubyte[] borders;
-	public sul.protocol.pocket110.types.ExtraData[] extraData;
+	public sul.protocol.pocket111.types.ExtraData[] extraData;
 
 	/**
 	 * Additional data for the chunk's block entities (tiles), encoded in the same way
