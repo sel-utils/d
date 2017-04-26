@@ -26,6 +26,8 @@ public struct Item
     ItemData minecraft, pocket;
     ubyte stack;
 
+    alias index this;
+
 }
 
 public enum Items : Item

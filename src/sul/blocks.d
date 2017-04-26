@@ -54,6 +54,8 @@ public struct Block
     bool replaceable;
     BoundingBox boundingBox;
 
+    alias id this;
+
 }
 
 public enum Blocks : Block
