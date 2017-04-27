@@ -4,16 +4,16 @@
  * 
  * License: https://github.com/sel-project/sel-utils/blob/master/LICENSE
  * Repository: https://github.com/sel-project/sel-utils
- * Generated from https://github.com/sel-project/sel-utils/blob/master/xml/metadata/pocket111.xml
+ * Generated from https://github.com/sel-project/sel-utils/blob/master/xml/metadata/pocket112.xml
  */
-module sul.metadata.pocket111;
+module sul.metadata.pocket112;
 
 import std.typecons : Tuple, tuple;
 
 import sul.utils.buffer : Buffer;
 import sul.utils.var;
 
-static import sul.protocol.pocket111.types;
+static import sul.protocol.pocket112.types;
 
 alias Changed(T) = Tuple!(T, "value", bool, "changed");
 
@@ -39,11 +39,18 @@ class Metadata {
 	private Changed!(float) _paddleTimeLeft;
 	private Changed!(float) _paddleTimeRight;
 	private Changed!(int) _experienceCount;
-	private Changed!(byte) _slimeSize = tuple(cast(byte)1, false);
+	private Changed!(int) _minecartBlock;
+	private Changed!(int) _minecartOffset;
+	private Changed!(byte) _minecartHasBlock;
+	private Changed!(short) _endermanItemId;
+	private Changed!(short) _endermanItemDamage;
 	private Changed!(short) _age;
 	private Changed!(byte) _playerFlags;
 	private Changed!(int) _playerIndex;
 	private Changed!(Tuple!(int, "x", int, "y", int, "z")) _bedPosition;
+	private Changed!(float) _fireballPowerX;
+	private Changed!(float) _fireballPowerY;
+	private Changed!(float) _fireballPowerZ;
 	private Changed!(short) _potionAuxValue;
 	private long _leadHolder = cast(long)-1;
 	private Changed!(float) _scale = tuple(cast(float)1, false);
@@ -52,6 +59,7 @@ class Metadata {
 	private Changed!(string) _interactiveTagUrl;
 	private Changed!(short) _maxAir;
 	private Changed!(int) _markVariant;
+	private Changed!(Tuple!(int, "x", int, "y", int, "z")) _blockTarget;
 	private Changed!(int) _invulnerableTime;
 	private Changed!(long) _centerHeadTarget;
 	private Changed!(long) _leftHeadTarget;
@@ -69,6 +77,9 @@ class Metadata {
 	private Changed!(byte) _shukerDirection;
 	private Changed!(Tuple!(int, "x", int, "y", int, "z")) _shulkerAttachment;
 	private Changed!(long) _tradingPlayer;
+	private Changed!(string) _commandBlockCommand;
+	private Changed!(string) _commandBlockLastOutput;
+	private Changed!(string) _commandBlockTrackOutput;
 	private Changed!(byte) _controllingRiderSeatNumber;
 	private Changed!(int) _strength;
 	private Changed!(int) _maxStrength;
@@ -503,6 +514,36 @@ class Metadata {
 		return value;
 	}
 
+	public pure nothrow @property @safe bool evokerSpell() {
+		return (_entityFlags >>> 40) & 1;
+	}
+
+	public pure nothrow @property @safe bool evokerSpell(bool value) {
+		if(value) entityFlags = cast(long)(_entityFlags | (cast(long)true << 40));
+		else entityFlags = cast(long)(_entityFlags & ~(cast(long)true << 40));
+		return value;
+	}
+
+	public pure nothrow @property @safe bool chargeAttack() {
+		return (_entityFlags >>> 41) & 1;
+	}
+
+	public pure nothrow @property @safe bool chargeAttack(bool value) {
+		if(value) entityFlags = cast(long)(_entityFlags | (cast(long)true << 41));
+		else entityFlags = cast(long)(_entityFlags & ~(cast(long)true << 41));
+		return value;
+	}
+
+	public pure nothrow @property @safe bool linger() {
+		return (_entityFlags >>> 45) & 1;
+	}
+
+	public pure nothrow @property @safe bool linger(bool value) {
+		if(value) entityFlags = cast(long)(_entityFlags | (cast(long)true << 45));
+		else entityFlags = cast(long)(_entityFlags & ~(cast(long)true << 45));
+		return value;
+	}
+
 	public pure nothrow @property @safe @nogc int health() {
 		return _health.value;
 	}
@@ -807,25 +848,113 @@ class Metadata {
 		}
 	}
 
-	public pure nothrow @property @safe @nogc byte slimeSize() {
-		return _slimeSize.value;
+	public pure nothrow @property @safe @nogc int minecartBlock() {
+		return _minecartBlock.value;
 	}
 
-	public pure nothrow @property @safe byte slimeSize(byte value) {
+	public pure nothrow @property @safe int minecartBlock(int value) {
 		this._cached = false;
-		this._slimeSize.value = value;
-		if(!this._slimeSize.changed) {
-			this._slimeSize.changed = true;
-			this._changed ~= &this.encodeSlimeSize;
+		this._minecartBlock.value = value;
+		if(!this._minecartBlock.changed) {
+			this._minecartBlock.changed = true;
+			this._changed ~= &this.encodeMinecartBlock;
 		}
 		return value;
 	}
 
-	public pure nothrow @safe encodeSlimeSize(Buffer buffer) {
+	public pure nothrow @safe encodeMinecartBlock(Buffer buffer) {
 		with(buffer) {
 			writeBytes(varuint.encode(16));
+			writeBytes(varuint.encode(2));
+			writeBytes(varint.encode(this._minecartBlock.value));
+		}
+	}
+
+	public pure nothrow @property @safe @nogc int minecartOffset() {
+		return _minecartOffset.value;
+	}
+
+	public pure nothrow @property @safe int minecartOffset(int value) {
+		this._cached = false;
+		this._minecartOffset.value = value;
+		if(!this._minecartOffset.changed) {
+			this._minecartOffset.changed = true;
+			this._changed ~= &this.encodeMinecartOffset;
+		}
+		return value;
+	}
+
+	public pure nothrow @safe encodeMinecartOffset(Buffer buffer) {
+		with(buffer) {
+			writeBytes(varuint.encode(17));
+			writeBytes(varuint.encode(2));
+			writeBytes(varint.encode(this._minecartOffset.value));
+		}
+	}
+
+	public pure nothrow @property @safe @nogc byte minecartHasBlock() {
+		return _minecartHasBlock.value;
+	}
+
+	public pure nothrow @property @safe byte minecartHasBlock(byte value) {
+		this._cached = false;
+		this._minecartHasBlock.value = value;
+		if(!this._minecartHasBlock.changed) {
+			this._minecartHasBlock.changed = true;
+			this._changed ~= &this.encodeMinecartHasBlock;
+		}
+		return value;
+	}
+
+	public pure nothrow @safe encodeMinecartHasBlock(Buffer buffer) {
+		with(buffer) {
+			writeBytes(varuint.encode(18));
 			writeBytes(varuint.encode(0));
-			writeBigEndianByte(this._slimeSize.value);
+			writeBigEndianByte(this._minecartHasBlock.value);
+		}
+	}
+
+	public pure nothrow @property @safe @nogc short endermanItemId() {
+		return _endermanItemId.value;
+	}
+
+	public pure nothrow @property @safe short endermanItemId(short value) {
+		this._cached = false;
+		this._endermanItemId.value = value;
+		if(!this._endermanItemId.changed) {
+			this._endermanItemId.changed = true;
+			this._changed ~= &this.encodeEndermanItemId;
+		}
+		return value;
+	}
+
+	public pure nothrow @safe encodeEndermanItemId(Buffer buffer) {
+		with(buffer) {
+			writeBytes(varuint.encode(23));
+			writeBytes(varuint.encode(1));
+			writeLittleEndianShort(this._endermanItemId.value);
+		}
+	}
+
+	public pure nothrow @property @safe @nogc short endermanItemDamage() {
+		return _endermanItemDamage.value;
+	}
+
+	public pure nothrow @property @safe short endermanItemDamage(short value) {
+		this._cached = false;
+		this._endermanItemDamage.value = value;
+		if(!this._endermanItemDamage.changed) {
+			this._endermanItemDamage.changed = true;
+			this._changed ~= &this.encodeEndermanItemDamage;
+		}
+		return value;
+	}
+
+	public pure nothrow @safe encodeEndermanItemDamage(Buffer buffer) {
+		with(buffer) {
+			writeBytes(varuint.encode(24));
+			writeBytes(varuint.encode(1));
+			writeLittleEndianShort(this._endermanItemDamage.value);
 		}
 	}
 
@@ -924,6 +1053,72 @@ class Metadata {
 			writeBytes(varuint.encode(29));
 			writeBytes(varuint.encode(6));
 			writeBytes(varint.encode(this._bedPosition.value.x)); writeBytes(varint.encode(this._bedPosition.value.y)); writeBytes(varint.encode(this._bedPosition.value.z));
+		}
+	}
+
+	public pure nothrow @property @safe @nogc float fireballPowerX() {
+		return _fireballPowerX.value;
+	}
+
+	public pure nothrow @property @safe float fireballPowerX(float value) {
+		this._cached = false;
+		this._fireballPowerX.value = value;
+		if(!this._fireballPowerX.changed) {
+			this._fireballPowerX.changed = true;
+			this._changed ~= &this.encodeFireballPowerX;
+		}
+		return value;
+	}
+
+	public pure nothrow @safe encodeFireballPowerX(Buffer buffer) {
+		with(buffer) {
+			writeBytes(varuint.encode(30));
+			writeBytes(varuint.encode(3));
+			writeLittleEndianFloat(this._fireballPowerX.value);
+		}
+	}
+
+	public pure nothrow @property @safe @nogc float fireballPowerY() {
+		return _fireballPowerY.value;
+	}
+
+	public pure nothrow @property @safe float fireballPowerY(float value) {
+		this._cached = false;
+		this._fireballPowerY.value = value;
+		if(!this._fireballPowerY.changed) {
+			this._fireballPowerY.changed = true;
+			this._changed ~= &this.encodeFireballPowerY;
+		}
+		return value;
+	}
+
+	public pure nothrow @safe encodeFireballPowerY(Buffer buffer) {
+		with(buffer) {
+			writeBytes(varuint.encode(31));
+			writeBytes(varuint.encode(3));
+			writeLittleEndianFloat(this._fireballPowerY.value);
+		}
+	}
+
+	public pure nothrow @property @safe @nogc float fireballPowerZ() {
+		return _fireballPowerZ.value;
+	}
+
+	public pure nothrow @property @safe float fireballPowerZ(float value) {
+		this._cached = false;
+		this._fireballPowerZ.value = value;
+		if(!this._fireballPowerZ.changed) {
+			this._fireballPowerZ.changed = true;
+			this._changed ~= &this.encodeFireballPowerZ;
+		}
+		return value;
+	}
+
+	public pure nothrow @safe encodeFireballPowerZ(Buffer buffer) {
+		with(buffer) {
+			writeBytes(varuint.encode(32));
+			writeBytes(varuint.encode(3));
+			writeLittleEndianFloat(this._fireballPowerZ.value);
 		}
 	}
 
@@ -1049,7 +1244,7 @@ class Metadata {
 
 	public pure nothrow @safe encodeInteractiveTagUrl(Buffer buffer) {
 		with(buffer) {
-			writeBytes(varuint.encode(43));
+			writeBytes(varuint.encode(42));
 			writeBytes(varuint.encode(4));
 			writeBytes(varuint.encode(cast(uint)this._interactiveTagUrl.value.length)); writeString(this._interactiveTagUrl.value);
 		}
@@ -1071,7 +1266,7 @@ class Metadata {
 
 	public pure nothrow @safe encodeMaxAir(Buffer buffer) {
 		with(buffer) {
-			writeBytes(varuint.encode(44));
+			writeBytes(varuint.encode(43));
 			writeBytes(varuint.encode(1));
 			writeLittleEndianShort(this._maxAir.value);
 		}
@@ -1093,9 +1288,31 @@ class Metadata {
 
 	public pure nothrow @safe encodeMarkVariant(Buffer buffer) {
 		with(buffer) {
-			writeBytes(varuint.encode(45));
+			writeBytes(varuint.encode(44));
 			writeBytes(varuint.encode(2));
 			writeBytes(varint.encode(this._markVariant.value));
+		}
+	}
+
+	public pure nothrow @property @safe @nogc Tuple!(int, "x", int, "y", int, "z") blockTarget() {
+		return _blockTarget.value;
+	}
+
+	public pure nothrow @property @safe Tuple!(int, "x", int, "y", int, "z") blockTarget(Tuple!(int, "x", int, "y", int, "z") value) {
+		this._cached = false;
+		this._blockTarget.value = value;
+		if(!this._blockTarget.changed) {
+			this._blockTarget.changed = true;
+			this._changed ~= &this.encodeBlockTarget;
+		}
+		return value;
+	}
+
+	public pure nothrow @safe encodeBlockTarget(Buffer buffer) {
+		with(buffer) {
+			writeBytes(varuint.encode(48));
+			writeBytes(varuint.encode(6));
+			writeBytes(varint.encode(this._blockTarget.value.x)); writeBytes(varint.encode(this._blockTarget.value.y)); writeBytes(varint.encode(this._blockTarget.value.z));
 		}
 	}
 
@@ -1470,6 +1687,72 @@ class Metadata {
 			writeBytes(varuint.encode(68));
 			writeBytes(varuint.encode(7));
 			writeBytes(varlong.encode(this._tradingPlayer.value));
+		}
+	}
+
+	public pure nothrow @property @safe @nogc string commandBlockCommand() {
+		return _commandBlockCommand.value;
+	}
+
+	public pure nothrow @property @safe string commandBlockCommand(string value) {
+		this._cached = false;
+		this._commandBlockCommand.value = value;
+		if(!this._commandBlockCommand.changed) {
+			this._commandBlockCommand.changed = true;
+			this._changed ~= &this.encodeCommandBlockCommand;
+		}
+		return value;
+	}
+
+	public pure nothrow @safe encodeCommandBlockCommand(Buffer buffer) {
+		with(buffer) {
+			writeBytes(varuint.encode(71));
+			writeBytes(varuint.encode(4));
+			writeBytes(varuint.encode(cast(uint)this._commandBlockCommand.value.length)); writeString(this._commandBlockCommand.value);
+		}
+	}
+
+	public pure nothrow @property @safe @nogc string commandBlockLastOutput() {
+		return _commandBlockLastOutput.value;
+	}
+
+	public pure nothrow @property @safe string commandBlockLastOutput(string value) {
+		this._cached = false;
+		this._commandBlockLastOutput.value = value;
+		if(!this._commandBlockLastOutput.changed) {
+			this._commandBlockLastOutput.changed = true;
+			this._changed ~= &this.encodeCommandBlockLastOutput;
+		}
+		return value;
+	}
+
+	public pure nothrow @safe encodeCommandBlockLastOutput(Buffer buffer) {
+		with(buffer) {
+			writeBytes(varuint.encode(72));
+			writeBytes(varuint.encode(4));
+			writeBytes(varuint.encode(cast(uint)this._commandBlockLastOutput.value.length)); writeString(this._commandBlockLastOutput.value);
+		}
+	}
+
+	public pure nothrow @property @safe @nogc string commandBlockTrackOutput() {
+		return _commandBlockTrackOutput.value;
+	}
+
+	public pure nothrow @property @safe string commandBlockTrackOutput(string value) {
+		this._cached = false;
+		this._commandBlockTrackOutput.value = value;
+		if(!this._commandBlockTrackOutput.changed) {
+			this._commandBlockTrackOutput.changed = true;
+			this._changed ~= &this.encodeCommandBlockTrackOutput;
+		}
+		return value;
+	}
+
+	public pure nothrow @safe encodeCommandBlockTrackOutput(Buffer buffer) {
+		with(buffer) {
+			writeBytes(varuint.encode(73));
+			writeBytes(varuint.encode(4));
+			writeBytes(varuint.encode(cast(uint)this._commandBlockTrackOutput.value.length)); writeString(this._commandBlockTrackOutput.value);
 		}
 	}
 
