@@ -500,7 +500,7 @@ class Text : Buffer {
 
 	enum string variantField = "type";
 
-	alias Variants = TypeTuple!(Raw, Chat, Translation, Popup, Tip, System, Whisper);
+	alias Variants = TypeTuple!(Raw, Chat, Translation, Popup, Tip, System, Whisper, Announcement);
 
 	/**
 	 * Raw message that will be printed in the chat as it is.
@@ -768,6 +768,41 @@ class Text : Buffer {
 
 		public override string toString() {
 			return "Text.Whisper(sender: " ~ std.conv.to!string(this.sender) ~ ", message: " ~ std.conv.to!string(this.message) ~ ")";
+		}
+
+	}
+
+	public class Announcement {
+
+		public enum typeof(type) TYPE = 7;
+
+		public enum string[] FIELDS = ["announcer", "message"];
+
+		public string announcer;
+		public string message;
+
+		public pure nothrow @safe @nogc this() {}
+
+		public pure nothrow @safe @nogc this(string announcer, string message=string.init) {
+			this.announcer = announcer;
+			this.message = message;
+		}
+
+		public pure nothrow @safe ubyte[] encode(bool writeId=true)() {
+			type = 7;
+			_encode!writeId();
+			writeBytes(varuint.encode(cast(uint)announcer.length)); writeString(announcer);
+			writeBytes(varuint.encode(cast(uint)message.length)); writeString(message);
+			return _buffer;
+		}
+
+		public pure nothrow @safe void decode() {
+			uint y5bvyv=varuint.decode(_buffer, &_index); announcer=readString(y5bvyv);
+			uint bvcfz=varuint.decode(_buffer, &_index); message=readString(bvcfz);
+		}
+
+		public override string toString() {
+			return "Text.Announcement(announcer: " ~ std.conv.to!string(this.announcer) ~ ", message: " ~ std.conv.to!string(this.message) ~ ")";
 		}
 
 	}
@@ -1513,9 +1548,10 @@ class MovePlayer : Buffer {
 	// animation
 	public enum ubyte FULL = 0;
 	public enum ubyte NONE = 1;
-	public enum ubyte ROTATION = 2;
+	public enum ubyte TELEPORT = 2;
+	public enum ubyte PITCH = 3;
 
-	public enum string[] FIELDS = ["entityId", "position", "pitch", "headYaw", "yaw", "animation", "onGround", "unknown7"];
+	public enum string[] FIELDS = ["entityId", "position", "pitch", "headYaw", "yaw", "animation", "onGround", "unknown7", "unknown8", "unknown9"];
 
 	public long entityId;
 	public Tuple!(float, "x", float, "y", float, "z") position;
@@ -1525,10 +1561,12 @@ class MovePlayer : Buffer {
 	public ubyte animation;
 	public bool onGround;
 	public long unknown7;
+	public int unknown8;
+	public int unknown9;
 
 	public pure nothrow @safe @nogc this() {}
 
-	public pure nothrow @safe @nogc this(long entityId, Tuple!(float, "x", float, "y", float, "z") position=Tuple!(float, "x", float, "y", float, "z").init, float pitch=float.init, float headYaw=float.init, float yaw=float.init, ubyte animation=ubyte.init, bool onGround=bool.init, long unknown7=long.init) {
+	public pure nothrow @safe @nogc this(long entityId, Tuple!(float, "x", float, "y", float, "z") position=Tuple!(float, "x", float, "y", float, "z").init, float pitch=float.init, float headYaw=float.init, float yaw=float.init, ubyte animation=ubyte.init, bool onGround=bool.init, long unknown7=long.init, int unknown8=int.init, int unknown9=int.init) {
 		this.entityId = entityId;
 		this.position = position;
 		this.pitch = pitch;
@@ -1537,6 +1575,8 @@ class MovePlayer : Buffer {
 		this.animation = animation;
 		this.onGround = onGround;
 		this.unknown7 = unknown7;
+		this.unknown8 = unknown8;
+		this.unknown9 = unknown9;
 	}
 
 	public pure nothrow @safe ubyte[] encode(bool writeId=true)() {
@@ -1550,6 +1590,8 @@ class MovePlayer : Buffer {
 		writeBigEndianUbyte(animation);
 		writeBigEndianBool(onGround);
 		writeBytes(varlong.encode(unknown7));
+		if(animation==3){ writeLittleEndianInt(unknown8); }
+		if(animation==3){ writeLittleEndianInt(unknown9); }
 		return _buffer;
 	}
 
@@ -1563,6 +1605,8 @@ class MovePlayer : Buffer {
 		animation=readBigEndianUbyte();
 		onGround=readBigEndianBool();
 		unknown7=varlong.decode(_buffer, &_index);
+		if(animation==3){ unknown8=readLittleEndianInt(); }
+		if(animation==3){ unknown9=readLittleEndianInt(); }
 	}
 
 	public static pure nothrow @safe MovePlayer fromBuffer(bool readId=true)(ubyte[] buffer) {
@@ -1573,7 +1617,7 @@ class MovePlayer : Buffer {
 	}
 
 	public override string toString() {
-		return "MovePlayer(entityId: " ~ std.conv.to!string(this.entityId) ~ ", position: " ~ std.conv.to!string(this.position) ~ ", pitch: " ~ std.conv.to!string(this.pitch) ~ ", headYaw: " ~ std.conv.to!string(this.headYaw) ~ ", yaw: " ~ std.conv.to!string(this.yaw) ~ ", animation: " ~ std.conv.to!string(this.animation) ~ ", onGround: " ~ std.conv.to!string(this.onGround) ~ ", unknown7: " ~ std.conv.to!string(this.unknown7) ~ ")";
+		return "MovePlayer(entityId: " ~ std.conv.to!string(this.entityId) ~ ", position: " ~ std.conv.to!string(this.position) ~ ", pitch: " ~ std.conv.to!string(this.pitch) ~ ", headYaw: " ~ std.conv.to!string(this.headYaw) ~ ", yaw: " ~ std.conv.to!string(this.yaw) ~ ", animation: " ~ std.conv.to!string(this.animation) ~ ", onGround: " ~ std.conv.to!string(this.onGround) ~ ", unknown7: " ~ std.conv.to!string(this.unknown7) ~ ", unknown8: " ~ std.conv.to!string(this.unknown8) ~ ", unknown9: " ~ std.conv.to!string(this.unknown9) ~ ")";
 	}
 
 }
