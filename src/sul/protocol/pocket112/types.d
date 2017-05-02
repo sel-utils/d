@@ -232,6 +232,33 @@ struct BlockPosition {
 
 }
 
+struct McpeUuid {
+
+	public enum string[] FIELDS = ["mostSignificantBits", "leastSignificantBits"];
+
+	public long mostSignificantBits;
+	public long leastSignificantBits;
+
+	public pure nothrow @safe void encode(Buffer buffer) {
+		with(buffer) {
+			writeLittleEndianLong(mostSignificantBits);
+			writeLittleEndianLong(leastSignificantBits);
+		}
+	}
+
+	public pure nothrow @safe void decode(Buffer buffer) {
+		with(buffer) {
+			mostSignificantBits=readLittleEndianLong();
+			leastSignificantBits=readLittleEndianLong();
+		}
+	}
+
+	public string toString() {
+		return "McpeUuid(mostSignificantBits: " ~ std.conv.to!string(this.mostSignificantBits) ~ ", leastSignificantBits: " ~ std.conv.to!string(this.leastSignificantBits) ~ ")";
+	}
+
+}
+
 /**
  * Player's skin.
  */
@@ -281,7 +308,7 @@ struct PlayerList {
 	 * UUID of the player. If it's associated with an XBOX Live account the player's profile
 	 * will also be available in pause menu.
 	 */
-	public UUID uuid;
+	public sul.protocol.pocket112.types.McpeUuid uuid;
 
 	/**
 	 * Player's id, used to associate the skin with the game's entity spawned with AddPlayer.
@@ -301,7 +328,7 @@ struct PlayerList {
 
 	public pure nothrow @safe void encode(Buffer buffer) {
 		with(buffer) {
-			writeBytes(uuid.data);
+			uuid.encode(bufferInstance);
 			writeBytes(varlong.encode(entityId));
 			writeBytes(varuint.encode(cast(uint)displayName.length)); writeString(displayName);
 			skin.encode(bufferInstance);
@@ -310,7 +337,7 @@ struct PlayerList {
 
 	public pure nothrow @safe void decode(Buffer buffer) {
 		with(buffer) {
-			if(_buffer.length>=_index+16){ ubyte[16] dvz=_buffer[_index.._index+16].dup; _index+=16; uuid=UUID(dvz); }
+			uuid.decode(bufferInstance);
 			entityId=varlong.decode(_buffer, &_index);
 			uint zlcxe5bu=varuint.decode(_buffer, &_index); displayName=readString(zlcxe5bu);
 			skin.decode(bufferInstance);

@@ -1095,7 +1095,7 @@ class AddPlayer : Buffer {
 	/**
 	 * Player's UUID, should match an UUID of a player in the list added through PlayerList.
 	 */
-	public UUID uuid;
+	public sul.protocol.pocket112.types.McpeUuid uuid;
 
 	/**
 	 * Player's username and text displayed on the nametag if something else is not specified
@@ -1114,7 +1114,7 @@ class AddPlayer : Buffer {
 
 	public pure nothrow @safe @nogc this() {}
 
-	public pure nothrow @safe @nogc this(UUID uuid, string username=string.init, long entityId=long.init, long runtimeId=long.init, Tuple!(float, "x", float, "y", float, "z") position=Tuple!(float, "x", float, "y", float, "z").init, Tuple!(float, "x", float, "y", float, "z") motion=Tuple!(float, "x", float, "y", float, "z").init, float pitch=float.init, float headYaw=float.init, float yaw=float.init, sul.protocol.pocket112.types.Slot heldItem=sul.protocol.pocket112.types.Slot.init, Metadata metadata=Metadata.init) {
+	public pure nothrow @safe @nogc this(sul.protocol.pocket112.types.McpeUuid uuid, string username=string.init, long entityId=long.init, long runtimeId=long.init, Tuple!(float, "x", float, "y", float, "z") position=Tuple!(float, "x", float, "y", float, "z").init, Tuple!(float, "x", float, "y", float, "z") motion=Tuple!(float, "x", float, "y", float, "z").init, float pitch=float.init, float headYaw=float.init, float yaw=float.init, sul.protocol.pocket112.types.Slot heldItem=sul.protocol.pocket112.types.Slot.init, Metadata metadata=Metadata.init) {
 		this.uuid = uuid;
 		this.username = username;
 		this.entityId = entityId;
@@ -1131,7 +1131,7 @@ class AddPlayer : Buffer {
 	public pure nothrow @safe ubyte[] encode(bool writeId=true)() {
 		_buffer.length = 0;
 		static if(writeId){ writeBigEndianUbyte(ID); }
-		writeBytes(uuid.data);
+		uuid.encode(bufferInstance);
 		writeBytes(varuint.encode(cast(uint)username.length)); writeString(username);
 		writeBytes(varlong.encode(entityId));
 		writeBytes(varlong.encode(runtimeId));
@@ -1147,7 +1147,7 @@ class AddPlayer : Buffer {
 
 	public pure nothrow @safe void decode(bool readId=true)() {
 		static if(readId){ ubyte _id; _id=readBigEndianUbyte(); }
-		if(_buffer.length>=_index+16){ ubyte[16] dvz=_buffer[_index.._index+16].dup; _index+=16; uuid=UUID(dvz); }
+		uuid.decode(bufferInstance);
 		uint dnc5bu=varuint.decode(_buffer, &_index); username=readString(dnc5bu);
 		entityId=varlong.decode(_buffer, &_index);
 		runtimeId=varlong.decode(_buffer, &_index);
@@ -3586,13 +3586,13 @@ class CraftingEvent : Buffer {
 
 	public ubyte window;
 	public int type;
-	public UUID uuid;
+	public sul.protocol.pocket112.types.McpeUuid uuid;
 	public sul.protocol.pocket112.types.Slot[] input;
 	public sul.protocol.pocket112.types.Slot[] output;
 
 	public pure nothrow @safe @nogc this() {}
 
-	public pure nothrow @safe @nogc this(ubyte window, int type=int.init, UUID uuid=UUID.init, sul.protocol.pocket112.types.Slot[] input=(sul.protocol.pocket112.types.Slot[]).init, sul.protocol.pocket112.types.Slot[] output=(sul.protocol.pocket112.types.Slot[]).init) {
+	public pure nothrow @safe @nogc this(ubyte window, int type=int.init, sul.protocol.pocket112.types.McpeUuid uuid=sul.protocol.pocket112.types.McpeUuid.init, sul.protocol.pocket112.types.Slot[] input=(sul.protocol.pocket112.types.Slot[]).init, sul.protocol.pocket112.types.Slot[] output=(sul.protocol.pocket112.types.Slot[]).init) {
 		this.window = window;
 		this.type = type;
 		this.uuid = uuid;
@@ -3605,7 +3605,7 @@ class CraftingEvent : Buffer {
 		static if(writeId){ writeBigEndianUbyte(ID); }
 		writeBigEndianUbyte(window);
 		writeBytes(varint.encode(type));
-		writeBytes(uuid.data);
+		uuid.encode(bufferInstance);
 		writeBytes(varuint.encode(cast(uint)input.length)); foreach(a5dq;input){ a5dq.encode(bufferInstance); }
 		writeBytes(varuint.encode(cast(uint)output.length)); foreach(bvcv;output){ bvcv.encode(bufferInstance); }
 		return _buffer;
@@ -3615,7 +3615,7 @@ class CraftingEvent : Buffer {
 		static if(readId){ ubyte _id; _id=readBigEndianUbyte(); }
 		window=readBigEndianUbyte();
 		type=varint.decode(_buffer, &_index);
-		if(_buffer.length>=_index+16){ ubyte[16] dvz=_buffer[_index.._index+16].dup; _index+=16; uuid=UUID(dvz); }
+		uuid.decode(bufferInstance);
 		input.length=varuint.decode(_buffer, &_index); foreach(ref a5dq;input){ a5dq.decode(bufferInstance); }
 		output.length=varuint.decode(_buffer, &_index); foreach(ref bvcv;output){ bvcv.decode(bufferInstance); }
 	}
@@ -4160,23 +4160,23 @@ class PlayerList : Buffer {
 
 		public enum string[] FIELDS = ["players"];
 
-		public UUID[] players;
+		public sul.protocol.pocket112.types.McpeUuid[] players;
 
 		public pure nothrow @safe @nogc this() {}
 
-		public pure nothrow @safe @nogc this(UUID[] players) {
+		public pure nothrow @safe @nogc this(sul.protocol.pocket112.types.McpeUuid[] players) {
 			this.players = players;
 		}
 
 		public pure nothrow @safe ubyte[] encode(bool writeId=true)() {
 			action = 1;
 			_encode!writeId();
-			writeBytes(varuint.encode(cast(uint)players.length)); foreach(cxevc;players){ writeBytes(cxevc.data); }
+			writeBytes(varuint.encode(cast(uint)players.length)); foreach(cxevc;players){ cxevc.encode(bufferInstance); }
 			return _buffer;
 		}
 
 		public pure nothrow @safe void decode() {
-			players.length=varuint.decode(_buffer, &_index); foreach(ref cxevc;players){ if(_buffer.length>=_index+16){ ubyte[16] yhdm=_buffer[_index.._index+16].dup; _index+=16; cxevc=UUID(yhdm); } }
+			players.length=varuint.decode(_buffer, &_index); foreach(ref cxevc;players){ cxevc.decode(bufferInstance); }
 		}
 
 		public override string toString() {
