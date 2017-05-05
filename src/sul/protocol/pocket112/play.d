@@ -44,7 +44,7 @@ class Login : Buffer {
 	public enum ubyte VANILLA = 0;
 	public enum ubyte EDUCATION = 1;
 
-	public enum string[] FIELDS = ["protocol", "vers", "bodyLength", "body_"];
+	public enum string[] FIELDS = ["protocol", "vers", "body_"];
 
 	/**
 	 * Version of the protocol used by the player.
@@ -59,12 +59,6 @@ class Login : Buffer {
 	public ubyte vers;
 
 	/**
-	 * Length, in bytes, of the following field. This field was used when the body was
-	 * compressed.
-	 */
-	public uint bodyLength;
-
-	/**
 	 * Payload that contains 2 JWTs (with each length indicated by an unsigned little-endian
 	 * 32-bits integer) with more informations about the player and its account.
 	 */
@@ -72,10 +66,9 @@ class Login : Buffer {
 
 	public pure nothrow @safe @nogc this() {}
 
-	public pure nothrow @safe @nogc this(uint protocol, ubyte vers=ubyte.init, uint bodyLength=uint.init, sul.protocol.pocket112.types.LoginBody body_=sul.protocol.pocket112.types.LoginBody.init) {
+	public pure nothrow @safe @nogc this(uint protocol, ubyte vers=ubyte.init, sul.protocol.pocket112.types.LoginBody body_=sul.protocol.pocket112.types.LoginBody.init) {
 		this.protocol = protocol;
 		this.vers = vers;
-		this.bodyLength = bodyLength;
 		this.body_ = body_;
 	}
 
@@ -84,7 +77,6 @@ class Login : Buffer {
 		static if(writeId){ writeBigEndianUbyte(ID); }
 		writeBigEndianUint(protocol);
 		writeBigEndianUbyte(vers);
-		writeBytes(varuint.encode(bodyLength));
 		body_.encode(bufferInstance);
 		return _buffer;
 	}
@@ -93,7 +85,6 @@ class Login : Buffer {
 		static if(readId){ ubyte _id; _id=readBigEndianUbyte(); }
 		protocol=readBigEndianUint();
 		vers=readBigEndianUbyte();
-		bodyLength=varuint.decode(_buffer, &_index);
 		body_.decode(bufferInstance);
 	}
 
@@ -105,7 +96,7 @@ class Login : Buffer {
 	}
 
 	public override string toString() {
-		return "Login(protocol: " ~ std.conv.to!string(this.protocol) ~ ", vers: " ~ std.conv.to!string(this.vers) ~ ", bodyLength: " ~ std.conv.to!string(this.bodyLength) ~ ", body_: " ~ std.conv.to!string(this.body_) ~ ")";
+		return "Login(protocol: " ~ std.conv.to!string(this.protocol) ~ ", vers: " ~ std.conv.to!string(this.vers) ~ ", body_: " ~ std.conv.to!string(this.body_) ~ ")";
 	}
 
 }

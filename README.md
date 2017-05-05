@@ -1,4 +1,4 @@
-[![SEL](http://i.imgur.com/cTu1FE5.png)](https://github.com/sel-project/sel-utils)
+[![SEL](https://i.imgur.com/cTu1FE5.png)](https://github.com/sel-project/sel-utils)
 
 **Automatically generated libraries for Minecraft and Minecraft: Pocket Edition from [sel-project/sel-utils](https://github.com/sel-project/sel-utils)**
 

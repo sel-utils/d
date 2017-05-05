@@ -26,14 +26,22 @@ struct LoginBody {
 	public ubyte[] chain;
 	public ubyte[] clientData;
 
-	public pure nothrow @safe void encode(Buffer buffer) {
+	public pure nothrow @safe void encode(Buffer o_buffer) {
+		Buffer buffer = new Buffer();
 		with(buffer) {
 			writeLittleEndianUint(cast(uint)chain.length); writeBytes(chain);
 			writeLittleEndianUint(cast(uint)clientData.length); writeBytes(clientData);
 		}
+		with(o_buffer){ writeBytes(varuint.encode(cast(uint)buffer._buffer.length)); }
+		o_buffer.writeBytes(buffer._buffer);
 	}
 
-	public pure nothrow @safe void decode(Buffer buffer) {
+	public pure nothrow @safe void decode(Buffer o_buffer) {
+		Buffer buffer = new Buffer();
+		with(o_buffer) {
+			immutable _length=varuint.decode(_buffer, &_index);
+			buffer._buffer = readBytes(_length);
+		}
 		with(buffer) {
 			chain.length=readLittleEndianUint(); if(_buffer.length>=_index+chain.length){ chain=_buffer[_index.._index+chain.length].dup; _index+=chain.length; }
 			clientData.length=readLittleEndianUint(); if(_buffer.length>=_index+clientData.length){ clientData=_buffer[_index.._index+clientData.length].dup; _index+=clientData.length; }
