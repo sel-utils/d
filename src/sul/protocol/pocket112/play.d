@@ -316,16 +316,16 @@ class ResourcePacksInfo : Buffer {
 		_buffer.length = 0;
 		static if(writeId){ writeBigEndianUbyte(ID); }
 		writeBigEndianBool(mustAccept);
-		writeBytes(varuint.encode(cast(uint)behaviourPacks.length)); foreach(yvyzbvuf;behaviourPacks){ yvyzbvuf.encode(bufferInstance); }
-		writeBytes(varuint.encode(cast(uint)resourcePacks.length)); foreach(cvbvyvyn;resourcePacks){ cvbvyvyn.encode(bufferInstance); }
+		writeLittleEndianUshort(cast(ushort)behaviourPacks.length); foreach(yvyzbvuf;behaviourPacks){ yvyzbvuf.encode(bufferInstance); }
+		writeLittleEndianUshort(cast(ushort)resourcePacks.length); foreach(cvbvyvyn;resourcePacks){ cvbvyvyn.encode(bufferInstance); }
 		return _buffer;
 	}
 
 	public pure nothrow @safe void decode(bool readId=true)() {
 		static if(readId){ ubyte _id; _id=readBigEndianUbyte(); }
 		mustAccept=readBigEndianBool();
-		behaviourPacks.length=varuint.decode(_buffer, &_index); foreach(ref yvyzbvuf;behaviourPacks){ yvyzbvuf.decode(bufferInstance); }
-		resourcePacks.length=varuint.decode(_buffer, &_index); foreach(ref cvbvyvyn;resourcePacks){ cvbvyvyn.decode(bufferInstance); }
+		behaviourPacks.length=readLittleEndianUshort(); foreach(ref yvyzbvuf;behaviourPacks){ yvyzbvuf.decode(bufferInstance); }
+		resourcePacks.length=readLittleEndianUshort(); foreach(ref cvbvyvyn;resourcePacks){ cvbvyvyn.decode(bufferInstance); }
 	}
 
 	public static pure nothrow @safe ResourcePacksInfo fromBuffer(bool readId=true)(ubyte[] buffer) {
@@ -420,14 +420,14 @@ class ResourcePackClientResponse : Buffer {
 		_buffer.length = 0;
 		static if(writeId){ writeBigEndianUbyte(ID); }
 		writeBigEndianUbyte(status);
-		writeBytes(varuint.encode(cast(uint)packIds.length)); foreach(cfalc;packIds){ writeBytes(varuint.encode(cast(uint)cfalc.length)); writeString(cfalc); }
+		writeLittleEndianUshort(cast(ushort)packIds.length); foreach(cfalc;packIds){ writeBytes(varuint.encode(cast(uint)cfalc.length)); writeString(cfalc); }
 		return _buffer;
 	}
 
 	public pure nothrow @safe void decode(bool readId=true)() {
 		static if(readId){ ubyte _id; _id=readBigEndianUbyte(); }
 		status=readBigEndianUbyte();
-		packIds.length=varuint.decode(_buffer, &_index); foreach(ref cfalc;packIds){ uint yzbm=varuint.decode(_buffer, &_index); cfalc=readString(yzbm); }
+		packIds.length=readLittleEndianUshort(); foreach(ref cfalc;packIds){ uint yzbm=varuint.decode(_buffer, &_index); cfalc=readString(yzbm); }
 	}
 
 	public static pure nothrow @safe ResourcePackClientResponse fromBuffer(bool readId=true)(ubyte[] buffer) {
@@ -5195,9 +5195,9 @@ class ResourcePackDataInfo : Buffer {
 		_buffer.length = 0;
 		static if(writeId){ writeBigEndianUbyte(ID); }
 		writeBytes(varuint.encode(cast(uint)id.length)); writeString(id);
-		writeBytes(varuint.encode(maxChunkSize));
-		writeBytes(varuint.encode(chunkCount));
-		writeBytes(varulong.encode(compressedPackSize));
+		writeLittleEndianUint(maxChunkSize);
+		writeLittleEndianUint(chunkCount);
+		writeLittleEndianUlong(compressedPackSize);
 		writeBytes(varuint.encode(cast(uint)sha256.length)); writeString(sha256);
 		return _buffer;
 	}
@@ -5205,9 +5205,9 @@ class ResourcePackDataInfo : Buffer {
 	public pure nothrow @safe void decode(bool readId=true)() {
 		static if(readId){ ubyte _id; _id=readBigEndianUbyte(); }
 		uint aq=varuint.decode(_buffer, &_index); id=readString(aq);
-		maxChunkSize=varuint.decode(_buffer, &_index);
-		chunkCount=varuint.decode(_buffer, &_index);
-		compressedPackSize=varulong.decode(_buffer, &_index);
+		maxChunkSize=readLittleEndianUint();
+		chunkCount=readLittleEndianUint();
+		compressedPackSize=readLittleEndianUlong();
 		uint chmu=varuint.decode(_buffer, &_index); sha256=readString(chmu);
 	}
 
@@ -5251,18 +5251,18 @@ class ResourcePackChunkData : Buffer {
 		_buffer.length = 0;
 		static if(writeId){ writeBigEndianUbyte(ID); }
 		writeBytes(varuint.encode(cast(uint)id.length)); writeString(id);
-		writeBytes(varuint.encode(chunkIndex));
-		writeBytes(varulong.encode(progress));
-		writeBytes(varuint.encode(cast(uint)data.length)); writeBytes(data);
+		writeLittleEndianUint(chunkIndex);
+		writeLittleEndianUlong(progress);
+		writeLittleEndianUint(cast(uint)data.length); writeBytes(data);
 		return _buffer;
 	}
 
 	public pure nothrow @safe void decode(bool readId=true)() {
 		static if(readId){ ubyte _id; _id=readBigEndianUbyte(); }
 		uint aq=varuint.decode(_buffer, &_index); id=readString(aq);
-		chunkIndex=varuint.decode(_buffer, &_index);
-		progress=varulong.decode(_buffer, &_index);
-		data.length=varuint.decode(_buffer, &_index); if(_buffer.length>=_index+data.length){ data=_buffer[_index.._index+data.length].dup; _index+=data.length; }
+		chunkIndex=readLittleEndianUint();
+		progress=readLittleEndianUlong();
+		data.length=readLittleEndianUint(); if(_buffer.length>=_index+data.length){ data=_buffer[_index.._index+data.length].dup; _index+=data.length; }
 	}
 
 	public static pure nothrow @safe ResourcePackChunkData fromBuffer(bool readId=true)(ubyte[] buffer) {
@@ -5301,14 +5301,14 @@ class ResourcePackChunkRequest : Buffer {
 		_buffer.length = 0;
 		static if(writeId){ writeBigEndianUbyte(ID); }
 		writeBytes(varuint.encode(cast(uint)id.length)); writeString(id);
-		writeBytes(varuint.encode(chunkIndex));
+		writeLittleEndianUint(chunkIndex);
 		return _buffer;
 	}
 
 	public pure nothrow @safe void decode(bool readId=true)() {
 		static if(readId){ ubyte _id; _id=readBigEndianUbyte(); }
 		uint aq=varuint.decode(_buffer, &_index); id=readString(aq);
-		chunkIndex=varuint.decode(_buffer, &_index);
+		chunkIndex=readLittleEndianUint();
 	}
 
 	public static pure nothrow @safe ResourcePackChunkRequest fromBuffer(bool readId=true)(ubyte[] buffer) {
