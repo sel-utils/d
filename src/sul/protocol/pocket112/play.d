@@ -1941,42 +1941,52 @@ class LevelSoundEvent : Buffer {
 	public enum ubyte ITEM_FIZZ = 59;
 	public enum ubyte CHEST_OPEN = 60;
 	public enum ubyte CHEST_CLOSED = 61;
-	public enum ubyte POWER_ON = 62;
-	public enum ubyte POWER_OFF = 63;
-	public enum ubyte ATTACH = 64;
-	public enum ubyte DETACH = 65;
-	public enum ubyte DENY = 66;
-	public enum ubyte TRIPOD = 67;
-	public enum ubyte POP = 68;
-	public enum ubyte DROP_SLOT = 69;
-	public enum ubyte NOTE = 70;
-	public enum ubyte THORNS = 71;
-	public enum ubyte PISTON_IN = 72;
-	public enum ubyte PISTON_OUT = 73;
-	public enum ubyte PORTAL = 74;
-	public enum ubyte WATER = 75;
-	public enum ubyte LAVA_POP = 76;
-	public enum ubyte LAVA = 77;
-	public enum ubyte BURP = 78;
-	public enum ubyte BUCKET_FILL_WATER = 79;
-	public enum ubyte BUCKET_FILL_LAVA = 80;
-	public enum ubyte BUCKET_EMPTY_WATER = 81;
-	public enum ubyte BUCKET_EMPTY_LAVA = 82;
-	public enum ubyte GUARDIAN_FLOP = 83;
-	public enum ubyte ELDERGUARDIAN_CURSE = 84;
-	public enum ubyte MOB_WARNING = 85;
-	public enum ubyte MOB_WARNING_BABY = 86;
-	public enum ubyte TELEPORT = 87;
-	public enum ubyte SHULKER_OPEN = 88;
-	public enum ubyte SHULKER_CLOSE = 89;
-	public enum ubyte HAGGLE = 90;
-	public enum ubyte HAGGLE_YES = 91;
-	public enum ubyte HAGGLE_NO = 92;
-	public enum ubyte HAGGLE_IDLE = 93;
-	public enum ubyte CHORUS_GROW = 94;
-	public enum ubyte CHORUS_DEATH = 95;
-	public enum ubyte DEFAULT = 96;
-	public enum ubyte UNDEFINED = 97;
+	public enum ubyte SHULKER_BOX_OPEN = 62;
+	public enum ubyte SHULKER_BOX_CLOSE = 63;
+	public enum ubyte POWER_ON = 64;
+	public enum ubyte POWER_OFF = 65;
+	public enum ubyte ATTACH = 66;
+	public enum ubyte DETACH = 67;
+	public enum ubyte DENY = 68;
+	public enum ubyte TRIPOD = 69;
+	public enum ubyte POP = 70;
+	public enum ubyte DROP_SLOT = 71;
+	public enum ubyte NOTE = 72;
+	public enum ubyte THORNS = 73;
+	public enum ubyte PISTON_IN = 74;
+	public enum ubyte PISTON_OUT = 75;
+	public enum ubyte PORTAL = 76;
+	public enum ubyte WATER = 77;
+	public enum ubyte LAVA_POP = 78;
+	public enum ubyte LAVA = 79;
+	public enum ubyte BURP = 80;
+	public enum ubyte BUCKET_FILL_WATER = 81;
+	public enum ubyte BUCKET_FILL_LAVA = 82;
+	public enum ubyte BUCKET_EMPTY_WATER = 83;
+	public enum ubyte BUCKET_EMPTY_LAVA = 84;
+	public enum ubyte GUARDIAN_FLOP = 85;
+	public enum ubyte ELDERGUARDIAN_CURSE = 86;
+	public enum ubyte MOB_WARNING = 87;
+	public enum ubyte MOB_WARNING_BABY = 88;
+	public enum ubyte TELEPORT = 89;
+	public enum ubyte SHULKER_OPEN = 90;
+	public enum ubyte SHULKER_CLOSE = 91;
+	public enum ubyte HAGGLE = 92;
+	public enum ubyte HAGGLE_YES = 93;
+	public enum ubyte HAGGLE_NO = 94;
+	public enum ubyte HAGGLE_IDLE = 95;
+	public enum ubyte CHORUS_GROW = 96;
+	public enum ubyte CHORUS_DEATH = 97;
+	public enum ubyte GLASS = 98;
+	public enum ubyte CAST_SPELL = 99;
+	public enum ubyte PREPARE_ATTACK = 100;
+	public enum ubyte PREPARE_SUMMON = 101;
+	public enum ubyte PREPARE_WOLOLO = 102;
+	public enum ubyte FANG = 103;
+	public enum ubyte CHARGE = 104;
+	public enum ubyte TAKE_PICTURE = 105;
+	public enum ubyte DEFAULT = 106;
+	public enum ubyte UNDEFINED = 107;
 
 	public enum string[] FIELDS = ["sound", "position", "volume", "pitch", "unknown4"];
 
@@ -5391,38 +5401,38 @@ class PlaySound : Buffer {
 	public enum bool CLIENTBOUND = true;
 	public enum bool SERVERBOUND = false;
 
-	public enum string[] FIELDS = ["unknown0", "position", "unknown2", "unknown3"];
+	public enum string[] FIELDS = ["name", "position", "volume", "pitch"];
 
-	public string unknown0;
+	public string name;
 	public sul.protocol.pocket112.types.BlockPosition position;
-	public float unknown2;
-	public float unknown3;
+	public float volume;
+	public float pitch;
 
 	public pure nothrow @safe @nogc this() {}
 
-	public pure nothrow @safe @nogc this(string unknown0, sul.protocol.pocket112.types.BlockPosition position=sul.protocol.pocket112.types.BlockPosition.init, float unknown2=float.init, float unknown3=float.init) {
-		this.unknown0 = unknown0;
+	public pure nothrow @safe @nogc this(string name, sul.protocol.pocket112.types.BlockPosition position=sul.protocol.pocket112.types.BlockPosition.init, float volume=float.init, float pitch=float.init) {
+		this.name = name;
 		this.position = position;
-		this.unknown2 = unknown2;
-		this.unknown3 = unknown3;
+		this.volume = volume;
+		this.pitch = pitch;
 	}
 
 	public pure nothrow @safe ubyte[] encode(bool writeId=true)() {
 		_buffer.length = 0;
 		static if(writeId){ writeBigEndianUbyte(ID); }
-		writeBytes(varuint.encode(cast(uint)unknown0.length)); writeString(unknown0);
+		writeBytes(varuint.encode(cast(uint)name.length)); writeString(name);
 		position.encode(bufferInstance);
-		writeLittleEndianFloat(unknown2);
-		writeLittleEndianFloat(unknown3);
+		writeLittleEndianFloat(volume);
+		writeLittleEndianFloat(pitch);
 		return _buffer;
 	}
 
 	public pure nothrow @safe void decode(bool readId=true)() {
 		static if(readId){ ubyte _id; _id=readBigEndianUbyte(); }
-		uint d5b9ba=varuint.decode(_buffer, &_index); unknown0=readString(d5b9ba);
+		uint bfz=varuint.decode(_buffer, &_index); name=readString(bfz);
 		position.decode(bufferInstance);
-		unknown2=readLittleEndianFloat();
-		unknown3=readLittleEndianFloat();
+		volume=readLittleEndianFloat();
+		pitch=readLittleEndianFloat();
 	}
 
 	public static pure nothrow @safe PlaySound fromBuffer(bool readId=true)(ubyte[] buffer) {
@@ -5433,7 +5443,7 @@ class PlaySound : Buffer {
 	}
 
 	public override string toString() {
-		return "PlaySound(unknown0: " ~ std.conv.to!string(this.unknown0) ~ ", position: " ~ std.conv.to!string(this.position) ~ ", unknown2: " ~ std.conv.to!string(this.unknown2) ~ ", unknown3: " ~ std.conv.to!string(this.unknown3) ~ ")";
+		return "PlaySound(name: " ~ std.conv.to!string(this.name) ~ ", position: " ~ std.conv.to!string(this.position) ~ ", volume: " ~ std.conv.to!string(this.volume) ~ ", pitch: " ~ std.conv.to!string(this.pitch) ~ ")";
 	}
 
 }
@@ -5445,30 +5455,30 @@ class StopSound : Buffer {
 	public enum bool CLIENTBOUND = true;
 	public enum bool SERVERBOUND = false;
 
-	public enum string[] FIELDS = ["unknown0", "unknown1"];
+	public enum string[] FIELDS = ["name", "stopAll"];
 
-	public string unknown0;
-	public bool unknown1;
+	public string name;
+	public bool stopAll;
 
 	public pure nothrow @safe @nogc this() {}
 
-	public pure nothrow @safe @nogc this(string unknown0, bool unknown1=bool.init) {
-		this.unknown0 = unknown0;
-		this.unknown1 = unknown1;
+	public pure nothrow @safe @nogc this(string name, bool stopAll=bool.init) {
+		this.name = name;
+		this.stopAll = stopAll;
 	}
 
 	public pure nothrow @safe ubyte[] encode(bool writeId=true)() {
 		_buffer.length = 0;
 		static if(writeId){ writeBigEndianUbyte(ID); }
-		writeBytes(varuint.encode(cast(uint)unknown0.length)); writeString(unknown0);
-		writeBigEndianBool(unknown1);
+		writeBytes(varuint.encode(cast(uint)name.length)); writeString(name);
+		writeBigEndianBool(stopAll);
 		return _buffer;
 	}
 
 	public pure nothrow @safe void decode(bool readId=true)() {
 		static if(readId){ ubyte _id; _id=readBigEndianUbyte(); }
-		uint d5b9ba=varuint.decode(_buffer, &_index); unknown0=readString(d5b9ba);
-		unknown1=readBigEndianBool();
+		uint bfz=varuint.decode(_buffer, &_index); name=readString(bfz);
+		stopAll=readBigEndianBool();
 	}
 
 	public static pure nothrow @safe StopSound fromBuffer(bool readId=true)(ubyte[] buffer) {
@@ -5479,7 +5489,7 @@ class StopSound : Buffer {
 	}
 
 	public override string toString() {
-		return "StopSound(unknown0: " ~ std.conv.to!string(this.unknown0) ~ ", unknown1: " ~ std.conv.to!string(this.unknown1) ~ ")";
+		return "StopSound(name: " ~ std.conv.to!string(this.name) ~ ", stopAll: " ~ std.conv.to!string(this.stopAll) ~ ")";
 	}
 
 }
