@@ -3042,34 +3042,38 @@ class SetSpawnPosition : Buffer {
 	public enum bool CLIENTBOUND = true;
 	public enum bool SERVERBOUND = false;
 
-	public enum string[] FIELDS = ["unknown0", "position", "unknown2"];
+	// type
+	public enum int PLAYER_SPAWN = 0;
+	public enum int WORLD_SPAWN = 1;
 
-	public int unknown0;
+	public enum string[] FIELDS = ["type", "position", "forced"];
+
+	public int type;
 	public sul.protocol.pocket112.types.BlockPosition position;
-	public bool unknown2;
+	public bool forced;
 
 	public pure nothrow @safe @nogc this() {}
 
-	public pure nothrow @safe @nogc this(int unknown0, sul.protocol.pocket112.types.BlockPosition position=sul.protocol.pocket112.types.BlockPosition.init, bool unknown2=bool.init) {
-		this.unknown0 = unknown0;
+	public pure nothrow @safe @nogc this(int type, sul.protocol.pocket112.types.BlockPosition position=sul.protocol.pocket112.types.BlockPosition.init, bool forced=bool.init) {
+		this.type = type;
 		this.position = position;
-		this.unknown2 = unknown2;
+		this.forced = forced;
 	}
 
 	public pure nothrow @safe ubyte[] encode(bool writeId=true)() {
 		_buffer.length = 0;
 		static if(writeId){ writeBigEndianUbyte(ID); }
-		writeBytes(varint.encode(unknown0));
+		writeBytes(varint.encode(type));
 		position.encode(bufferInstance);
-		writeBigEndianBool(unknown2);
+		writeBigEndianBool(forced);
 		return _buffer;
 	}
 
 	public pure nothrow @safe void decode(bool readId=true)() {
 		static if(readId){ ubyte _id; _id=readBigEndianUbyte(); }
-		unknown0=varint.decode(_buffer, &_index);
+		type=varint.decode(_buffer, &_index);
 		position.decode(bufferInstance);
-		unknown2=readBigEndianBool();
+		forced=readBigEndianBool();
 	}
 
 	public static pure nothrow @safe SetSpawnPosition fromBuffer(bool readId=true)(ubyte[] buffer) {
@@ -3080,7 +3084,7 @@ class SetSpawnPosition : Buffer {
 	}
 
 	public override string toString() {
-		return "SetSpawnPosition(unknown0: " ~ std.conv.to!string(this.unknown0) ~ ", position: " ~ std.conv.to!string(this.position) ~ ", unknown2: " ~ std.conv.to!string(this.unknown2) ~ ")";
+		return "SetSpawnPosition(type: " ~ std.conv.to!string(this.type) ~ ", position: " ~ std.conv.to!string(this.position) ~ ", forced: " ~ std.conv.to!string(this.forced) ~ ")";
 	}
 
 }

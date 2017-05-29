@@ -630,7 +630,12 @@ struct Rule {
 	public enum string PVP = "pvp";
 	public enum string SEND_COMMAND_FEEDBACK = "sendcommandfeedback";
 
-	public enum string[] FIELDS = ["name", "value", "unknown2"];
+	// type
+	public enum ubyte BOOLEAN = 1;
+	public enum ubyte INTEGER = 2;
+	public enum ubyte FLOATING = 3;
+
+	public enum string[] FIELDS = ["name", "type", "booleanValue", "integerValue", "floatingValue"];
 
 	/**
 	 * Name of the rule. Same of the `gamerule` command's field in the game.
@@ -638,31 +643,33 @@ struct Rule {
 	 * disabled.
 	 */
 	public string name;
-
-	/**
-	 * Indicates whether the game rule is enabled.
-	 */
-	public bool value;
-	public bool unknown2;
+	public ubyte type;
+	public bool booleanValue;
+	public int integerValue;
+	public float floatingValue;
 
 	public pure nothrow @safe void encode(Buffer buffer) {
 		with(buffer) {
 			writeBytes(varuint.encode(cast(uint)name.length)); writeString(name);
-			writeBigEndianBool(value);
-			writeBigEndianBool(unknown2);
+			writeBigEndianUbyte(type);
+			if(type==1){ writeBigEndianBool(booleanValue); }
+			if(type==2){ writeBigEndianInt(integerValue); }
+			if(type==3){ writeLittleEndianFloat(floatingValue); }
 		}
 	}
 
 	public pure nothrow @safe void decode(Buffer buffer) {
 		with(buffer) {
 			uint bfz=varuint.decode(_buffer, &_index); name=readString(bfz);
-			value=readBigEndianBool();
-			unknown2=readBigEndianBool();
+			type=readBigEndianUbyte();
+			if(type==1){ booleanValue=readBigEndianBool(); }
+			if(type==2){ integerValue=readBigEndianInt(); }
+			if(type==3){ floatingValue=readLittleEndianFloat(); }
 		}
 	}
 
 	public string toString() {
-		return "Rule(name: " ~ std.conv.to!string(this.name) ~ ", value: " ~ std.conv.to!string(this.value) ~ ", unknown2: " ~ std.conv.to!string(this.unknown2) ~ ")";
+		return "Rule(name: " ~ std.conv.to!string(this.name) ~ ", type: " ~ std.conv.to!string(this.type) ~ ", booleanValue: " ~ std.conv.to!string(this.booleanValue) ~ ", integerValue: " ~ std.conv.to!string(this.integerValue) ~ ", floatingValue: " ~ std.conv.to!string(this.floatingValue) ~ ")";
 	}
 
 }
