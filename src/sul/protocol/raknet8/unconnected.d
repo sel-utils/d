@@ -31,16 +31,18 @@ class Ping : Buffer {
 	public enum bool CLIENTBOUND = false;
 	public enum bool SERVERBOUND = true;
 
-	public enum string[] FIELDS = ["pingId", "magic"];
+	public enum string[] FIELDS = ["pingId", "magic", "guid"];
 
 	public long pingId;
 	public ubyte[16] magic;
+	public long guid;
 
 	public pure nothrow @safe @nogc this() {}
 
-	public pure nothrow @safe @nogc this(long pingId, ubyte[16] magic=(ubyte[16]).init) {
+	public pure nothrow @safe @nogc this(long pingId, ubyte[16] magic=(ubyte[16]).init, long guid=long.init) {
 		this.pingId = pingId;
 		this.magic = magic;
+		this.guid = guid;
 	}
 
 	public pure nothrow @safe ubyte[] encode(bool writeId=true)() {
@@ -48,6 +50,7 @@ class Ping : Buffer {
 		static if(writeId){ writeBigEndianUbyte(ID); }
 		writeBigEndianLong(pingId);
 		writeBytes(magic);
+		writeBigEndianLong(guid);
 		return _buffer;
 	}
 
@@ -55,6 +58,7 @@ class Ping : Buffer {
 		static if(readId){ ubyte _id; _id=readBigEndianUbyte(); }
 		pingId=readBigEndianLong();
 		if(_buffer.length>=_index+magic.length){ magic=_buffer[_index.._index+magic.length].dup; _index+=magic.length; }
+		guid=readBigEndianLong();
 	}
 
 	public static pure nothrow @safe Ping fromBuffer(bool readId=true)(ubyte[] buffer) {
@@ -65,7 +69,7 @@ class Ping : Buffer {
 	}
 
 	public override string toString() {
-		return "Ping(pingId: " ~ std.conv.to!string(this.pingId) ~ ", magic: " ~ std.conv.to!string(this.magic) ~ ")";
+		return "Ping(pingId: " ~ std.conv.to!string(this.pingId) ~ ", magic: " ~ std.conv.to!string(this.magic) ~ ", guid: " ~ std.conv.to!string(this.guid) ~ ")";
 	}
 
 }
