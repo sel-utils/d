@@ -881,7 +881,7 @@ class StartGame : Buffer {
 	public enum ubyte VANILLA = 0;
 	public enum ubyte EDUCATION = 1;
 
-	public enum string[] FIELDS = ["entityId", "runtimeId", "gamemode", "position", "yaw", "pitch", "seed", "dimension", "generator", "worldGamemode", "difficulty", "spawnPosition", "loadedInCreative", "time", "vers", "rainLevel", "lightingLevel", "commandsEnabled", "textureRequired", "gameRules", "levelId", "worldName", "premiumWorldTemplate"];
+	public enum string[] FIELDS = ["entityId", "runtimeId", "gamemode", "position", "yaw", "pitch", "seed", "dimension", "generator", "worldGamemode", "difficulty", "spawnPosition", "loadedInCreative", "time", "vers", "rainLevel", "lightingLevel", "commandsEnabled", "textureRequired", "gameRules", "levelId", "worldName", "premiumWorldTemplate", "unknown23", "worldTicks"];
 
 	/**
 	 * Player's entity id that uniquely identifies the entity of the server.
@@ -969,10 +969,12 @@ class StartGame : Buffer {
 	 */
 	public string worldName;
 	public string premiumWorldTemplate;
+	public bool unknown23;
+	public ulong worldTicks;
 
 	public pure nothrow @safe @nogc this() {}
 
-	public pure nothrow @safe @nogc this(long entityId, long runtimeId=long.init, int gamemode=int.init, Tuple!(float, "x", float, "y", float, "z") position=Tuple!(float, "x", float, "y", float, "z").init, float yaw=float.init, float pitch=float.init, int seed=int.init, int dimension=0, int generator=1, int worldGamemode=int.init, int difficulty=int.init, Tuple!(int, "x", int, "y", int, "z") spawnPosition=Tuple!(int, "x", int, "y", int, "z").init, bool loadedInCreative=bool.init, int time=int.init, ubyte vers=ubyte.init, float rainLevel=float.init, float lightingLevel=float.init, bool commandsEnabled=bool.init, bool textureRequired=bool.init, sul.protocol.pocket113.types.Rule[] gameRules=(sul.protocol.pocket113.types.Rule[]).init, string levelId=string.init, string worldName=string.init, string premiumWorldTemplate=string.init) {
+	public pure nothrow @safe @nogc this(long entityId, long runtimeId=long.init, int gamemode=int.init, Tuple!(float, "x", float, "y", float, "z") position=Tuple!(float, "x", float, "y", float, "z").init, float yaw=float.init, float pitch=float.init, int seed=int.init, int dimension=0, int generator=1, int worldGamemode=int.init, int difficulty=int.init, Tuple!(int, "x", int, "y", int, "z") spawnPosition=Tuple!(int, "x", int, "y", int, "z").init, bool loadedInCreative=bool.init, int time=int.init, ubyte vers=ubyte.init, float rainLevel=float.init, float lightingLevel=float.init, bool commandsEnabled=bool.init, bool textureRequired=bool.init, sul.protocol.pocket113.types.Rule[] gameRules=(sul.protocol.pocket113.types.Rule[]).init, string levelId=string.init, string worldName=string.init, string premiumWorldTemplate=string.init, bool unknown23=bool.init, ulong worldTicks=ulong.init) {
 		this.entityId = entityId;
 		this.runtimeId = runtimeId;
 		this.gamemode = gamemode;
@@ -996,6 +998,8 @@ class StartGame : Buffer {
 		this.levelId = levelId;
 		this.worldName = worldName;
 		this.premiumWorldTemplate = premiumWorldTemplate;
+		this.unknown23 = unknown23;
+		this.worldTicks = worldTicks;
 	}
 
 	public pure nothrow @safe ubyte[] encode(bool writeId=true)() {
@@ -1024,6 +1028,8 @@ class StartGame : Buffer {
 		writeBytes(varuint.encode(cast(uint)levelId.length)); writeString(levelId);
 		writeBytes(varuint.encode(cast(uint)worldName.length)); writeString(worldName);
 		writeBytes(varuint.encode(cast(uint)premiumWorldTemplate.length)); writeString(premiumWorldTemplate);
+		writeBigEndianBool(unknown23);
+		writeLittleEndianUlong(worldTicks);
 		return _buffer;
 	}
 
@@ -1052,6 +1058,8 @@ class StartGame : Buffer {
 		uint bvzxz=varuint.decode(_buffer, &_index); levelId=readString(bvzxz);
 		uint d9bry1=varuint.decode(_buffer, &_index); worldName=readString(d9bry1);
 		uint cjblbdcx=varuint.decode(_buffer, &_index); premiumWorldTemplate=readString(cjblbdcx);
+		unknown23=readBigEndianBool();
+		worldTicks=readLittleEndianUlong();
 	}
 
 	public static pure nothrow @safe StartGame fromBuffer(bool readId=true)(ubyte[] buffer) {
@@ -1062,7 +1070,7 @@ class StartGame : Buffer {
 	}
 
 	public override string toString() {
-		return "StartGame(entityId: " ~ std.conv.to!string(this.entityId) ~ ", runtimeId: " ~ std.conv.to!string(this.runtimeId) ~ ", gamemode: " ~ std.conv.to!string(this.gamemode) ~ ", position: " ~ std.conv.to!string(this.position) ~ ", yaw: " ~ std.conv.to!string(this.yaw) ~ ", pitch: " ~ std.conv.to!string(this.pitch) ~ ", seed: " ~ std.conv.to!string(this.seed) ~ ", dimension: " ~ std.conv.to!string(this.dimension) ~ ", generator: " ~ std.conv.to!string(this.generator) ~ ", worldGamemode: " ~ std.conv.to!string(this.worldGamemode) ~ ", difficulty: " ~ std.conv.to!string(this.difficulty) ~ ", spawnPosition: " ~ std.conv.to!string(this.spawnPosition) ~ ", loadedInCreative: " ~ std.conv.to!string(this.loadedInCreative) ~ ", time: " ~ std.conv.to!string(this.time) ~ ", vers: " ~ std.conv.to!string(this.vers) ~ ", rainLevel: " ~ std.conv.to!string(this.rainLevel) ~ ", lightingLevel: " ~ std.conv.to!string(this.lightingLevel) ~ ", commandsEnabled: " ~ std.conv.to!string(this.commandsEnabled) ~ ", textureRequired: " ~ std.conv.to!string(this.textureRequired) ~ ", gameRules: " ~ std.conv.to!string(this.gameRules) ~ ", levelId: " ~ std.conv.to!string(this.levelId) ~ ", worldName: " ~ std.conv.to!string(this.worldName) ~ ", premiumWorldTemplate: " ~ std.conv.to!string(this.premiumWorldTemplate) ~ ")";
+		return "StartGame(entityId: " ~ std.conv.to!string(this.entityId) ~ ", runtimeId: " ~ std.conv.to!string(this.runtimeId) ~ ", gamemode: " ~ std.conv.to!string(this.gamemode) ~ ", position: " ~ std.conv.to!string(this.position) ~ ", yaw: " ~ std.conv.to!string(this.yaw) ~ ", pitch: " ~ std.conv.to!string(this.pitch) ~ ", seed: " ~ std.conv.to!string(this.seed) ~ ", dimension: " ~ std.conv.to!string(this.dimension) ~ ", generator: " ~ std.conv.to!string(this.generator) ~ ", worldGamemode: " ~ std.conv.to!string(this.worldGamemode) ~ ", difficulty: " ~ std.conv.to!string(this.difficulty) ~ ", spawnPosition: " ~ std.conv.to!string(this.spawnPosition) ~ ", loadedInCreative: " ~ std.conv.to!string(this.loadedInCreative) ~ ", time: " ~ std.conv.to!string(this.time) ~ ", vers: " ~ std.conv.to!string(this.vers) ~ ", rainLevel: " ~ std.conv.to!string(this.rainLevel) ~ ", lightingLevel: " ~ std.conv.to!string(this.lightingLevel) ~ ", commandsEnabled: " ~ std.conv.to!string(this.commandsEnabled) ~ ", textureRequired: " ~ std.conv.to!string(this.textureRequired) ~ ", gameRules: " ~ std.conv.to!string(this.gameRules) ~ ", levelId: " ~ std.conv.to!string(this.levelId) ~ ", worldName: " ~ std.conv.to!string(this.worldName) ~ ", premiumWorldTemplate: " ~ std.conv.to!string(this.premiumWorldTemplate) ~ ", unknown23: " ~ std.conv.to!string(this.unknown23) ~ ", worldTicks: " ~ std.conv.to!string(this.worldTicks) ~ ")";
 	}
 
 }
