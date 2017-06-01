@@ -4,7 +4,7 @@
  * 
  * License: https://github.com/sel-project/sel-utils/blob/master/LICENSE
  * Repository: https://github.com/sel-project/sel-utils
- * Generated from https://github.com/sel-project/sel-utils/blob/master/xml/protocol/pocket112.xml
+ * Generated from https://github.com/sel-project/sel-utils/blob/master/xml/protocol/pocket113.xml
  */
 /**
  * Protocol used in Minecraft: Pocket Edition and variants. The network part of the
@@ -30,8 +30,8 @@
  * The types and the packets without documentation haven't been tested yet or it's
  * not clear what their real purpose in the game is.
  */
-module sul.protocol.pocket112;
+module sul.protocol.pocket113;
 
-public import sul.protocol.pocket112.types;
+public import sul.protocol.pocket113.types;
 
-public import sul.protocol.pocket112.play;
+public import sul.protocol.pocket113.play;

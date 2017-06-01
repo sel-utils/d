@@ -4,16 +4,16 @@
  * 
  * License: https://github.com/sel-project/sel-utils/blob/master/LICENSE
  * Repository: https://github.com/sel-project/sel-utils
- * Generated from https://github.com/sel-project/sel-utils/blob/master/xml/metadata/pocket112.xml
+ * Generated from https://github.com/sel-project/sel-utils/blob/master/xml/metadata/pocket113.xml
  */
-module sul.metadata.pocket112;
+module sul.metadata.pocket113;
 
 import std.typecons : Tuple, tuple;
 
 import sul.utils.buffer : Buffer;
 import sul.utils.var;
 
-static import sul.protocol.pocket112.types;
+static import sul.protocol.pocket113.types;
 
 alias Changed(T) = Tuple!(T, "value", bool, "changed");
 

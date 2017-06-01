@@ -4,9 +4,9 @@
  * 
  * License: https://github.com/sel-project/sel-utils/blob/master/LICENSE
  * Repository: https://github.com/sel-project/sel-utils
- * Generated from https://github.com/sel-project/sel-utils/blob/master/xml/protocol/pocket112.xml
+ * Generated from https://github.com/sel-project/sel-utils/blob/master/xml/protocol/pocket113.xml
  */
-module sul.protocol.pocket112.types;
+module sul.protocol.pocket113.types;
 
 import std.bitmanip : write, peek;
 static import std.conv;
@@ -17,7 +17,7 @@ import std.uuid : UUID;
 import sul.utils.buffer;
 import sul.utils.var;
 
-static if(__traits(compiles, { import sul.metadata.pocket112; })) import sul.metadata.pocket112;
+static if(__traits(compiles, { import sul.metadata.pocket113; })) import sul.metadata.pocket113;
 
 struct LoginBody {
 
@@ -316,7 +316,7 @@ struct PlayerList {
 	 * UUID of the player. If it's associated with an XBOX Live account the player's profile
 	 * will also be available in pause menu.
 	 */
-	public sul.protocol.pocket112.types.McpeUuid uuid;
+	public sul.protocol.pocket113.types.McpeUuid uuid;
 
 	/**
 	 * Player's id, used to associate the skin with the game's entity spawned with AddPlayer.
@@ -332,7 +332,7 @@ struct PlayerList {
 	/**
 	 * Player's skin usually given in the Login's packet body.
 	 */
-	public sul.protocol.pocket112.types.Skin skin;
+	public sul.protocol.pocket113.types.Skin skin;
 
 	public pure nothrow @safe void encode(Buffer buffer) {
 		with(buffer) {
@@ -439,7 +439,7 @@ struct ChunkData {
 	 * (the 3rd element of the array will be the 3rd section from bottom, starting at `y=24`).
 	 * The amount of sections should be in a range from 0 (empty chunk) to 16.
 	 */
-	public sul.protocol.pocket112.types.Section[] sections;
+	public sul.protocol.pocket113.types.Section[] sections;
 
 	/**
 	 * Coordinates of the highest block in the column that receives sky light (order `xz`).
@@ -457,7 +457,7 @@ struct ChunkData {
 	 * implemented in the game yet and crashes the client.
 	 */
 	public ubyte[] borders;
-	public sul.protocol.pocket112.types.ExtraData[] extraData;
+	public sul.protocol.pocket113.types.ExtraData[] extraData;
 
 	/**
 	 * Additional data for the chunk's block entities (tiles), encoded in the same way
