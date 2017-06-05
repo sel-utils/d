@@ -4,9 +4,9 @@
  * 
  * License: https://github.com/sel-project/sel-utils/blob/master/LICENSE
  * Repository: https://github.com/sel-project/sel-utils
- * Generated from https://github.com/sel-project/sel-utils/blob/master/xml/attributes/minecraft333.xml
+ * Generated from https://github.com/sel-project/sel-utils/blob/master/xml/attributes/minecraft334.xml
  */
-module sul.attributes.minecraft333;
+module sul.attributes.minecraft334;
 
 import std.typecons : Tuple;
 

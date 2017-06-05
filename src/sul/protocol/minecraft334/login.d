@@ -4,9 +4,9 @@
  * 
  * License: https://github.com/sel-project/sel-utils/blob/master/LICENSE
  * Repository: https://github.com/sel-project/sel-utils
- * Generated from https://github.com/sel-project/sel-utils/blob/master/xml/protocol/minecraft333.xml
+ * Generated from https://github.com/sel-project/sel-utils/blob/master/xml/protocol/minecraft334.xml
  */
-module sul.protocol.minecraft333.login;
+module sul.protocol.minecraft334.login;
 
 import std.bitmanip : write, peek;
 static import std.conv;
@@ -18,9 +18,9 @@ import std.uuid : UUID;
 import sul.utils.buffer;
 import sul.utils.var;
 
-static import sul.protocol.minecraft333.types;
+static import sul.protocol.minecraft334.types;
 
-static if(__traits(compiles, { import sul.metadata.minecraft333; })) import sul.metadata.minecraft333;
+static if(__traits(compiles, { import sul.metadata.minecraft334; })) import sul.metadata.minecraft334;
 
 alias Packets = TypeTuple!(Disconnect, LoginStart, EncryptionRequest, EncryptionResponse, LoginSuccess, SetCompression);
 

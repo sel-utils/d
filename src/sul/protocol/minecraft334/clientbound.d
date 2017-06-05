@@ -4,9 +4,9 @@
  * 
  * License: https://github.com/sel-project/sel-utils/blob/master/LICENSE
  * Repository: https://github.com/sel-project/sel-utils
- * Generated from https://github.com/sel-project/sel-utils/blob/master/xml/protocol/minecraft333.xml
+ * Generated from https://github.com/sel-project/sel-utils/blob/master/xml/protocol/minecraft334.xml
  */
-module sul.protocol.minecraft333.clientbound;
+module sul.protocol.minecraft334.clientbound;
 
 import std.bitmanip : write, peek;
 static import std.conv;
@@ -18,9 +18,9 @@ import std.uuid : UUID;
 import sul.utils.buffer;
 import sul.utils.var;
 
-static import sul.protocol.minecraft333.types;
+static import sul.protocol.minecraft334.types;
 
-static if(__traits(compiles, { import sul.metadata.minecraft333; })) import sul.metadata.minecraft333;
+static if(__traits(compiles, { import sul.metadata.minecraft334; })) import sul.metadata.minecraft334;
 
 alias Packets = TypeTuple!(SpawnObject, SpawnExperienceOrb, SpawnGlobalEntity, SpawnMob, SpawnPainting, SpawnPlayer, Animation, Statistics, BlockBreakAnimation, UpdateBlockEntity, BlockAction, BlockChange, BossBar, ServerDifficulty, TabComplete, ChatMessage, MultiBlockChange, ConfirmTransaction, CloseWindow, OpenWindow, WindowItems, WindowProperty, SetSlot, SetCooldown, PluginMessage, NamedSoundEffect, Disconnect, EntityStatus, Explosion, UnloadChunk, ChangeGameState, KeepAlive, ChunkData, Effect, Particle, JoinGame, Map, Entity, EntityRelativeMove, EntityLookAndRelativeMove, EntityLook, VehicleMove, OpenSignEditor, PlayerAbilities, CombatEvent, PlayerListItem, PlayerPositionAndLook, UseBed, UnlockRecipes, DestroyEntities, RemoveEntityEffect, ResourcePackSend, Respawn, EntityHeadLook, AdvancementProgress, WorldBorder, Camera, HeldItemChange, DisplayScoreboard, EntityMetadata, AttachEntity, EntityVelocity, EntityEquipment, SetExperience, UpdateHealth, ScoreboardObjective, SetPassengers, Teams, UpdateScore, SpawnPosition, TimeUpdate, Title, SoundEffect, PlayerListHeaderAndFooter, CollectItem, EntityTeleport, Advencements, EntityProperties, EntityEffect);
 
@@ -460,11 +460,11 @@ class Statistics : Buffer {
 
 	public enum string[] FIELDS = ["statistics"];
 
-	public sul.protocol.minecraft333.types.Statistic[] statistics;
+	public sul.protocol.minecraft334.types.Statistic[] statistics;
 
 	public pure nothrow @safe @nogc this() {}
 
-	public pure nothrow @safe @nogc this(sul.protocol.minecraft333.types.Statistic[] statistics) {
+	public pure nothrow @safe @nogc this(sul.protocol.minecraft334.types.Statistic[] statistics) {
 		this.statistics = statistics;
 	}
 
@@ -1167,11 +1167,11 @@ class MultiBlockChange : Buffer {
 	public enum string[] FIELDS = ["chunk", "changes"];
 
 	public Tuple!(int, "x", int, "z") chunk;
-	public sul.protocol.minecraft333.types.BlockChange[] changes;
+	public sul.protocol.minecraft334.types.BlockChange[] changes;
 
 	public pure nothrow @safe @nogc this() {}
 
-	public pure nothrow @safe @nogc this(Tuple!(int, "x", int, "z") chunk, sul.protocol.minecraft333.types.BlockChange[] changes=(sul.protocol.minecraft333.types.BlockChange[]).init) {
+	public pure nothrow @safe @nogc this(Tuple!(int, "x", int, "z") chunk, sul.protocol.minecraft334.types.BlockChange[] changes=(sul.protocol.minecraft334.types.BlockChange[]).init) {
 		this.chunk = chunk;
 		this.changes = changes;
 	}
@@ -1359,11 +1359,11 @@ class WindowItems : Buffer {
 	public enum string[] FIELDS = ["window", "slots"];
 
 	public ubyte window;
-	public sul.protocol.minecraft333.types.Slot[] slots;
+	public sul.protocol.minecraft334.types.Slot[] slots;
 
 	public pure nothrow @safe @nogc this() {}
 
-	public pure nothrow @safe @nogc this(ubyte window, sul.protocol.minecraft333.types.Slot[] slots=(sul.protocol.minecraft333.types.Slot[]).init) {
+	public pure nothrow @safe @nogc this(ubyte window, sul.protocol.minecraft334.types.Slot[] slots=(sul.protocol.minecraft334.types.Slot[]).init) {
 		this.window = window;
 		this.slots = slots;
 	}
@@ -1477,11 +1477,11 @@ class SetSlot : Buffer {
 
 	public ubyte window;
 	public ushort slot;
-	public sul.protocol.minecraft333.types.Slot item;
+	public sul.protocol.minecraft334.types.Slot item;
 
 	public pure nothrow @safe @nogc this() {}
 
-	public pure nothrow @safe @nogc this(ubyte window, ushort slot=ushort.init, sul.protocol.minecraft333.types.Slot item=sul.protocol.minecraft333.types.Slot.init) {
+	public pure nothrow @safe @nogc this(ubyte window, ushort slot=ushort.init, sul.protocol.minecraft334.types.Slot item=sul.protocol.minecraft334.types.Slot.init) {
 		this.window = window;
 		this.slot = slot;
 		this.item = item;
@@ -2384,7 +2384,7 @@ class Map : Buffer {
 	public uint mapId;
 	public ubyte scale;
 	public bool showIcons;
-	public sul.protocol.minecraft333.types.Icon[] icons;
+	public sul.protocol.minecraft334.types.Icon[] icons;
 	public ubyte colums;
 	public ubyte rows;
 	public Tuple!(ubyte, "x", ubyte, "z") offset;
@@ -2392,7 +2392,7 @@ class Map : Buffer {
 
 	public pure nothrow @safe @nogc this() {}
 
-	public pure nothrow @safe @nogc this(uint mapId, ubyte scale=ubyte.init, bool showIcons=bool.init, sul.protocol.minecraft333.types.Icon[] icons=(sul.protocol.minecraft333.types.Icon[]).init, ubyte colums=ubyte.init, ubyte rows=ubyte.init, Tuple!(ubyte, "x", ubyte, "z") offset=Tuple!(ubyte, "x", ubyte, "z").init, ubyte[] data=(ubyte[]).init) {
+	public pure nothrow @safe @nogc this(uint mapId, ubyte scale=ubyte.init, bool showIcons=bool.init, sul.protocol.minecraft334.types.Icon[] icons=(sul.protocol.minecraft334.types.Icon[]).init, ubyte colums=ubyte.init, ubyte rows=ubyte.init, Tuple!(ubyte, "x", ubyte, "z") offset=Tuple!(ubyte, "x", ubyte, "z").init, ubyte[] data=(ubyte[]).init) {
 		this.mapId = mapId;
 		this.scale = scale;
 		this.showIcons = showIcons;
@@ -2989,11 +2989,11 @@ class PlayerListItem : Buffer {
 
 		public enum string[] FIELDS = ["players"];
 
-		public sul.protocol.minecraft333.types.ListAddPlayer[] players;
+		public sul.protocol.minecraft334.types.ListAddPlayer[] players;
 
 		public pure nothrow @safe @nogc this() {}
 
-		public pure nothrow @safe @nogc this(sul.protocol.minecraft333.types.ListAddPlayer[] players) {
+		public pure nothrow @safe @nogc this(sul.protocol.minecraft334.types.ListAddPlayer[] players) {
 			this.players = players;
 		}
 
@@ -3020,11 +3020,11 @@ class PlayerListItem : Buffer {
 
 		public enum string[] FIELDS = ["players"];
 
-		public sul.protocol.minecraft333.types.ListUpdateGamemode[] players;
+		public sul.protocol.minecraft334.types.ListUpdateGamemode[] players;
 
 		public pure nothrow @safe @nogc this() {}
 
-		public pure nothrow @safe @nogc this(sul.protocol.minecraft333.types.ListUpdateGamemode[] players) {
+		public pure nothrow @safe @nogc this(sul.protocol.minecraft334.types.ListUpdateGamemode[] players) {
 			this.players = players;
 		}
 
@@ -3051,11 +3051,11 @@ class PlayerListItem : Buffer {
 
 		public enum string[] FIELDS = ["players"];
 
-		public sul.protocol.minecraft333.types.ListUpdateLatency[] players;
+		public sul.protocol.minecraft334.types.ListUpdateLatency[] players;
 
 		public pure nothrow @safe @nogc this() {}
 
-		public pure nothrow @safe @nogc this(sul.protocol.minecraft333.types.ListUpdateLatency[] players) {
+		public pure nothrow @safe @nogc this(sul.protocol.minecraft334.types.ListUpdateLatency[] players) {
 			this.players = players;
 		}
 
@@ -3082,11 +3082,11 @@ class PlayerListItem : Buffer {
 
 		public enum string[] FIELDS = ["players"];
 
-		public sul.protocol.minecraft333.types.ListUpdateDisplayName[] players;
+		public sul.protocol.minecraft334.types.ListUpdateDisplayName[] players;
 
 		public pure nothrow @safe @nogc this() {}
 
-		public pure nothrow @safe @nogc this(sul.protocol.minecraft333.types.ListUpdateDisplayName[] players) {
+		public pure nothrow @safe @nogc this(sul.protocol.minecraft334.types.ListUpdateDisplayName[] players) {
 			this.players = players;
 		}
 
@@ -4167,11 +4167,11 @@ class EntityEquipment : Buffer {
 
 	public uint entityId;
 	public uint slot;
-	public sul.protocol.minecraft333.types.Slot item;
+	public sul.protocol.minecraft334.types.Slot item;
 
 	public pure nothrow @safe @nogc this() {}
 
-	public pure nothrow @safe @nogc this(uint entityId, uint slot=uint.init, sul.protocol.minecraft333.types.Slot item=sul.protocol.minecraft333.types.Slot.init) {
+	public pure nothrow @safe @nogc this(uint entityId, uint slot=uint.init, sul.protocol.minecraft334.types.Slot item=sul.protocol.minecraft334.types.Slot.init) {
 		this.entityId = entityId;
 		this.slot = slot;
 		this.item = item;
@@ -5318,11 +5318,11 @@ class EntityProperties : Buffer {
 	public enum string[] FIELDS = ["entityId", "attributes"];
 
 	public uint entityId;
-	public sul.protocol.minecraft333.types.Attribute[] attributes;
+	public sul.protocol.minecraft334.types.Attribute[] attributes;
 
 	public pure nothrow @safe @nogc this() {}
 
-	public pure nothrow @safe @nogc this(uint entityId, sul.protocol.minecraft333.types.Attribute[] attributes=(sul.protocol.minecraft333.types.Attribute[]).init) {
+	public pure nothrow @safe @nogc this(uint entityId, sul.protocol.minecraft334.types.Attribute[] attributes=(sul.protocol.minecraft334.types.Attribute[]).init) {
 		this.entityId = entityId;
 		this.attributes = attributes;
 	}

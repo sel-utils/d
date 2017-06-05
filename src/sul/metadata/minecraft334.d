@@ -5,7 +5,7 @@
  * License: https://github.com/sel-project/sel-utils/blob/master/LICENSE
  * Repository: https://github.com/sel-project/sel-utils
  */
-module sul.metadata.minecraft333;
+module sul.metadata.minecraft334;
 
 import sul.utils.buffer : Buffer;
 
