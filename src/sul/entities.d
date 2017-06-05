@@ -76,6 +76,7 @@ public enum Entities : Entity
     evoker = Entity("evoker", EntityData(true, 34), EntityData(true, 104), false, 0.6, 1.95),
     vex = Entity("vex", EntityData(true, 35), EntityData(true, 105), false, 0.4, 0.8),
     vindicator = Entity("vindicator", EntityData(true, 36), EntityData(true, 56), false, 0.6, 1.95),
+    illusioner = Entity("illusioner", EntityData(true, 37), EntityData(false), false, 0.6, 1.95),
     creeper = Entity("creeper", EntityData(true, 50), EntityData(true, 33), false, 0.6, 1.7),
     skeleton = Entity("skeleton", EntityData(false), EntityData(true, 34), false, 0.6, 1.99),
     spider = Entity("spider", EntityData(true, 52), EntityData(true, 35), false, 1.4, 0.9),
@@ -109,6 +110,7 @@ public enum Entities : Entity
     rabbit = Entity("rabbit", EntityData(true, 101), EntityData(true, 18), false, 0.4, 0.5),
     polarBear = Entity("polar bear", EntityData(true, 102), EntityData(true, 28), false, 1.3, 1.4),
     llama = Entity("llama", EntityData(true, 103), EntityData(true, 29), false, 0.9, 1.87),
+    parrot = Entity("parrot", EntityData(true, 105), EntityData(false), false, 0.5, 1),
     villager = Entity("villager", EntityData(true, 120), EntityData(true, 15), false, 0.6, 1.95),
     npc = Entity("npc", EntityData(false), EntityData(true, 51), false, 0.6, 1.95),
 
