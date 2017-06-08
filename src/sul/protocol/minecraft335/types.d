@@ -4,9 +4,9 @@
  * 
  * License: https://github.com/sel-project/sel-utils/blob/master/LICENSE
  * Repository: https://github.com/sel-project/sel-utils
- * Generated from https://github.com/sel-project/sel-utils/blob/master/xml/protocol/minecraft334.xml
+ * Generated from https://github.com/sel-project/sel-utils/blob/master/xml/protocol/minecraft335.xml
  */
-module sul.protocol.minecraft334.types;
+module sul.protocol.minecraft335.types;
 
 import std.bitmanip : write, peek;
 static import std.conv;
@@ -17,7 +17,7 @@ import std.uuid : UUID;
 import sul.utils.buffer;
 import sul.utils.var;
 
-static if(__traits(compiles, { import sul.metadata.minecraft334; })) import sul.metadata.minecraft334;
+static if(__traits(compiles, { import sul.metadata.minecraft335; })) import sul.metadata.minecraft335;
 
 struct Statistic {
 
@@ -193,7 +193,7 @@ struct ListAddPlayer {
 
 	public UUID uuid;
 	public string name;
-	public sul.protocol.minecraft334.types.Property[] properties;
+	public sul.protocol.minecraft335.types.Property[] properties;
 	public uint gamemode;
 	public uint latency;
 	public bool hasDisplayName;
@@ -360,7 +360,7 @@ struct Attribute {
 
 	public string key;
 	public double value;
-	public sul.protocol.minecraft334.types.Modifier[] modifiers;
+	public sul.protocol.minecraft335.types.Modifier[] modifiers;
 
 	public pure nothrow @safe void encode(Buffer buffer) {
 		with(buffer) {
@@ -388,7 +388,7 @@ struct Entry {
 
 	public enum string[] FIELDS = ["item", "craftingSlot", "playerSlot"];
 
-	public sul.protocol.minecraft334.types.Slot item;
+	public sul.protocol.minecraft335.types.Slot item;
 	public ubyte craftingSlot;
 	public ubyte playerSlot;
 

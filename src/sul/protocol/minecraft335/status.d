@@ -4,9 +4,9 @@
  * 
  * License: https://github.com/sel-project/sel-utils/blob/master/LICENSE
  * Repository: https://github.com/sel-project/sel-utils
- * Generated from https://github.com/sel-project/sel-utils/blob/master/xml/protocol/minecraft334.xml
+ * Generated from https://github.com/sel-project/sel-utils/blob/master/xml/protocol/minecraft335.xml
  */
-module sul.protocol.minecraft334.status;
+module sul.protocol.minecraft335.status;
 
 import std.bitmanip : write, peek;
 static import std.conv;
@@ -18,9 +18,9 @@ import std.uuid : UUID;
 import sul.utils.buffer;
 import sul.utils.var;
 
-static import sul.protocol.minecraft334.types;
+static import sul.protocol.minecraft335.types;
 
-static if(__traits(compiles, { import sul.metadata.minecraft334; })) import sul.metadata.minecraft334;
+static if(__traits(compiles, { import sul.metadata.minecraft335; })) import sul.metadata.minecraft335;
 
 alias Packets = TypeTuple!(Handshake, Request, Response, Latency);
 
@@ -37,7 +37,7 @@ class Handshake : Buffer {
 
 	public enum string[] FIELDS = ["protocol", "serverAddress", "serverPort", "next"];
 
-	public uint protocol = 334;
+	public uint protocol = 335;
 	public string serverAddress;
 	public ushort serverPort;
 	public uint next;

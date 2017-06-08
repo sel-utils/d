@@ -4,9 +4,9 @@
  * 
  * License: https://github.com/sel-project/sel-utils/blob/master/LICENSE
  * Repository: https://github.com/sel-project/sel-utils
- * Generated from https://github.com/sel-project/sel-utils/blob/master/xml/protocol/minecraft334.xml
+ * Generated from https://github.com/sel-project/sel-utils/blob/master/xml/protocol/minecraft335.xml
  */
-module sul.protocol.minecraft334.serverbound;
+module sul.protocol.minecraft335.serverbound;
 
 import std.bitmanip : write, peek;
 static import std.conv;
@@ -18,9 +18,9 @@ import std.uuid : UUID;
 import sul.utils.buffer;
 import sul.utils.var;
 
-static import sul.protocol.minecraft334.types;
+static import sul.protocol.minecraft335.types;
 
-static if(__traits(compiles, { import sul.metadata.minecraft334; })) import sul.metadata.minecraft334;
+static if(__traits(compiles, { import sul.metadata.minecraft335; })) import sul.metadata.minecraft335;
 
 alias Packets = TypeTuple!(TeleportConfirm, CraftingGrid, TabComplete, ChatMessage, ClientStatus, ClientSettings, ConfirmTransaction, EnchantItem, ClickWindow, CloseWindow, PluginMessage, UseEntity, KeepAlive, Player, PlayerPosition, PlayerPositionAndLook, PlayerLook, VehicleMove, SteerBoat, PlayerAbilities, PlayerDigging, EntityAction, SteerVehicle, CraftingBookData, ResourcePackStatus, AdvencementTab, HeldItemChange, CreativeInventoryAction, UpdateSign, Animation, Spectate, PlayerBlockPlacement, UseItem);
 
@@ -77,12 +77,12 @@ class CraftingGrid : Buffer {
 
 	public ubyte window;
 	public ushort action;
-	public sul.protocol.minecraft334.types.Entry[] returnEntry;
-	public sul.protocol.minecraft334.types.Entry[] prepareEntry;
+	public sul.protocol.minecraft335.types.Entry[] returnEntry;
+	public sul.protocol.minecraft335.types.Entry[] prepareEntry;
 
 	public pure nothrow @safe @nogc this() {}
 
-	public pure nothrow @safe @nogc this(ubyte window, ushort action=ushort.init, sul.protocol.minecraft334.types.Entry[] returnEntry=(sul.protocol.minecraft334.types.Entry[]).init, sul.protocol.minecraft334.types.Entry[] prepareEntry=(sul.protocol.minecraft334.types.Entry[]).init) {
+	public pure nothrow @safe @nogc this(ubyte window, ushort action=ushort.init, sul.protocol.minecraft335.types.Entry[] returnEntry=(sul.protocol.minecraft335.types.Entry[]).init, sul.protocol.minecraft335.types.Entry[] prepareEntry=(sul.protocol.minecraft335.types.Entry[]).init) {
 		this.window = window;
 		this.action = action;
 		this.returnEntry = returnEntry;
@@ -452,11 +452,11 @@ class ClickWindow : Buffer {
 	public ubyte button;
 	public ushort action;
 	public uint mode;
-	public sul.protocol.minecraft334.types.Slot clickedItem;
+	public sul.protocol.minecraft335.types.Slot clickedItem;
 
 	public pure nothrow @safe @nogc this() {}
 
-	public pure nothrow @safe @nogc this(ubyte window, ushort slot=ushort.init, ubyte button=ubyte.init, ushort action=ushort.init, uint mode=uint.init, sul.protocol.minecraft334.types.Slot clickedItem=sul.protocol.minecraft334.types.Slot.init) {
+	public pure nothrow @safe @nogc this(ubyte window, ushort slot=ushort.init, ubyte button=ubyte.init, ushort action=ushort.init, uint mode=uint.init, sul.protocol.minecraft335.types.Slot clickedItem=sul.protocol.minecraft335.types.Slot.init) {
 		this.window = window;
 		this.slot = slot;
 		this.button = button;
@@ -1476,11 +1476,11 @@ class CreativeInventoryAction : Buffer {
 	public enum string[] FIELDS = ["slot", "clickedItem"];
 
 	public ushort slot;
-	public sul.protocol.minecraft334.types.Slot clickedItem;
+	public sul.protocol.minecraft335.types.Slot clickedItem;
 
 	public pure nothrow @safe @nogc this() {}
 
-	public pure nothrow @safe @nogc this(ushort slot, sul.protocol.minecraft334.types.Slot clickedItem=sul.protocol.minecraft334.types.Slot.init) {
+	public pure nothrow @safe @nogc this(ushort slot, sul.protocol.minecraft335.types.Slot clickedItem=sul.protocol.minecraft335.types.Slot.init) {
 		this.slot = slot;
 		this.clickedItem = clickedItem;
 	}
