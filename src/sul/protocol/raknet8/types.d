@@ -21,11 +21,12 @@ static if(__traits(compiles, { import sul.metadata.raknet8; })) import sul.metad
 
 struct Address {
 
-	public enum string[] FIELDS = ["type", "ipv4", "ipv6", "port"];
+	public enum string[] FIELDS = ["type", "ipv4", "ipv6", "unknown3", "port"];
 
 	public ubyte type;
 	public uint ipv4;
 	public ubyte[16] ipv6;
+	public ubyte[10] unknown3;
 	public ushort port;
 
 	public pure nothrow @safe void encode(Buffer buffer) {
@@ -33,6 +34,7 @@ struct Address {
 			writeBigEndianUbyte(type);
 			if(type==4){ writeBigEndianUint(ipv4); }
 			if(type==6){ writeBytes(ipv6); }
+			if(type==6){ writeBytes(unknown3); }
 			writeBigEndianUshort(port);
 		}
 	}
@@ -42,12 +44,13 @@ struct Address {
 			type=readBigEndianUbyte();
 			if(type==4){ ipv4=readBigEndianUint(); }
 			if(type==6){ if(_buffer.length>=_index+ipv6.length){ ipv6=_buffer[_index.._index+ipv6.length].dup; _index+=ipv6.length; } }
+			if(type==6){ if(_buffer.length>=_index+unknown3.length){ unknown3=_buffer[_index.._index+unknown3.length].dup; _index+=unknown3.length; } }
 			port=readBigEndianUshort();
 		}
 	}
 
 	public string toString() {
-		return "Address(type: " ~ std.conv.to!string(this.type) ~ ", ipv4: " ~ std.conv.to!string(this.ipv4) ~ ", ipv6: " ~ std.conv.to!string(this.ipv6) ~ ", port: " ~ std.conv.to!string(this.port) ~ ")";
+		return "Address(type: " ~ std.conv.to!string(this.type) ~ ", ipv4: " ~ std.conv.to!string(this.ipv4) ~ ", ipv6: " ~ std.conv.to!string(this.ipv6) ~ ", unknown3: " ~ std.conv.to!string(this.unknown3) ~ ", port: " ~ std.conv.to!string(this.port) ~ ")";
 	}
 
 }
