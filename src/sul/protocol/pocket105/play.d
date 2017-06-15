@@ -926,7 +926,7 @@ class StartGame : Buffer {
 	public enum ubyte CLASSIC = 0;
 	public enum ubyte EDUCATION = 1;
 
-	public enum string[] FIELDS = ["entityId", "runtimeId", "position", "yaw", "pitch", "seed", "dimension", "generator", "worldGamemode", "difficulty", "spawnPosition", "loadedInCreative", "time", "edition", "rainLevel", "lightingLevel", "commandsEnabled", "textureRequired", "levelId", "worldName"];
+	public enum string[] FIELDS = ["entityId", "runtimeId", "position", "yaw", "pitch", "seed", "dimension", "generator", "worldGamemode", "difficulty", "spawnPosition", "loadedInCreative", "time", "edition", "rainLevel", "lightningLevel", "commandsEnabled", "textureRequired", "levelId", "worldName"];
 
 	/**
 	 * Player's entity id that uniquely identifies the entity of the server.
@@ -994,7 +994,7 @@ class StartGame : Buffer {
 	 * rain.
 	 */
 	public float rainLevel;
-	public float lightingLevel;
+	public float lightningLevel;
 
 	/**
 	 * Indicates whether the cheats are enabled. If the cheats are disabled the player
@@ -1012,7 +1012,7 @@ class StartGame : Buffer {
 
 	public pure nothrow @safe @nogc this() {}
 
-	public pure nothrow @safe @nogc this(long entityId, long runtimeId=long.init, Tuple!(float, "x", float, "y", float, "z") position=Tuple!(float, "x", float, "y", float, "z").init, float yaw=float.init, float pitch=float.init, int seed=int.init, int dimension=0, int generator=1, int worldGamemode=int.init, int difficulty=int.init, Tuple!(int, "x", int, "y", int, "z") spawnPosition=Tuple!(int, "x", int, "y", int, "z").init, bool loadedInCreative=bool.init, int time=int.init, ubyte edition=ubyte.init, float rainLevel=float.init, float lightingLevel=float.init, bool commandsEnabled=bool.init, bool textureRequired=bool.init, string levelId=string.init, string worldName=string.init) {
+	public pure nothrow @safe @nogc this(long entityId, long runtimeId=long.init, Tuple!(float, "x", float, "y", float, "z") position=Tuple!(float, "x", float, "y", float, "z").init, float yaw=float.init, float pitch=float.init, int seed=int.init, int dimension=0, int generator=1, int worldGamemode=int.init, int difficulty=int.init, Tuple!(int, "x", int, "y", int, "z") spawnPosition=Tuple!(int, "x", int, "y", int, "z").init, bool loadedInCreative=bool.init, int time=int.init, ubyte edition=ubyte.init, float rainLevel=float.init, float lightningLevel=float.init, bool commandsEnabled=bool.init, bool textureRequired=bool.init, string levelId=string.init, string worldName=string.init) {
 		this.entityId = entityId;
 		this.runtimeId = runtimeId;
 		this.position = position;
@@ -1028,7 +1028,7 @@ class StartGame : Buffer {
 		this.time = time;
 		this.edition = edition;
 		this.rainLevel = rainLevel;
-		this.lightingLevel = lightingLevel;
+		this.lightningLevel = lightningLevel;
 		this.commandsEnabled = commandsEnabled;
 		this.textureRequired = textureRequired;
 		this.levelId = levelId;
@@ -1053,7 +1053,7 @@ class StartGame : Buffer {
 		writeBytes(varint.encode(time));
 		writeBigEndianUbyte(edition);
 		writeLittleEndianFloat(rainLevel);
-		writeLittleEndianFloat(lightingLevel);
+		writeLittleEndianFloat(lightningLevel);
 		writeBigEndianBool(commandsEnabled);
 		writeBigEndianBool(textureRequired);
 		writeBytes(varuint.encode(cast(uint)levelId.length)); writeString(levelId);
@@ -1078,7 +1078,7 @@ class StartGame : Buffer {
 		time=varint.decode(_buffer, &_index);
 		edition=readBigEndianUbyte();
 		rainLevel=readLittleEndianFloat();
-		lightingLevel=readLittleEndianFloat();
+		lightningLevel=readLittleEndianFloat();
 		commandsEnabled=readBigEndianBool();
 		textureRequired=readBigEndianBool();
 		uint bvzxz=varuint.decode(_buffer, &_index); levelId=readString(bvzxz);
@@ -1093,7 +1093,7 @@ class StartGame : Buffer {
 	}
 
 	public override string toString() {
-		return "StartGame(entityId: " ~ std.conv.to!string(this.entityId) ~ ", runtimeId: " ~ std.conv.to!string(this.runtimeId) ~ ", position: " ~ std.conv.to!string(this.position) ~ ", yaw: " ~ std.conv.to!string(this.yaw) ~ ", pitch: " ~ std.conv.to!string(this.pitch) ~ ", seed: " ~ std.conv.to!string(this.seed) ~ ", dimension: " ~ std.conv.to!string(this.dimension) ~ ", generator: " ~ std.conv.to!string(this.generator) ~ ", worldGamemode: " ~ std.conv.to!string(this.worldGamemode) ~ ", difficulty: " ~ std.conv.to!string(this.difficulty) ~ ", spawnPosition: " ~ std.conv.to!string(this.spawnPosition) ~ ", loadedInCreative: " ~ std.conv.to!string(this.loadedInCreative) ~ ", time: " ~ std.conv.to!string(this.time) ~ ", edition: " ~ std.conv.to!string(this.edition) ~ ", rainLevel: " ~ std.conv.to!string(this.rainLevel) ~ ", lightingLevel: " ~ std.conv.to!string(this.lightingLevel) ~ ", commandsEnabled: " ~ std.conv.to!string(this.commandsEnabled) ~ ", textureRequired: " ~ std.conv.to!string(this.textureRequired) ~ ", levelId: " ~ std.conv.to!string(this.levelId) ~ ", worldName: " ~ std.conv.to!string(this.worldName) ~ ")";
+		return "StartGame(entityId: " ~ std.conv.to!string(this.entityId) ~ ", runtimeId: " ~ std.conv.to!string(this.runtimeId) ~ ", position: " ~ std.conv.to!string(this.position) ~ ", yaw: " ~ std.conv.to!string(this.yaw) ~ ", pitch: " ~ std.conv.to!string(this.pitch) ~ ", seed: " ~ std.conv.to!string(this.seed) ~ ", dimension: " ~ std.conv.to!string(this.dimension) ~ ", generator: " ~ std.conv.to!string(this.generator) ~ ", worldGamemode: " ~ std.conv.to!string(this.worldGamemode) ~ ", difficulty: " ~ std.conv.to!string(this.difficulty) ~ ", spawnPosition: " ~ std.conv.to!string(this.spawnPosition) ~ ", loadedInCreative: " ~ std.conv.to!string(this.loadedInCreative) ~ ", time: " ~ std.conv.to!string(this.time) ~ ", edition: " ~ std.conv.to!string(this.edition) ~ ", rainLevel: " ~ std.conv.to!string(this.rainLevel) ~ ", lightningLevel: " ~ std.conv.to!string(this.lightningLevel) ~ ", commandsEnabled: " ~ std.conv.to!string(this.commandsEnabled) ~ ", textureRequired: " ~ std.conv.to!string(this.textureRequired) ~ ", levelId: " ~ std.conv.to!string(this.levelId) ~ ", worldName: " ~ std.conv.to!string(this.worldName) ~ ")";
 	}
 
 }
