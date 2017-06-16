@@ -78,7 +78,7 @@ public enum Entities : Entity
     vindicator = Entity("vindicator", EntityData(true, 36), EntityData(true, 56), false, 0.6, 1.95),
     illusioner = Entity("illusioner", EntityData(true, 37), EntityData(false), false, 0.6, 1.95),
     creeper = Entity("creeper", EntityData(true, 50), EntityData(true, 33), false, 0.6, 1.7),
-    skeleton = Entity("skeleton", EntityData(false), EntityData(true, 34), false, 0.6, 1.99),
+    skeleton = Entity("skeleton", EntityData(true, 51), EntityData(true, 34), false, 0.6, 1.99),
     spider = Entity("spider", EntityData(true, 52), EntityData(true, 35), false, 1.4, 0.9),
     giant = Entity("giant", EntityData(true, 53), EntityData(false), false, 3.6, 10.8),
     zombie = Entity("zombie", EntityData(true, 54), EntityData(true, 32), false, 0.6, 1.95),
