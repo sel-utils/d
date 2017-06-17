@@ -1485,5 +1485,6 @@ public enum Blocks : Block
     fire13 = Block("fire 13", 1421, BlockData(true, 51, 13), BlockData(true, 51, 13), false, -1, 0, 0, 15, 0, 0, false, BoundingBox(Point(0, 0, 0), Point(16, 16, 16))),
     fire14 = Block("fire 14", 1422, BlockData(true, 51, 14), BlockData(true, 51, 14), false, -1, 0, 0, 15, 0, 0, false, BoundingBox(Point(0, 0, 0), Point(16, 16, 16))),
     fire15 = Block("fire 15", 1423, BlockData(true, 51, 15), BlockData(true, 51, 15), false, -1, 0, 0, 15, 0, 0, false, BoundingBox(Point(0, 0, 0), Point(16, 16, 16))),
+    smoothStoneSlab = Block("smooth stone slab", 1424, BlockData(true, 43, 8), BlockData(false), true, 2, 30, 15, 0, 0, 0, false, BoundingBox(Point(0, 0, 0), Point(16, 16, 16))),
 
 }

@@ -80,7 +80,7 @@ public enum Entities : Entity
     creeper = Entity("creeper", EntityData(true, 50), EntityData(true, 33), false, 0.6, 1.7),
     skeleton = Entity("skeleton", EntityData(true, 51), EntityData(true, 34), false, 0.6, 1.99),
     spider = Entity("spider", EntityData(true, 52), EntityData(true, 35), false, 1.4, 0.9),
-    giant = Entity("giant", EntityData(true, 53), EntityData(false), false, 3.6, 10.8),
+    giant = Entity("giant", EntityData(true, 53), EntityData(false), false, 3.6, 11.7),
     zombie = Entity("zombie", EntityData(true, 54), EntityData(true, 32), false, 0.6, 1.95),
     slime = Entity("slime", EntityData(true, 55), EntityData(true, 37), false, 0.51, 0.51),
     ghast = Entity("ghast", EntityData(true, 56), EntityData(true, 41), false, 4, 4),
