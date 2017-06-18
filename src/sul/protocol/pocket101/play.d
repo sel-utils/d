@@ -2491,8 +2491,8 @@ class Interact : Buffer {
 	public enum bool SERVERBOUND = true;
 
 	// action
-	public enum ubyte ATTACK = 1;
-	public enum ubyte INTERACT = 2;
+	public enum ubyte INTERACT = 1;
+	public enum ubyte ATTACK = 2;
 	public enum ubyte LEAVE_VEHICLE = 3;
 	public enum ubyte HOVER = 4;
 
