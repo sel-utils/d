@@ -30,8 +30,8 @@ public enum Entities : Entity
 {
 
     boat = Entity("boat", EntityData(true, 1), EntityData(true, 90), true, 1.5, 0.6),
-    droppedItem = Entity("dropped item", EntityData(true, 2), EntityData(true, 64), true, 0.25, 0.25),
-    experienceOrb = Entity("experience orb", EntityData(true, 2), EntityData(true, 69), true, 0.25, 0.25),
+    droppedItem = Entity("dropped item", EntityData(true, 2), EntityData(false), true, 0.25, 0.25),
+    experienceOrb = Entity("experience orb", EntityData(false), EntityData(true, 69), true, 0.25, 0.25),
     areaEffectCloud = Entity("area effect cloud", EntityData(true, 3), EntityData(true, 95), true, 2, 0.5),
     minecart = Entity("minecart", EntityData(true, 10), EntityData(true, 84), true, 0.98, 0.7),
     minecartWithHopper = Entity("minecart with hopper", EntityData(false), EntityData(true, 96), true, 0.98, 0.7),
@@ -62,7 +62,7 @@ public enum Entities : Entity
     spectralArrow = Entity("spectral arrow", EntityData(true, 91), EntityData(false), true, 0.5, 0.5),
     dragonFireball = Entity("dragon fireball", EntityData(true, 93), EntityData(true, 79), true, 1, 1),
     camera = Entity("camera", EntityData(false), EntityData(true, 62), true),
-    painting = Entity("painting", EntityData(false), EntityData(true, 83), true),
+    painting = Entity("painting", EntityData(false), EntityData(false), true),
     lightning = Entity("lightning", EntityData(false), EntityData(true, 93), true),
     elderGuardian = Entity("elder guardian", EntityData(true, 4), EntityData(true, 50), false, 1.9975, 1.9975),
     witherSkeleton = Entity("wither skeleton", EntityData(true, 5), EntityData(true, 48), false, 0.7, 2.4),
