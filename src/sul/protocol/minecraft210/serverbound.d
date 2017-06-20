@@ -573,7 +573,7 @@ class UseEntity : Buffer {
 		writeBytes(varuint.encode(target));
 		writeBytes(varuint.encode(type));
 		if(type==2){ writeBigEndianFloat(targetPosition.x); writeBigEndianFloat(targetPosition.y); writeBigEndianFloat(targetPosition.z); }
-		if(type==2){ writeBytes(varuint.encode(hand)); }
+		if(type==0||type==2){ writeBytes(varuint.encode(hand)); }
 		return _buffer;
 	}
 
@@ -582,7 +582,7 @@ class UseEntity : Buffer {
 		target=varuint.decode(_buffer, &_index);
 		type=varuint.decode(_buffer, &_index);
 		if(type==2){ targetPosition.x=readBigEndianFloat(); targetPosition.y=readBigEndianFloat(); targetPosition.z=readBigEndianFloat(); }
-		if(type==2){ hand=varuint.decode(_buffer, &_index); }
+		if(type==0||type==2){ hand=varuint.decode(_buffer, &_index); }
 	}
 
 	public static pure nothrow @safe UseEntity fromBuffer(bool readId=true)(ubyte[] buffer) {
@@ -1081,7 +1081,7 @@ class EntityAction : Buffer {
 		static if(writeId){ writeBytes(varuint.encode(ID)); }
 		writeBytes(varuint.encode(entityId));
 		writeBytes(varuint.encode(action));
-		if(action==5){ writeBytes(varuint.encode(jumpBoost)); }
+		writeBytes(varuint.encode(jumpBoost));
 		return _buffer;
 	}
 
@@ -1089,7 +1089,7 @@ class EntityAction : Buffer {
 		static if(readId){ uint _id; _id=varuint.decode(_buffer, &_index); }
 		entityId=varuint.decode(_buffer, &_index);
 		action=varuint.decode(_buffer, &_index);
-		if(action==5){ jumpBoost=varuint.decode(_buffer, &_index); }
+		jumpBoost=varuint.decode(_buffer, &_index);
 	}
 
 	public static pure nothrow @safe EntityAction fromBuffer(bool readId=true)(ubyte[] buffer) {
