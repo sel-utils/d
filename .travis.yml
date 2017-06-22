@@ -1,16 +1,12 @@
 language: d
 
 d:
- - dmd-2.074.0
- - dmd-2.073.2
- - dmd-2.072.2
- - dmd-2.071.2
- - dmd-2.070.2
- - dmd-2.069.2
- - dmd-2.068.2
- - dmd-2.067.1
- - dmd-2.066.1
- - ldc-1.2.0
+ - dmd
+ - ldc
+ 
+os:
+ - linux
+ - osx
  
 script:
  - dub build --build=release
