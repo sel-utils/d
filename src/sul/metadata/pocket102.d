@@ -1053,47 +1053,47 @@ class Metadata {
 					case 0:
 						byte _0;
 						_0=readBigEndianByte();
-						metadata.decoded ~= new DecodedMetadata(id, 0, _0);
+						metadata.decoded ~= DecodedMetadata.fromByte(id, _0);
 						break;
 					case 1:
 						short _1;
 						_1=readLittleEndianShort();
-						metadata.decoded ~= new DecodedMetadata(id, 1, _1);
+						metadata.decoded ~= DecodedMetadata.fromShort(id, _1);
 						break;
 					case 2:
 						int _2;
 						_2=varint.decode(_buffer, &_index);
-						metadata.decoded ~= new DecodedMetadata(id, 2, _2);
+						metadata.decoded ~= DecodedMetadata.fromInt(id, _2);
 						break;
 					case 3:
 						float _3;
 						_3=readLittleEndianFloat();
-						metadata.decoded ~= new DecodedMetadata(id, 3, _3);
+						metadata.decoded ~= DecodedMetadata.fromFloat(id, _3);
 						break;
 					case 4:
 						string _4;
 						uint xq=varuint.decode(_buffer, &_index); _4=readString(xq);
-						metadata.decoded ~= new DecodedMetadata(id, 4, _4);
+						metadata.decoded ~= DecodedMetadata.fromString(id, _4);
 						break;
 					case 5:
 						sul.protocol.pocket102.types.Slot _5;
 						_5.decode(bufferInstance);
-						metadata.decoded ~= new DecodedMetadata(id, 5, _5);
+						metadata.decoded ~= DecodedMetadata.fromSlot(id, _5);
 						break;
 					case 6:
 						Tuple!(int, "x", int, "y", int, "z") _6;
 						_6.x=varint.decode(_buffer, &_index); _6.y=varint.decode(_buffer, &_index); _6.z=varint.decode(_buffer, &_index);
-						metadata.decoded ~= new DecodedMetadata(id, 6, _6);
+						metadata.decoded ~= DecodedMetadata.fromBlockPosition(id, _6);
 						break;
 					case 7:
 						long _7;
 						_7=varlong.decode(_buffer, &_index);
-						metadata.decoded ~= new DecodedMetadata(id, 7, _7);
+						metadata.decoded ~= DecodedMetadata.fromLong(id, _7);
 						break;
 					case 8:
 						Tuple!(float, "x", float, "y", float, "z") _8;
 						_8.x=readLittleEndianFloat(); _8.y=readLittleEndianFloat(); _8.z=readLittleEndianFloat();
-						metadata.decoded ~= new DecodedMetadata(id, 8, _8);
+						metadata.decoded ~= DecodedMetadata.fromEntityPosition(id, _8);
 						break;
 					default:
 						break;
@@ -1107,7 +1107,8 @@ class Metadata {
 
 class DecodedMetadata {
 
-	public immutable uint id, type;
+	public immutable uint id;
+	public immutable uint type;
 
 	union {
 		byte byte_;
@@ -1121,58 +1122,63 @@ class DecodedMetadata {
 		Tuple!(float, "x", float, "y", float, "z") entity_position;
 	}
 
-	public pure nothrow @trusted this(uint id, uint type, byte value) {
+	private pure nothrow @safe @nogc this(uint id, uint type) {
 		this.id = id;
 		this.type = type;
-		this.byte_ = value;
 	}
 
-	public pure nothrow @trusted this(uint id, uint type, short value) {
-		this.id = id;
-		this.type = type;
-		this.short_ = value;
+	public static pure nothrow @trusted DecodedMetadata fromByte(uint id, byte value) {
+		auto ret = new DecodedMetadata(id, 0);
+		ret.byte_ = value;
+		return ret;
 	}
 
-	public pure nothrow @trusted this(uint id, uint type, int value) {
-		this.id = id;
-		this.type = type;
-		this.int_ = value;
+	public static pure nothrow @trusted DecodedMetadata fromShort(uint id, short value) {
+		auto ret = new DecodedMetadata(id, 1);
+		ret.short_ = value;
+		return ret;
 	}
 
-	public pure nothrow @trusted this(uint id, uint type, float value) {
-		this.id = id;
-		this.type = type;
-		this.float_ = value;
+	public static pure nothrow @trusted DecodedMetadata fromInt(uint id, int value) {
+		auto ret = new DecodedMetadata(id, 2);
+		ret.int_ = value;
+		return ret;
 	}
 
-	public pure nothrow @trusted this(uint id, uint type, string value) {
-		this.id = id;
-		this.type = type;
-		this.string_ = value;
+	public static pure nothrow @trusted DecodedMetadata fromFloat(uint id, float value) {
+		auto ret = new DecodedMetadata(id, 3);
+		ret.float_ = value;
+		return ret;
 	}
 
-	public pure nothrow @trusted this(uint id, uint type, sul.protocol.pocket102.types.Slot value) {
-		this.id = id;
-		this.type = type;
-		this.slot = value;
+	public static pure nothrow @trusted DecodedMetadata fromString(uint id, string value) {
+		auto ret = new DecodedMetadata(id, 4);
+		ret.string_ = value;
+		return ret;
 	}
 
-	public pure nothrow @trusted this(uint id, uint type, Tuple!(int, "x", int, "y", int, "z") value) {
-		this.id = id;
-		this.type = type;
-		this.block_position = value;
+	public static pure nothrow @trusted DecodedMetadata fromSlot(uint id, sul.protocol.pocket102.types.Slot value) {
+		auto ret = new DecodedMetadata(id, 5);
+		ret.slot = value;
+		return ret;
 	}
 
-	public pure nothrow @trusted this(uint id, uint type, long value) {
-		this.id = id;
-		this.type = type;
-		this.long_ = value;
+	public static pure nothrow @trusted DecodedMetadata fromBlockPosition(uint id, Tuple!(int, "x", int, "y", int, "z") value) {
+		auto ret = new DecodedMetadata(id, 6);
+		ret.block_position = value;
+		return ret;
 	}
 
-	public pure nothrow @trusted this(uint id, uint type, Tuple!(float, "x", float, "y", float, "z") value) {
-		this.id = id;
-		this.type = type;
-		this.entity_position = value;
+	public static pure nothrow @trusted DecodedMetadata fromLong(uint id, long value) {
+		auto ret = new DecodedMetadata(id, 7);
+		ret.long_ = value;
+		return ret;
+	}
+
+	public static pure nothrow @trusted DecodedMetadata fromEntityPosition(uint id, Tuple!(float, "x", float, "y", float, "z") value) {
+		auto ret = new DecodedMetadata(id, 8);
+		ret.entity_position = value;
+		return ret;
 	}
 
 }

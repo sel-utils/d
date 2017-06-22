@@ -2943,67 +2943,67 @@ class Metadata {
 					case 0:
 						byte _0;
 						_0=readBigEndianByte();
-						metadata.decoded ~= new DecodedMetadata(id, 0, _0);
+						metadata.decoded ~= DecodedMetadata.fromByte(id, _0);
 						break;
 					case 1:
 						uint _1;
 						_1=varuint.decode(_buffer, &_index);
-						metadata.decoded ~= new DecodedMetadata(id, 1, _1);
+						metadata.decoded ~= DecodedMetadata.fromInt(id, _1);
 						break;
 					case 2:
 						float _2;
 						_2=readBigEndianFloat();
-						metadata.decoded ~= new DecodedMetadata(id, 2, _2);
+						metadata.decoded ~= DecodedMetadata.fromFloat(id, _2);
 						break;
 					case 3:
 						string _3;
 						uint xm=varuint.decode(_buffer, &_index); _3=readString(xm);
-						metadata.decoded ~= new DecodedMetadata(id, 3, _3);
+						metadata.decoded ~= DecodedMetadata.fromString(id, _3);
 						break;
 					case 4:
 						string _4;
 						uint xq=varuint.decode(_buffer, &_index); _4=readString(xq);
-						metadata.decoded ~= new DecodedMetadata(id, 4, _4);
+						metadata.decoded ~= DecodedMetadata.fromChat(id, _4);
 						break;
 					case 5:
 						sul.protocol.minecraft316.types.Slot _5;
 						_5.decode(bufferInstance);
-						metadata.decoded ~= new DecodedMetadata(id, 5, _5);
+						metadata.decoded ~= DecodedMetadata.fromSlot(id, _5);
 						break;
 					case 6:
 						bool _6;
 						_6=readBigEndianBool();
-						metadata.decoded ~= new DecodedMetadata(id, 6, _6);
+						metadata.decoded ~= DecodedMetadata.fromBool(id, _6);
 						break;
 					case 7:
 						Tuple!(float, "x", float, "y", float, "z") _7;
 						_7.x=readBigEndianFloat(); _7.y=readBigEndianFloat(); _7.z=readBigEndianFloat();
-						metadata.decoded ~= new DecodedMetadata(id, 7, _7);
+						metadata.decoded ~= DecodedMetadata.fromRotation(id, _7);
 						break;
 					case 8:
 						ulong _8;
 						_8=readBigEndianUlong();
-						metadata.decoded ~= new DecodedMetadata(id, 8, _8);
+						metadata.decoded ~= DecodedMetadata.fromPosition(id, _8);
 						break;
 					case 9:
 						sul.protocol.minecraft316.types.OptionalPosition _9;
 						_9.decode(bufferInstance);
-						metadata.decoded ~= new DecodedMetadata(id, 9, _9);
+						metadata.decoded ~= DecodedMetadata.fromOptionalPosition(id, _9);
 						break;
 					case 10:
 						uint _10;
 						_10=varuint.decode(_buffer, &_index);
-						metadata.decoded ~= new DecodedMetadata(id, 10, _10);
+						metadata.decoded ~= DecodedMetadata.fromDirection(id, _10);
 						break;
 					case 11:
 						sul.protocol.minecraft316.types.OptionalUuid _11;
 						_11.decode(bufferInstance);
-						metadata.decoded ~= new DecodedMetadata(id, 11, _11);
+						metadata.decoded ~= DecodedMetadata.fromUuid(id, _11);
 						break;
 					case 12:
 						uint _12;
 						_12=varuint.decode(_buffer, &_index);
-						metadata.decoded ~= new DecodedMetadata(id, 12, _12);
+						metadata.decoded ~= DecodedMetadata.fromBlock(id, _12);
 						break;
 					default:
 						break;
@@ -3017,7 +3017,8 @@ class Metadata {
 
 class DecodedMetadata {
 
-	public immutable ubyte id, type;
+	public immutable ubyte id;
+	public immutable ubyte type;
 
 	union {
 		byte byte_;
@@ -3035,64 +3036,87 @@ class DecodedMetadata {
 		uint block;
 	}
 
-	public pure nothrow @trusted this(ubyte id, ubyte type, byte value) {
+	private pure nothrow @safe @nogc this(ubyte id, ubyte type) {
 		this.id = id;
 		this.type = type;
-		this.byte_ = value;
 	}
 
-	public pure nothrow @trusted this(ubyte id, ubyte type, uint value) {
-		this.id = id;
-		this.type = type;
-		this.int_ = value;
+	public static pure nothrow @trusted DecodedMetadata fromByte(ubyte id, byte value) {
+		auto ret = new DecodedMetadata(id, 0);
+		ret.byte_ = value;
+		return ret;
 	}
 
-	public pure nothrow @trusted this(ubyte id, ubyte type, float value) {
-		this.id = id;
-		this.type = type;
-		this.float_ = value;
+	public static pure nothrow @trusted DecodedMetadata fromInt(ubyte id, uint value) {
+		auto ret = new DecodedMetadata(id, 1);
+		ret.int_ = value;
+		return ret;
 	}
 
-	public pure nothrow @trusted this(ubyte id, ubyte type, string value) {
-		this.id = id;
-		this.type = type;
-		this.string_ = value;
+	public static pure nothrow @trusted DecodedMetadata fromFloat(ubyte id, float value) {
+		auto ret = new DecodedMetadata(id, 2);
+		ret.float_ = value;
+		return ret;
 	}
 
-	public pure nothrow @trusted this(ubyte id, ubyte type, sul.protocol.minecraft316.types.Slot value) {
-		this.id = id;
-		this.type = type;
-		this.slot = value;
+	public static pure nothrow @trusted DecodedMetadata fromString(ubyte id, string value) {
+		auto ret = new DecodedMetadata(id, 3);
+		ret.string_ = value;
+		return ret;
 	}
 
-	public pure nothrow @trusted this(ubyte id, ubyte type, bool value) {
-		this.id = id;
-		this.type = type;
-		this.bool_ = value;
+	public static pure nothrow @trusted DecodedMetadata fromChat(ubyte id, string value) {
+		auto ret = new DecodedMetadata(id, 4);
+		ret.chat = value;
+		return ret;
 	}
 
-	public pure nothrow @trusted this(ubyte id, ubyte type, Tuple!(float, "x", float, "y", float, "z") value) {
-		this.id = id;
-		this.type = type;
-		this.rotation = value;
+	public static pure nothrow @trusted DecodedMetadata fromSlot(ubyte id, sul.protocol.minecraft316.types.Slot value) {
+		auto ret = new DecodedMetadata(id, 5);
+		ret.slot = value;
+		return ret;
 	}
 
-	public pure nothrow @trusted this(ubyte id, ubyte type, ulong value) {
-		this.id = id;
-		this.type = type;
-		this.position = value;
+	public static pure nothrow @trusted DecodedMetadata fromBool(ubyte id, bool value) {
+		auto ret = new DecodedMetadata(id, 6);
+		ret.bool_ = value;
+		return ret;
 	}
 
-	public pure nothrow @trusted this(ubyte id, ubyte type, sul.protocol.minecraft316.types.OptionalPosition value) {
-		this.id = id;
-		this.type = type;
-		this.optional_position = value;
+	public static pure nothrow @trusted DecodedMetadata fromRotation(ubyte id, Tuple!(float, "x", float, "y", float, "z") value) {
+		auto ret = new DecodedMetadata(id, 7);
+		ret.rotation = value;
+		return ret;
 	}
 
-	public pure nothrow @trusted this(ubyte id, ubyte type, sul.protocol.minecraft316.types.OptionalUuid value) {
-		this.id = id;
-		this.type = type;
-		this.uuid = value;
+	public static pure nothrow @trusted DecodedMetadata fromPosition(ubyte id, ulong value) {
+		auto ret = new DecodedMetadata(id, 8);
+		ret.position = value;
+		return ret;
+	}
+
+	public static pure nothrow @trusted DecodedMetadata fromOptionalPosition(ubyte id, sul.protocol.minecraft316.types.OptionalPosition value) {
+		auto ret = new DecodedMetadata(id, 9);
+		ret.optional_position = value;
+		return ret;
+	}
+
+	public static pure nothrow @trusted DecodedMetadata fromDirection(ubyte id, uint value) {
+		auto ret = new DecodedMetadata(id, 10);
+		ret.direction = value;
+		return ret;
+	}
+
+	public static pure nothrow @trusted DecodedMetadata fromUuid(ubyte id, sul.protocol.minecraft316.types.OptionalUuid value) {
+		auto ret = new DecodedMetadata(id, 11);
+		ret.uuid = value;
+		return ret;
+	}
+
+	public static pure nothrow @trusted DecodedMetadata fromBlock(ubyte id, uint value) {
+		auto ret = new DecodedMetadata(id, 12);
+		ret.block = value;
+		return ret;
 	}
 
 }
