@@ -15,8 +15,8 @@ class Metadata {
 		return (ubyte[]).init;
 	}
 
-	public static pure nothrow @safe @nogc Metadata decode(Buffer buffer) {
-		return null;
+	public static pure nothrow @safe Metadata decode(Buffer buffer) {
+		return new Metadata();
 	}
 
 }

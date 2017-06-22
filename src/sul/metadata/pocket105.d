@@ -17,7 +17,85 @@ static import sul.protocol.pocket105.types;
 
 alias Changed(T) = Tuple!(T, "value", bool, "changed");
 
+enum MetadataType : uint {
+
+	BYTE = 0,
+	SHORT = 1,
+	INT = 2,
+	FLOAT = 3,
+	STRING = 4,
+	SLOT = 5,
+	BLOCK_POSITION = 6,
+	LONG = 7,
+	ENTITY_POSITION = 8,
+}
+
 class Metadata {
+
+	public enum ENTITY_FLAGS : size_t {
+		ON_FIRE = 0,
+		SNEAKING = 1,
+		RIDING = 2,
+		SPRINTING = 3,
+		USING_ITEM = 4,
+		INVISIBLE = 5,
+		TEMPTED = 6,
+		IN_LOVE = 7,
+		SADDLED = 8,
+		POWERED = 9,
+		IGNITED = 10,
+		BABY = 11,
+		CONVERTING = 12,
+		CRITICAL = 13,
+		SHOW_NAMETAG = 14,
+		ALWAYS_SHOW_NAMETAG = 15,
+		NO_AI = 16,
+		SILENT = 17,
+		CLIMBING = 18,
+		RESTING = 19,
+		SITTING = 20,
+		ANGRY = 21,
+		INTERESTED = 22,
+		CHARGED = 23,
+		TAMED = 24,
+		LEASHED = 25,
+		SHEARED = 26,
+		GLIDING = 27,
+		ELDER = 28,
+		MOVING = 29,
+		BREATHING = 30,
+		CHESTED = 31,
+		STACKABLE = 32,
+		IDLING = 36,
+	}
+	public enum uint VARIANT = 2;
+	public enum uint COLOR = 3;
+	public enum uint NAMETAG = 4;
+	public enum uint OWNER = 5;
+	public enum uint AIR = 7;
+	public enum uint POTION_COLOR = 8;
+	public enum uint POTION_AMBIENT = 9;
+	public enum uint SLIME_SIZE = 16;
+	public enum PLAYER_FLAGS : size_t {
+		ASLEEP = 1,
+	}
+	public enum uint PLAYER_INDEX = 28;
+	public enum uint BED_POSITION = 29;
+	public enum uint LEAD_HOLDER = 38;
+	public enum uint SCALE = 39;
+	public enum uint INTERACTIVE_TAG = 40;
+	public enum uint INTERACTIVE_TAG_URL = 43;
+	public enum uint MAX_AIR = 44;
+	public enum uint MARK_VARIANT = 45;
+	public enum uint BOUNDING_BOX_WIDTH = 54;
+	public enum uint BOUNDING_BOX_HEIGHT = 55;
+	public enum uint FUSE_LENGTH = 56;
+	public enum uint AREA_EFFECT_CLOUD_RADIUS = 61;
+	public enum uint AREA_EFFECT_CLOUD_WAITING = 62;
+	public enum uint AREA_EFFECT_CLOUD_PARTICLE = 63;
+	public enum uint TRADING_PLAYER = 68;
+
+	public DecodedMetadata[] decoded;
 
 	private bool _cached = false;
 	private ubyte[] _cache;
@@ -965,7 +1043,136 @@ class Metadata {
 	}
 
 	public static pure nothrow @safe Metadata decode(Buffer buffer) {
-		return null;
+		auto metadata = new Metadata();
+		with(buffer) {
+			uint id;
+			size_t length=varuint.decode(_buffer, &_index);
+			while(length-- > 0) {
+				id=varuint.decode(_buffer, &_index);
+				switch(varuint.decode(_buffer, &_index)) {
+					case 0:
+						byte _0;
+						_0=readBigEndianByte();
+						metadata.decoded ~= new DecodedMetadata(id, 0, _0);
+						break;
+					case 1:
+						short _1;
+						_1=readLittleEndianShort();
+						metadata.decoded ~= new DecodedMetadata(id, 1, _1);
+						break;
+					case 2:
+						int _2;
+						_2=varint.decode(_buffer, &_index);
+						metadata.decoded ~= new DecodedMetadata(id, 2, _2);
+						break;
+					case 3:
+						float _3;
+						_3=readLittleEndianFloat();
+						metadata.decoded ~= new DecodedMetadata(id, 3, _3);
+						break;
+					case 4:
+						string _4;
+						uint xq=varuint.decode(_buffer, &_index); _4=readString(xq);
+						metadata.decoded ~= new DecodedMetadata(id, 4, _4);
+						break;
+					case 5:
+						sul.protocol.pocket105.types.Slot _5;
+						_5.decode(bufferInstance);
+						metadata.decoded ~= new DecodedMetadata(id, 5, _5);
+						break;
+					case 6:
+						Tuple!(int, "x", int, "y", int, "z") _6;
+						_6.x=varint.decode(_buffer, &_index); _6.y=varint.decode(_buffer, &_index); _6.z=varint.decode(_buffer, &_index);
+						metadata.decoded ~= new DecodedMetadata(id, 6, _6);
+						break;
+					case 7:
+						long _7;
+						_7=varlong.decode(_buffer, &_index);
+						metadata.decoded ~= new DecodedMetadata(id, 7, _7);
+						break;
+					case 8:
+						Tuple!(float, "x", float, "y", float, "z") _8;
+						_8.x=readLittleEndianFloat(); _8.y=readLittleEndianFloat(); _8.z=readLittleEndianFloat();
+						metadata.decoded ~= new DecodedMetadata(id, 8, _8);
+						break;
+					default:
+						break;
+				}
+			}
+		}
+		return metadata;
+	}
+
+}
+
+class DecodedMetadata {
+
+	public immutable uint id, type;
+
+	union {
+		byte byte_;
+		short short_;
+		int int_;
+		float float_;
+		string string_;
+		sul.protocol.pocket105.types.Slot slot;
+		Tuple!(int, "x", int, "y", int, "z") block_position;
+		long long_;
+		Tuple!(float, "x", float, "y", float, "z") entity_position;
+	}
+
+	public pure nothrow @trusted this(uint id, uint type, byte value) {
+		this.id = id;
+		this.type = type;
+		this.byte_ = value;
+	}
+
+	public pure nothrow @trusted this(uint id, uint type, short value) {
+		this.id = id;
+		this.type = type;
+		this.short_ = value;
+	}
+
+	public pure nothrow @trusted this(uint id, uint type, int value) {
+		this.id = id;
+		this.type = type;
+		this.int_ = value;
+	}
+
+	public pure nothrow @trusted this(uint id, uint type, float value) {
+		this.id = id;
+		this.type = type;
+		this.float_ = value;
+	}
+
+	public pure nothrow @trusted this(uint id, uint type, string value) {
+		this.id = id;
+		this.type = type;
+		this.string_ = value;
+	}
+
+	public pure nothrow @trusted this(uint id, uint type, sul.protocol.pocket105.types.Slot value) {
+		this.id = id;
+		this.type = type;
+		this.slot = value;
+	}
+
+	public pure nothrow @trusted this(uint id, uint type, Tuple!(int, "x", int, "y", int, "z") value) {
+		this.id = id;
+		this.type = type;
+		this.block_position = value;
+	}
+
+	public pure nothrow @trusted this(uint id, uint type, long value) {
+		this.id = id;
+		this.type = type;
+		this.long_ = value;
+	}
+
+	public pure nothrow @trusted this(uint id, uint type, Tuple!(float, "x", float, "y", float, "z") value) {
+		this.id = id;
+		this.type = type;
+		this.entity_position = value;
 	}
 
 }

@@ -17,7 +17,128 @@ static import sul.protocol.pocket113.types;
 
 alias Changed(T) = Tuple!(T, "value", bool, "changed");
 
+enum MetadataType : uint {
+
+	BYTE = 0,
+	SHORT = 1,
+	INT = 2,
+	FLOAT = 3,
+	STRING = 4,
+	SLOT = 5,
+	BLOCK_POSITION = 6,
+	LONG = 7,
+	ENTITY_POSITION = 8,
+}
+
 class Metadata {
+
+	public enum ENTITY_FLAGS : size_t {
+		ON_FIRE = 0,
+		SNEAKING = 1,
+		RIDING = 2,
+		SPRINTING = 3,
+		USING_ITEM = 4,
+		INVISIBLE = 5,
+		TEMPTED = 6,
+		IN_LOVE = 7,
+		SADDLED = 8,
+		POWERED = 9,
+		IGNITED = 10,
+		BABY = 11,
+		CONVERTING = 12,
+		CRITICAL = 13,
+		SHOW_NAMETAG = 14,
+		ALWAYS_SHOW_NAMETAG = 15,
+		NO_AI = 16,
+		SILENT = 17,
+		CLIMBING = 18,
+		CAN_CLIMB = 19,
+		CAN_SWIM = 20,
+		CAN_FLY = 21,
+		RESTING = 22,
+		SITTING = 23,
+		ANGRY = 24,
+		INTERESTED = 25,
+		CHARGED = 26,
+		TAMED = 27,
+		LEASHED = 28,
+		SHEARED = 29,
+		GLIDING = 30,
+		ELDER = 31,
+		MOVING = 32,
+		BREATHING = 33,
+		CHESTED = 34,
+		STACKABLE = 35,
+		SHOWBASE = 36,
+		REARING = 37,
+		VIBRATING = 38,
+		IDLING = 39,
+		EVOKER_SPELL = 40,
+		CHARGE_ATTACK = 41,
+		LINGER = 45,
+	}
+	public enum uint HEALTH = 1;
+	public enum uint VARIANT = 2;
+	public enum uint COLOR = 3;
+	public enum uint NAMETAG = 4;
+	public enum uint OWNER = 5;
+	public enum uint TARGET = 6;
+	public enum uint AIR = 7;
+	public enum uint POTION_COLOR = 8;
+	public enum uint POTION_AMBIENT = 9;
+	public enum uint HURT_TIME = 11;
+	public enum uint HURT_DIRECTION = 12;
+	public enum uint PADDLE_TIME_LEFT = 13;
+	public enum uint PADDLE_TIME_RIGHT = 14;
+	public enum uint EXPERIENCE_COUNT = 15;
+	public enum uint MINECART_BLOCK = 16;
+	public enum uint MINECART_OFFSET = 17;
+	public enum uint MINECART_HAS_BLOCK = 18;
+	public enum uint ENDERMAN_ITEM_ID = 23;
+	public enum uint ENDERMAN_ITEM_DAMAGE = 24;
+	public enum uint AGE = 25;
+	public enum PLAYER_FLAGS : size_t {
+		ASLEEP = 1,
+	}
+	public enum uint PLAYER_INDEX = 28;
+	public enum uint BED_POSITION = 29;
+	public enum uint FIREBALL_POWER_X = 30;
+	public enum uint FIREBALL_POWER_Y = 31;
+	public enum uint FIREBALL_POWER_Z = 32;
+	public enum uint POTION_AUX_VALUE = 37;
+	public enum uint LEAD_HOLDER = 38;
+	public enum uint SCALE = 39;
+	public enum uint INTERACTIVE_TAG = 40;
+	public enum uint NPC_ID = 41;
+	public enum uint INTERACTIVE_TAG_URL = 42;
+	public enum uint MAX_AIR = 43;
+	public enum uint MARK_VARIANT = 44;
+	public enum uint BLOCK_TARGET = 48;
+	public enum uint INVULNERABLE_TIME = 49;
+	public enum uint CENTER_HEAD_TARGET = 50;
+	public enum uint LEFT_HEAD_TARGET = 51;
+	public enum uint RIGHT_HEAD_TARGET = 52;
+	public enum uint BOUNDING_BOX_WIDTH = 54;
+	public enum uint BOUNDING_BOX_HEIGHT = 55;
+	public enum uint FUSE_LENGTH = 56;
+	public enum uint RIDER_SEAT_POSITION = 57;
+	public enum uint RIDER_ROTATION_LOCKED = 58;
+	public enum uint RIDER_MAX_ROTATION = 59;
+	public enum uint RIDER_MIN_ROTATION = 60;
+	public enum uint AREA_EFFECT_CLOUD_RADIUS = 61;
+	public enum uint AREA_EFFECT_CLOUD_WAITING = 62;
+	public enum uint AREA_EFFECT_CLOUD_PARTICLE = 63;
+	public enum uint SHUKER_DIRECTION = 65;
+	public enum uint SHULKER_ATTACHMENT = 67;
+	public enum uint TRADING_PLAYER = 68;
+	public enum uint COMMAND_BLOCK_COMMAND = 71;
+	public enum uint COMMAND_BLOCK_LAST_OUTPUT = 72;
+	public enum uint COMMAND_BLOCK_TRACK_OUTPUT = 73;
+	public enum uint CONTROLLING_RIDER_SEAT_NUMBER = 74;
+	public enum uint STRENGTH = 75;
+	public enum uint MAX_STRENGTH = 76;
+
+	public DecodedMetadata[] decoded;
 
 	private bool _cached = false;
 	private ubyte[] _cache;
@@ -1837,7 +1958,136 @@ class Metadata {
 	}
 
 	public static pure nothrow @safe Metadata decode(Buffer buffer) {
-		return null;
+		auto metadata = new Metadata();
+		with(buffer) {
+			uint id;
+			size_t length=varuint.decode(_buffer, &_index);
+			while(length-- > 0) {
+				id=varuint.decode(_buffer, &_index);
+				switch(varuint.decode(_buffer, &_index)) {
+					case 0:
+						byte _0;
+						_0=readBigEndianByte();
+						metadata.decoded ~= new DecodedMetadata(id, 0, _0);
+						break;
+					case 1:
+						short _1;
+						_1=readLittleEndianShort();
+						metadata.decoded ~= new DecodedMetadata(id, 1, _1);
+						break;
+					case 2:
+						int _2;
+						_2=varint.decode(_buffer, &_index);
+						metadata.decoded ~= new DecodedMetadata(id, 2, _2);
+						break;
+					case 3:
+						float _3;
+						_3=readLittleEndianFloat();
+						metadata.decoded ~= new DecodedMetadata(id, 3, _3);
+						break;
+					case 4:
+						string _4;
+						uint xq=varuint.decode(_buffer, &_index); _4=readString(xq);
+						metadata.decoded ~= new DecodedMetadata(id, 4, _4);
+						break;
+					case 5:
+						sul.protocol.pocket113.types.Slot _5;
+						_5.decode(bufferInstance);
+						metadata.decoded ~= new DecodedMetadata(id, 5, _5);
+						break;
+					case 6:
+						Tuple!(int, "x", int, "y", int, "z") _6;
+						_6.x=varint.decode(_buffer, &_index); _6.y=varint.decode(_buffer, &_index); _6.z=varint.decode(_buffer, &_index);
+						metadata.decoded ~= new DecodedMetadata(id, 6, _6);
+						break;
+					case 7:
+						long _7;
+						_7=varlong.decode(_buffer, &_index);
+						metadata.decoded ~= new DecodedMetadata(id, 7, _7);
+						break;
+					case 8:
+						Tuple!(float, "x", float, "y", float, "z") _8;
+						_8.x=readLittleEndianFloat(); _8.y=readLittleEndianFloat(); _8.z=readLittleEndianFloat();
+						metadata.decoded ~= new DecodedMetadata(id, 8, _8);
+						break;
+					default:
+						break;
+				}
+			}
+		}
+		return metadata;
+	}
+
+}
+
+class DecodedMetadata {
+
+	public immutable uint id, type;
+
+	union {
+		byte byte_;
+		short short_;
+		int int_;
+		float float_;
+		string string_;
+		sul.protocol.pocket113.types.Slot slot;
+		Tuple!(int, "x", int, "y", int, "z") block_position;
+		long long_;
+		Tuple!(float, "x", float, "y", float, "z") entity_position;
+	}
+
+	public pure nothrow @trusted this(uint id, uint type, byte value) {
+		this.id = id;
+		this.type = type;
+		this.byte_ = value;
+	}
+
+	public pure nothrow @trusted this(uint id, uint type, short value) {
+		this.id = id;
+		this.type = type;
+		this.short_ = value;
+	}
+
+	public pure nothrow @trusted this(uint id, uint type, int value) {
+		this.id = id;
+		this.type = type;
+		this.int_ = value;
+	}
+
+	public pure nothrow @trusted this(uint id, uint type, float value) {
+		this.id = id;
+		this.type = type;
+		this.float_ = value;
+	}
+
+	public pure nothrow @trusted this(uint id, uint type, string value) {
+		this.id = id;
+		this.type = type;
+		this.string_ = value;
+	}
+
+	public pure nothrow @trusted this(uint id, uint type, sul.protocol.pocket113.types.Slot value) {
+		this.id = id;
+		this.type = type;
+		this.slot = value;
+	}
+
+	public pure nothrow @trusted this(uint id, uint type, Tuple!(int, "x", int, "y", int, "z") value) {
+		this.id = id;
+		this.type = type;
+		this.block_position = value;
+	}
+
+	public pure nothrow @trusted this(uint id, uint type, long value) {
+		this.id = id;
+		this.type = type;
+		this.long_ = value;
+	}
+
+	public pure nothrow @trusted this(uint id, uint type, Tuple!(float, "x", float, "y", float, "z") value) {
+		this.id = id;
+		this.type = type;
+		this.entity_position = value;
 	}
 
 }

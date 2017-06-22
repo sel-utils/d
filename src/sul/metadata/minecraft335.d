@@ -17,7 +17,178 @@ static import sul.protocol.minecraft335.types;
 
 alias Changed(T) = Tuple!(T, "value", bool, "changed");
 
+enum MetadataType : ubyte {
+
+	BYTE = 0,
+	INT = 1,
+	FLOAT = 2,
+	STRING = 3,
+	CHAT = 4,
+	SLOT = 5,
+	BOOL = 6,
+	ROTATION = 7,
+	POSITION = 8,
+	OPTIONAL_POSITION = 9,
+	DIRECTION = 10,
+	UUID = 11,
+	BLOCK = 12,
+	NBT = 13,
+}
+
 class Metadata {
+
+	public enum ENTITY_FLAGS : size_t {
+		ON_FIRE = 0,
+		SNEAKING = 1,
+		SPRINTING = 3,
+		INVISIBLE = 5,
+		GLOWING = 6,
+		GLIDING = 7,
+	}
+	public enum ubyte AIR = 1;
+	public enum ubyte NAMETAG = 2;
+	public enum ubyte SHOW_NAMETAG = 3;
+	public enum ubyte SILENT = 4;
+	public enum ubyte NO_GRAVITY = 5;
+	public enum ubyte POTION = 6;
+	public enum ubyte SPAWN_POSITION = 6;
+	public enum ubyte RADIUS = 6;
+	public enum ubyte COLOR = 7;
+	public enum ubyte IS_SINGLE_POINT = 8;
+	public enum ubyte PARTICLE_ID = 9;
+	public enum ubyte PARTICLE_PARAMETER_1 = 10;
+	public enum ubyte PARTICLE_PARAMETER_2 = 11;
+	public enum ubyte HOOKED_ENTITY = 6;
+	public enum ARROW_FLAGS : size_t {
+		CRITICAL = 0,
+	}
+	public enum ubyte TIME_SINCE_LAST_HIT = 6;
+	public enum ubyte FORWARD_DIRECTION = 7;
+	public enum ubyte DAMAGE_TAKEN = 8;
+	public enum ubyte BOAT_VARIANT = 9;
+	public enum ubyte RIGHT_PADDLE_TURNING = 10;
+	public enum ubyte LEFT_PADDLE_TURNING = 11;
+	public enum ubyte BEAM_TARGET = 6;
+	public enum ubyte SHOW_BOTTOM = 7;
+	public enum ubyte FIREWORK = 6;
+	public enum ubyte FIREWORK_THROWER = 7;
+	public enum ubyte ITEM = 6;
+	public enum ubyte ROTATION = 7;
+	public enum LIVING_FLAGS : size_t {
+		HAND_ACTIVE = 0,
+		OFFHAND = 1,
+	}
+	public enum ubyte HEALTH = 7;
+	public enum ubyte POTION_COLOR = 8;
+	public enum ubyte POTION_AMBIENT = 9;
+	public enum ubyte ARROWS = 10;
+	public enum ubyte ADDITIONAL_HEARTS = 11;
+	public enum ubyte SCORE = 12;
+	public enum SKIN_PARTS : size_t {
+		CAPE = 0,
+		JACKET = 1,
+		LEFT_SLEEVE = 2,
+		RIGHT_SLEEVE = 3,
+		LEFT_PANTS = 4,
+		RIGHT_PANTS = 5,
+		HAT = 6,
+	}
+	public enum ubyte MAIN_HAND = 14;
+	public enum ubyte LEFT_SHOULDER = 15;
+	public enum ubyte RIGHT_SHOULDER = 16;
+	public enum ARMOR_STAND_FLAGS : size_t {
+		IS_SMALL = 0,
+		HAS_ARMS = 2,
+		NO_BASE_PLATE = 3,
+		SET_MARKER = 4,
+	}
+	public enum ubyte HEAD_ROTATION = 12;
+	public enum ubyte BODY_ROTATION = 13;
+	public enum ubyte LEFT_ARM_ROTATION = 14;
+	public enum ubyte RIGHT_ARM_ROTATION = 15;
+	public enum ubyte LEFT_LEG_ROTATION = 16;
+	public enum ubyte RIGHT_LEG_ROTATION = 17;
+	public enum INSTENTIENT_FLAGS : size_t {
+		NO_AI = 0,
+		LEFT_HANDED = 1,
+	}
+	public enum ubyte HANGING = 12;
+	public enum ubyte BABY = 12;
+	public enum HORSE_FLAGS : size_t {
+		HORSE_TAMED = 1,
+		HORSE_SADDLED = 2,
+		HORSE_CHESTED = 3,
+		HORSE_EATING = 5,
+		HORSE_REARING = 6,
+		MOUTH_OPEN = 7,
+	}
+	public enum ubyte OWNER_UUID = 14;
+	public enum ubyte HORSE_VARIANT = 15;
+	public enum ubyte HORSE_ARMOR = 16;
+	public enum ubyte CHESTED = 15;
+	public enum ubyte LLAMA_STRENGTH = 16;
+	public enum ubyte CARPET_COLOR = 17;
+	public enum ubyte LLAMA_VARIANT = 18;
+	public enum ubyte PIG_SADDLED = 13;
+	public enum ubyte CARROT_BOOST = 14;
+	public enum ubyte RABBIT_VARIANT = 13;
+	public enum ubyte STANDING_UP = 13;
+	public enum SHEEP_FLAGS_AND_COLOR : size_t {
+		SHEARED = 7,
+	}
+	public enum TAMEABLE_FLAGS : size_t {
+		SITTING = 0,
+		ANGRY = 1,
+		TAMED = 2,
+	}
+	public enum ubyte OCELOT_VARIANT = 15;
+	public enum ubyte PARROT_COLOR = 15;
+	public enum ubyte WOLF_HEALTH = 15;
+	public enum ubyte BEGGING = 16;
+	public enum ubyte COLLAR_COLOR = 17;
+	public enum ubyte PROFESSION = 13;
+	public enum ubyte CREATED_BY_PLAYER = 12;
+	public enum SNOWMAN_FLAGS : size_t {
+		PUMPKINLESS = 4,
+	}
+	public enum ubyte SHULKER_DIRECTION = 12;
+	public enum ubyte SHULKER_ATTACHMENT = 13;
+	public enum ubyte SHULKER_SHIELD_HEIGHT = 14;
+	public enum ubyte SHULKER_COLOR = 15;
+	public enum ubyte BLAZE_ON_FIRE = 12;
+	public enum ubyte CREEPER_STATE = 12;
+	public enum ubyte CHARGED = 13;
+	public enum ubyte IGNITED = 14;
+	public enum ubyte RECTRACTING_SPIKES = 12;
+	public enum ubyte GUARDIAN_TARGET = 13;
+	public enum ubyte SPELL = 12;
+	public enum ubyte ATTACK_MODE = 12;
+	public enum ubyte SWINGING_ARMS = 12;
+	public enum ubyte CLIMBING = 12;
+	public enum ubyte CENTER_HEAD_TARGET = 12;
+	public enum ubyte LEFT_HEAD_TARGET = 13;
+	public enum ubyte RIGHT_HEAD_TARGET = 14;
+	public enum ubyte INVULNERABLE_TIME = 15;
+	public enum ubyte HANDS_HELD_UP = 14;
+	public enum ubyte CONVERTING = 15;
+	public enum ubyte ZOMBIE_VILLAGER_PROFESSION = 16;
+	public enum ubyte CARRIED_BLOCK = 12;
+	public enum ubyte SCREAMING = 13;
+	public enum ubyte DRAGON_PHASE = 12;
+	public enum ubyte GHAST_ATTACKING = 12;
+	public enum ubyte SLIME_SIZE = 12;
+	public enum ubyte SHAKING_POWER = 6;
+	public enum ubyte SHAKING_DIRECTION = 7;
+	public enum ubyte SHAKING_MULTIPLIER = 8;
+	public enum ubyte MINECART_BLOCK = 9;
+	public enum ubyte MINECART_BLOCK_POSITION = 10;
+	public enum ubyte MINECART_CUSTOM_BLOCK = 11;
+	public enum ubyte FURNACE_POWERED = 12;
+	public enum ubyte COMMAND = 12;
+	public enum ubyte LAST_OUTPUT = 13;
+	public enum ubyte FUSE_TIME = 6;
+
+	public DecodedMetadata[] decoded;
 
 	private bool _cached = false;
 	private ubyte[] _cache;
@@ -2837,7 +3008,176 @@ class Metadata {
 	}
 
 	public static pure nothrow @safe Metadata decode(Buffer buffer) {
-		return null;
+		auto metadata = new Metadata();
+		with(buffer) {
+			ubyte id;
+			while(_index < _buffer.length && (id=readBigEndianUbyte()) != 255) {
+				switch(readBigEndianUbyte()) {
+					case 0:
+						byte _0;
+						_0=readBigEndianByte();
+						metadata.decoded ~= new DecodedMetadata(id, 0, _0);
+						break;
+					case 1:
+						uint _1;
+						_1=varuint.decode(_buffer, &_index);
+						metadata.decoded ~= new DecodedMetadata(id, 1, _1);
+						break;
+					case 2:
+						float _2;
+						_2=readBigEndianFloat();
+						metadata.decoded ~= new DecodedMetadata(id, 2, _2);
+						break;
+					case 3:
+						string _3;
+						uint xm=varuint.decode(_buffer, &_index); _3=readString(xm);
+						metadata.decoded ~= new DecodedMetadata(id, 3, _3);
+						break;
+					case 4:
+						string _4;
+						uint xq=varuint.decode(_buffer, &_index); _4=readString(xq);
+						metadata.decoded ~= new DecodedMetadata(id, 4, _4);
+						break;
+					case 5:
+						sul.protocol.minecraft335.types.Slot _5;
+						_5.decode(bufferInstance);
+						metadata.decoded ~= new DecodedMetadata(id, 5, _5);
+						break;
+					case 6:
+						bool _6;
+						_6=readBigEndianBool();
+						metadata.decoded ~= new DecodedMetadata(id, 6, _6);
+						break;
+					case 7:
+						Tuple!(float, "x", float, "y", float, "z") _7;
+						_7.x=readBigEndianFloat(); _7.y=readBigEndianFloat(); _7.z=readBigEndianFloat();
+						metadata.decoded ~= new DecodedMetadata(id, 7, _7);
+						break;
+					case 8:
+						ulong _8;
+						_8=readBigEndianUlong();
+						metadata.decoded ~= new DecodedMetadata(id, 8, _8);
+						break;
+					case 9:
+						sul.protocol.minecraft335.types.OptionalPosition _9;
+						_9.decode(bufferInstance);
+						metadata.decoded ~= new DecodedMetadata(id, 9, _9);
+						break;
+					case 10:
+						uint _10;
+						_10=varuint.decode(_buffer, &_index);
+						metadata.decoded ~= new DecodedMetadata(id, 10, _10);
+						break;
+					case 11:
+						sul.protocol.minecraft335.types.OptionalUuid _11;
+						_11.decode(bufferInstance);
+						metadata.decoded ~= new DecodedMetadata(id, 11, _11);
+						break;
+					case 12:
+						uint _12;
+						_12=varuint.decode(_buffer, &_index);
+						metadata.decoded ~= new DecodedMetadata(id, 12, _12);
+						break;
+					case 13:
+						ubyte[] _13;
+						_13=_buffer[_index..$].dup; _index=_buffer.length;
+						metadata.decoded ~= new DecodedMetadata(id, 13, _13);
+						break;
+					default:
+						break;
+				}
+			}
+		}
+		return metadata;
+	}
+
+}
+
+class DecodedMetadata {
+
+	public immutable ubyte id, type;
+
+	union {
+		byte byte_;
+		uint int_;
+		float float_;
+		string string_;
+		string chat;
+		sul.protocol.minecraft335.types.Slot slot;
+		bool bool_;
+		Tuple!(float, "x", float, "y", float, "z") rotation;
+		ulong position;
+		sul.protocol.minecraft335.types.OptionalPosition optional_position;
+		uint direction;
+		sul.protocol.minecraft335.types.OptionalUuid uuid;
+		uint block;
+		ubyte[] nbt;
+	}
+
+	public pure nothrow @trusted this(ubyte id, ubyte type, byte value) {
+		this.id = id;
+		this.type = type;
+		this.byte_ = value;
+	}
+
+	public pure nothrow @trusted this(ubyte id, ubyte type, uint value) {
+		this.id = id;
+		this.type = type;
+		this.int_ = value;
+	}
+
+	public pure nothrow @trusted this(ubyte id, ubyte type, float value) {
+		this.id = id;
+		this.type = type;
+		this.float_ = value;
+	}
+
+	public pure nothrow @trusted this(ubyte id, ubyte type, string value) {
+		this.id = id;
+		this.type = type;
+		this.string_ = value;
+	}
+
+	public pure nothrow @trusted this(ubyte id, ubyte type, sul.protocol.minecraft335.types.Slot value) {
+		this.id = id;
+		this.type = type;
+		this.slot = value;
+	}
+
+	public pure nothrow @trusted this(ubyte id, ubyte type, bool value) {
+		this.id = id;
+		this.type = type;
+		this.bool_ = value;
+	}
+
+	public pure nothrow @trusted this(ubyte id, ubyte type, Tuple!(float, "x", float, "y", float, "z") value) {
+		this.id = id;
+		this.type = type;
+		this.rotation = value;
+	}
+
+	public pure nothrow @trusted this(ubyte id, ubyte type, ulong value) {
+		this.id = id;
+		this.type = type;
+		this.position = value;
+	}
+
+	public pure nothrow @trusted this(ubyte id, ubyte type, sul.protocol.minecraft335.types.OptionalPosition value) {
+		this.id = id;
+		this.type = type;
+		this.optional_position = value;
+	}
+
+	public pure nothrow @trusted this(ubyte id, ubyte type, sul.protocol.minecraft335.types.OptionalUuid value) {
+		this.id = id;
+		this.type = type;
+		this.uuid = value;
+	}
+
+	public pure nothrow @trusted this(ubyte id, ubyte type, ubyte[] value) {
+		this.id = id;
+		this.type = type;
+		this.nbt = value;
 	}
 
 }

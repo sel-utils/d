@@ -4210,7 +4210,7 @@ class PlayerList : Buffer {
 
 class SimpleEvent : Buffer {
 
-	public enum ubyte ID = 63;
+	public enum ubyte ID = 64;
 
 	public enum bool CLIENTBOUND = true;
 	public enum bool SERVERBOUND = true;
@@ -4242,7 +4242,7 @@ class SimpleEvent : Buffer {
 
 class TelemetryEvent : Buffer {
 
-	public enum ubyte ID = 64;
+	public enum ubyte ID = 65;
 
 	public enum bool CLIENTBOUND = true;
 	public enum bool SERVERBOUND = false;
@@ -5089,57 +5089,57 @@ class UpdateTrade : Buffer {
 	public enum bool CLIENTBOUND = true;
 	public enum bool SERVERBOUND = false;
 
-	public enum string[] FIELDS = ["unknown0", "unknown1", "unknown2", "unknown3", "unknown4", "trader", "player", "unknown7", "offers"];
+	public enum string[] FIELDS = ["window", "windowType", "unknown2", "unknown3", "willing", "trader", "player", "displayName", "offers"];
 
-	public ubyte unknown0;
-	public ubyte unknown1;
+	public ubyte window;
+	public ubyte windowType = 15;
 	public int unknown2;
 	public int unknown3;
-	public bool unknown4;
+	public bool willing;
 	public long trader;
 	public long player;
-	public string unknown7;
+	public string displayName;
 	public ubyte[] offers;
 
 	public pure nothrow @safe @nogc this() {}
 
-	public pure nothrow @safe @nogc this(ubyte unknown0, ubyte unknown1=ubyte.init, int unknown2=int.init, int unknown3=int.init, bool unknown4=bool.init, long trader=long.init, long player=long.init, string unknown7=string.init, ubyte[] offers=(ubyte[]).init) {
-		this.unknown0 = unknown0;
-		this.unknown1 = unknown1;
+	public pure nothrow @safe @nogc this(ubyte window, ubyte windowType=15, int unknown2=int.init, int unknown3=int.init, bool willing=bool.init, long trader=long.init, long player=long.init, string displayName=string.init, ubyte[] offers=(ubyte[]).init) {
+		this.window = window;
+		this.windowType = windowType;
 		this.unknown2 = unknown2;
 		this.unknown3 = unknown3;
-		this.unknown4 = unknown4;
+		this.willing = willing;
 		this.trader = trader;
 		this.player = player;
-		this.unknown7 = unknown7;
+		this.displayName = displayName;
 		this.offers = offers;
 	}
 
 	public pure nothrow @safe ubyte[] encode(bool writeId=true)() {
 		_buffer.length = 0;
 		static if(writeId){ writeBigEndianUbyte(ID); }
-		writeBigEndianUbyte(unknown0);
-		writeBigEndianUbyte(unknown1);
+		writeBigEndianUbyte(window);
+		writeBigEndianUbyte(windowType);
 		writeBytes(varint.encode(unknown2));
 		writeBytes(varint.encode(unknown3));
-		writeBigEndianBool(unknown4);
+		writeBigEndianBool(willing);
 		writeBytes(varlong.encode(trader));
 		writeBytes(varlong.encode(player));
-		writeBytes(varuint.encode(cast(uint)unknown7.length)); writeString(unknown7);
+		writeBytes(varuint.encode(cast(uint)displayName.length)); writeString(displayName);
 		writeBytes(offers);
 		return _buffer;
 	}
 
 	public pure nothrow @safe void decode(bool readId=true)() {
 		static if(readId){ ubyte _id; _id=readBigEndianUbyte(); }
-		unknown0=readBigEndianUbyte();
-		unknown1=readBigEndianUbyte();
+		window=readBigEndianUbyte();
+		windowType=readBigEndianUbyte();
 		unknown2=varint.decode(_buffer, &_index);
 		unknown3=varint.decode(_buffer, &_index);
-		unknown4=readBigEndianBool();
+		willing=readBigEndianBool();
 		trader=varlong.decode(_buffer, &_index);
 		player=varlong.decode(_buffer, &_index);
-		uint d5b9bc=varuint.decode(_buffer, &_index); unknown7=readString(d5b9bc);
+		uint zlcxe5bu=varuint.decode(_buffer, &_index); displayName=readString(zlcxe5bu);
 		offers=_buffer[_index..$].dup; _index=_buffer.length;
 	}
 
@@ -5151,7 +5151,7 @@ class UpdateTrade : Buffer {
 	}
 
 	public override string toString() {
-		return "UpdateTrade(unknown0: " ~ std.conv.to!string(this.unknown0) ~ ", unknown1: " ~ std.conv.to!string(this.unknown1) ~ ", unknown2: " ~ std.conv.to!string(this.unknown2) ~ ", unknown3: " ~ std.conv.to!string(this.unknown3) ~ ", unknown4: " ~ std.conv.to!string(this.unknown4) ~ ", trader: " ~ std.conv.to!string(this.trader) ~ ", player: " ~ std.conv.to!string(this.player) ~ ", unknown7: " ~ std.conv.to!string(this.unknown7) ~ ", offers: " ~ std.conv.to!string(this.offers) ~ ")";
+		return "UpdateTrade(window: " ~ std.conv.to!string(this.window) ~ ", windowType: " ~ std.conv.to!string(this.windowType) ~ ", unknown2: " ~ std.conv.to!string(this.unknown2) ~ ", unknown3: " ~ std.conv.to!string(this.unknown3) ~ ", willing: " ~ std.conv.to!string(this.willing) ~ ", trader: " ~ std.conv.to!string(this.trader) ~ ", player: " ~ std.conv.to!string(this.player) ~ ", displayName: " ~ std.conv.to!string(this.displayName) ~ ", offers: " ~ std.conv.to!string(this.offers) ~ ")";
 	}
 
 }
