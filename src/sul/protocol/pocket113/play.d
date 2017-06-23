@@ -3795,34 +3795,38 @@ class PlayerInput : Buffer {
 	public enum bool CLIENTBOUND = false;
 	public enum bool SERVERBOUND = true;
 
-	public enum string[] FIELDS = ["motion", "flags", "unknown2"];
+	public enum string[] FIELDS = ["sideways", "forward", "unknown2", "unknown3"];
 
-	public Tuple!(float, "x", float, "y", float, "z") motion;
-	public ubyte flags;
+	public float sideways;
+	public float forward;
 	public bool unknown2;
+	public bool unknown3;
 
 	public pure nothrow @safe @nogc this() {}
 
-	public pure nothrow @safe @nogc this(Tuple!(float, "x", float, "y", float, "z") motion, ubyte flags=ubyte.init, bool unknown2=bool.init) {
-		this.motion = motion;
-		this.flags = flags;
+	public pure nothrow @safe @nogc this(float sideways, float forward=float.init, bool unknown2=bool.init, bool unknown3=bool.init) {
+		this.sideways = sideways;
+		this.forward = forward;
 		this.unknown2 = unknown2;
+		this.unknown3 = unknown3;
 	}
 
 	public pure nothrow @safe ubyte[] encode(bool writeId=true)() {
 		_buffer.length = 0;
 		static if(writeId){ writeBigEndianUbyte(ID); }
-		writeLittleEndianFloat(motion.x); writeLittleEndianFloat(motion.y); writeLittleEndianFloat(motion.z);
-		writeBigEndianUbyte(flags);
+		writeLittleEndianFloat(sideways);
+		writeLittleEndianFloat(forward);
 		writeBigEndianBool(unknown2);
+		writeBigEndianBool(unknown3);
 		return _buffer;
 	}
 
 	public pure nothrow @safe void decode(bool readId=true)() {
 		static if(readId){ ubyte _id; _id=readBigEndianUbyte(); }
-		motion.x=readLittleEndianFloat(); motion.y=readLittleEndianFloat(); motion.z=readLittleEndianFloat();
-		flags=readBigEndianUbyte();
+		sideways=readLittleEndianFloat();
+		forward=readLittleEndianFloat();
 		unknown2=readBigEndianBool();
+		unknown3=readBigEndianBool();
 	}
 
 	public static pure nothrow @safe PlayerInput fromBuffer(bool readId=true)(ubyte[] buffer) {
@@ -3833,7 +3837,7 @@ class PlayerInput : Buffer {
 	}
 
 	public override string toString() {
-		return "PlayerInput(motion: " ~ std.conv.to!string(this.motion) ~ ", flags: " ~ std.conv.to!string(this.flags) ~ ", unknown2: " ~ std.conv.to!string(this.unknown2) ~ ")";
+		return "PlayerInput(sideways: " ~ std.conv.to!string(this.sideways) ~ ", forward: " ~ std.conv.to!string(this.forward) ~ ", unknown2: " ~ std.conv.to!string(this.unknown2) ~ ", unknown3: " ~ std.conv.to!string(this.unknown3) ~ ")";
 	}
 
 }
