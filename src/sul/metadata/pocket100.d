@@ -11,6 +11,7 @@ module sul.metadata.pocket100;
 import std.typecons : Tuple, tuple;
 
 import sul.utils.buffer : Buffer;
+import sul.utils.metadataflags;
 import sul.utils.var;
 
 static import sul.protocol.pocket100.types;
@@ -98,7 +99,7 @@ class Metadata {
 
 	private void delegate(Buffer) pure nothrow @safe[] _changed;
 
-	private long _entityFlags = cast(long)0;
+	private MetadataFlags!(long) _entityFlags = cast(MetadataFlags!(long))0;
 	private Changed!(int) _variant;
 	private Changed!(byte) _color;
 	private Changed!(string) _nametag;
@@ -107,7 +108,7 @@ class Metadata {
 	private Changed!(int) _potionColor;
 	private Changed!(byte) _potionAmbient;
 	private Changed!(byte) _slimeSize = tuple(cast(byte)1, false);
-	private Changed!(byte) _playerFlags;
+	private Changed!(MetadataFlags!(byte)) _playerFlags;
 	private Changed!(int) _playerIndex;
 	private Changed!(Tuple!(int, "x", int, "y", int, "z")) _bedPosition;
 	private long _leadHolder = cast(long)-1;
@@ -151,342 +152,308 @@ class Metadata {
 	}
 
 	public pure nothrow @property @safe bool onFire() {
-		return (_entityFlags >>> 0) & 1;
+		return _entityFlags._0;
 	}
 
 	public pure nothrow @property @safe bool onFire(bool value) {
-		if(value) entityFlags = cast(long)(_entityFlags | (cast(long)true << 0));
-		else entityFlags = cast(long)(_entityFlags & ~(cast(long)true << 0));
+		_entityFlags._0 = value;
 		return value;
 	}
 
 	public pure nothrow @property @safe bool sneaking() {
-		return (_entityFlags >>> 1) & 1;
+		return _entityFlags._1;
 	}
 
 	public pure nothrow @property @safe bool sneaking(bool value) {
-		if(value) entityFlags = cast(long)(_entityFlags | (cast(long)true << 1));
-		else entityFlags = cast(long)(_entityFlags & ~(cast(long)true << 1));
+		_entityFlags._1 = value;
 		return value;
 	}
 
 	public pure nothrow @property @safe bool riding() {
-		return (_entityFlags >>> 2) & 1;
+		return _entityFlags._2;
 	}
 
 	public pure nothrow @property @safe bool riding(bool value) {
-		if(value) entityFlags = cast(long)(_entityFlags | (cast(long)true << 2));
-		else entityFlags = cast(long)(_entityFlags & ~(cast(long)true << 2));
+		_entityFlags._2 = value;
 		return value;
 	}
 
 	public pure nothrow @property @safe bool sprinting() {
-		return (_entityFlags >>> 3) & 1;
+		return _entityFlags._3;
 	}
 
 	public pure nothrow @property @safe bool sprinting(bool value) {
-		if(value) entityFlags = cast(long)(_entityFlags | (cast(long)true << 3));
-		else entityFlags = cast(long)(_entityFlags & ~(cast(long)true << 3));
+		_entityFlags._3 = value;
 		return value;
 	}
 
 	public pure nothrow @property @safe bool usingItem() {
-		return (_entityFlags >>> 4) & 1;
+		return _entityFlags._4;
 	}
 
 	public pure nothrow @property @safe bool usingItem(bool value) {
-		if(value) entityFlags = cast(long)(_entityFlags | (cast(long)true << 4));
-		else entityFlags = cast(long)(_entityFlags & ~(cast(long)true << 4));
+		_entityFlags._4 = value;
 		return value;
 	}
 
 	public pure nothrow @property @safe bool invisible() {
-		return (_entityFlags >>> 5) & 1;
+		return _entityFlags._5;
 	}
 
 	public pure nothrow @property @safe bool invisible(bool value) {
-		if(value) entityFlags = cast(long)(_entityFlags | (cast(long)true << 5));
-		else entityFlags = cast(long)(_entityFlags & ~(cast(long)true << 5));
+		_entityFlags._5 = value;
 		return value;
 	}
 
 	public pure nothrow @property @safe bool tempted() {
-		return (_entityFlags >>> 6) & 1;
+		return _entityFlags._6;
 	}
 
 	public pure nothrow @property @safe bool tempted(bool value) {
-		if(value) entityFlags = cast(long)(_entityFlags | (cast(long)true << 6));
-		else entityFlags = cast(long)(_entityFlags & ~(cast(long)true << 6));
+		_entityFlags._6 = value;
 		return value;
 	}
 
 	public pure nothrow @property @safe bool inLove() {
-		return (_entityFlags >>> 7) & 1;
+		return _entityFlags._7;
 	}
 
 	public pure nothrow @property @safe bool inLove(bool value) {
-		if(value) entityFlags = cast(long)(_entityFlags | (cast(long)true << 7));
-		else entityFlags = cast(long)(_entityFlags & ~(cast(long)true << 7));
+		_entityFlags._7 = value;
 		return value;
 	}
 
 	public pure nothrow @property @safe bool saddled() {
-		return (_entityFlags >>> 8) & 1;
+		return _entityFlags._8;
 	}
 
 	public pure nothrow @property @safe bool saddled(bool value) {
-		if(value) entityFlags = cast(long)(_entityFlags | (cast(long)true << 8));
-		else entityFlags = cast(long)(_entityFlags & ~(cast(long)true << 8));
+		_entityFlags._8 = value;
 		return value;
 	}
 
 	public pure nothrow @property @safe bool powered() {
-		return (_entityFlags >>> 9) & 1;
+		return _entityFlags._9;
 	}
 
 	public pure nothrow @property @safe bool powered(bool value) {
-		if(value) entityFlags = cast(long)(_entityFlags | (cast(long)true << 9));
-		else entityFlags = cast(long)(_entityFlags & ~(cast(long)true << 9));
+		_entityFlags._9 = value;
 		return value;
 	}
 
 	public pure nothrow @property @safe bool ignited() {
-		return (_entityFlags >>> 10) & 1;
+		return _entityFlags._10;
 	}
 
 	public pure nothrow @property @safe bool ignited(bool value) {
-		if(value) entityFlags = cast(long)(_entityFlags | (cast(long)true << 10));
-		else entityFlags = cast(long)(_entityFlags & ~(cast(long)true << 10));
+		_entityFlags._10 = value;
 		return value;
 	}
 
 	public pure nothrow @property @safe bool baby() {
-		return (_entityFlags >>> 11) & 1;
+		return _entityFlags._11;
 	}
 
 	public pure nothrow @property @safe bool baby(bool value) {
-		if(value) entityFlags = cast(long)(_entityFlags | (cast(long)true << 11));
-		else entityFlags = cast(long)(_entityFlags & ~(cast(long)true << 11));
+		_entityFlags._11 = value;
 		return value;
 	}
 
 	public pure nothrow @property @safe bool converting() {
-		return (_entityFlags >>> 12) & 1;
+		return _entityFlags._12;
 	}
 
 	public pure nothrow @property @safe bool converting(bool value) {
-		if(value) entityFlags = cast(long)(_entityFlags | (cast(long)true << 12));
-		else entityFlags = cast(long)(_entityFlags & ~(cast(long)true << 12));
+		_entityFlags._12 = value;
 		return value;
 	}
 
 	public pure nothrow @property @safe bool critical() {
-		return (_entityFlags >>> 13) & 1;
+		return _entityFlags._13;
 	}
 
 	public pure nothrow @property @safe bool critical(bool value) {
-		if(value) entityFlags = cast(long)(_entityFlags | (cast(long)true << 13));
-		else entityFlags = cast(long)(_entityFlags & ~(cast(long)true << 13));
+		_entityFlags._13 = value;
 		return value;
 	}
 
 	public pure nothrow @property @safe bool showNametag() {
-		return (_entityFlags >>> 14) & 1;
+		return _entityFlags._14;
 	}
 
 	public pure nothrow @property @safe bool showNametag(bool value) {
-		if(value) entityFlags = cast(long)(_entityFlags | (cast(long)true << 14));
-		else entityFlags = cast(long)(_entityFlags & ~(cast(long)true << 14));
+		_entityFlags._14 = value;
 		return value;
 	}
 
 	public pure nothrow @property @safe bool alwaysShowNametag() {
-		return (_entityFlags >>> 15) & 1;
+		return _entityFlags._15;
 	}
 
 	public pure nothrow @property @safe bool alwaysShowNametag(bool value) {
-		if(value) entityFlags = cast(long)(_entityFlags | (cast(long)true << 15));
-		else entityFlags = cast(long)(_entityFlags & ~(cast(long)true << 15));
+		_entityFlags._15 = value;
 		return value;
 	}
 
 	public pure nothrow @property @safe bool noAi() {
-		return (_entityFlags >>> 16) & 1;
+		return _entityFlags._16;
 	}
 
 	public pure nothrow @property @safe bool noAi(bool value) {
-		if(value) entityFlags = cast(long)(_entityFlags | (cast(long)true << 16));
-		else entityFlags = cast(long)(_entityFlags & ~(cast(long)true << 16));
+		_entityFlags._16 = value;
 		return value;
 	}
 
 	public pure nothrow @property @safe bool silent() {
-		return (_entityFlags >>> 17) & 1;
+		return _entityFlags._17;
 	}
 
 	public pure nothrow @property @safe bool silent(bool value) {
-		if(value) entityFlags = cast(long)(_entityFlags | (cast(long)true << 17));
-		else entityFlags = cast(long)(_entityFlags & ~(cast(long)true << 17));
+		_entityFlags._17 = value;
 		return value;
 	}
 
 	public pure nothrow @property @safe bool climbing() {
-		return (_entityFlags >>> 18) & 1;
+		return _entityFlags._18;
 	}
 
 	public pure nothrow @property @safe bool climbing(bool value) {
-		if(value) entityFlags = cast(long)(_entityFlags | (cast(long)true << 18));
-		else entityFlags = cast(long)(_entityFlags & ~(cast(long)true << 18));
+		_entityFlags._18 = value;
 		return value;
 	}
 
 	public pure nothrow @property @safe bool resting() {
-		return (_entityFlags >>> 19) & 1;
+		return _entityFlags._19;
 	}
 
 	public pure nothrow @property @safe bool resting(bool value) {
-		if(value) entityFlags = cast(long)(_entityFlags | (cast(long)true << 19));
-		else entityFlags = cast(long)(_entityFlags & ~(cast(long)true << 19));
+		_entityFlags._19 = value;
 		return value;
 	}
 
 	public pure nothrow @property @safe bool sitting() {
-		return (_entityFlags >>> 20) & 1;
+		return _entityFlags._20;
 	}
 
 	public pure nothrow @property @safe bool sitting(bool value) {
-		if(value) entityFlags = cast(long)(_entityFlags | (cast(long)true << 20));
-		else entityFlags = cast(long)(_entityFlags & ~(cast(long)true << 20));
+		_entityFlags._20 = value;
 		return value;
 	}
 
 	public pure nothrow @property @safe bool angry() {
-		return (_entityFlags >>> 21) & 1;
+		return _entityFlags._21;
 	}
 
 	public pure nothrow @property @safe bool angry(bool value) {
-		if(value) entityFlags = cast(long)(_entityFlags | (cast(long)true << 21));
-		else entityFlags = cast(long)(_entityFlags & ~(cast(long)true << 21));
+		_entityFlags._21 = value;
 		return value;
 	}
 
 	public pure nothrow @property @safe bool interested() {
-		return (_entityFlags >>> 22) & 1;
+		return _entityFlags._22;
 	}
 
 	public pure nothrow @property @safe bool interested(bool value) {
-		if(value) entityFlags = cast(long)(_entityFlags | (cast(long)true << 22));
-		else entityFlags = cast(long)(_entityFlags & ~(cast(long)true << 22));
+		_entityFlags._22 = value;
 		return value;
 	}
 
 	public pure nothrow @property @safe bool charged() {
-		return (_entityFlags >>> 23) & 1;
+		return _entityFlags._23;
 	}
 
 	public pure nothrow @property @safe bool charged(bool value) {
-		if(value) entityFlags = cast(long)(_entityFlags | (cast(long)true << 23));
-		else entityFlags = cast(long)(_entityFlags & ~(cast(long)true << 23));
+		_entityFlags._23 = value;
 		return value;
 	}
 
 	public pure nothrow @property @safe bool tamed() {
-		return (_entityFlags >>> 24) & 1;
+		return _entityFlags._24;
 	}
 
 	public pure nothrow @property @safe bool tamed(bool value) {
-		if(value) entityFlags = cast(long)(_entityFlags | (cast(long)true << 24));
-		else entityFlags = cast(long)(_entityFlags & ~(cast(long)true << 24));
+		_entityFlags._24 = value;
 		return value;
 	}
 
 	public pure nothrow @property @safe bool leashed() {
-		return (_entityFlags >>> 25) & 1;
+		return _entityFlags._25;
 	}
 
 	public pure nothrow @property @safe bool leashed(bool value) {
-		if(value) entityFlags = cast(long)(_entityFlags | (cast(long)true << 25));
-		else entityFlags = cast(long)(_entityFlags & ~(cast(long)true << 25));
+		_entityFlags._25 = value;
 		return value;
 	}
 
 	public pure nothrow @property @safe bool sheared() {
-		return (_entityFlags >>> 26) & 1;
+		return _entityFlags._26;
 	}
 
 	public pure nothrow @property @safe bool sheared(bool value) {
-		if(value) entityFlags = cast(long)(_entityFlags | (cast(long)true << 26));
-		else entityFlags = cast(long)(_entityFlags & ~(cast(long)true << 26));
+		_entityFlags._26 = value;
 		return value;
 	}
 
 	public pure nothrow @property @safe bool gliding() {
-		return (_entityFlags >>> 27) & 1;
+		return _entityFlags._27;
 	}
 
 	public pure nothrow @property @safe bool gliding(bool value) {
-		if(value) entityFlags = cast(long)(_entityFlags | (cast(long)true << 27));
-		else entityFlags = cast(long)(_entityFlags & ~(cast(long)true << 27));
+		_entityFlags._27 = value;
 		return value;
 	}
 
 	public pure nothrow @property @safe bool elder() {
-		return (_entityFlags >>> 28) & 1;
+		return _entityFlags._28;
 	}
 
 	public pure nothrow @property @safe bool elder(bool value) {
-		if(value) entityFlags = cast(long)(_entityFlags | (cast(long)true << 28));
-		else entityFlags = cast(long)(_entityFlags & ~(cast(long)true << 28));
+		_entityFlags._28 = value;
 		return value;
 	}
 
 	public pure nothrow @property @safe bool moving() {
-		return (_entityFlags >>> 29) & 1;
+		return _entityFlags._29;
 	}
 
 	public pure nothrow @property @safe bool moving(bool value) {
-		if(value) entityFlags = cast(long)(_entityFlags | (cast(long)true << 29));
-		else entityFlags = cast(long)(_entityFlags & ~(cast(long)true << 29));
+		_entityFlags._29 = value;
 		return value;
 	}
 
 	public pure nothrow @property @safe bool breathing() {
-		return (_entityFlags >>> 30) & 1;
+		return _entityFlags._30;
 	}
 
 	public pure nothrow @property @safe bool breathing(bool value) {
-		if(value) entityFlags = cast(long)(_entityFlags | (cast(long)true << 30));
-		else entityFlags = cast(long)(_entityFlags & ~(cast(long)true << 30));
+		_entityFlags._30 = value;
 		return value;
 	}
 
 	public pure nothrow @property @safe bool chested() {
-		return (_entityFlags >>> 31) & 1;
+		return _entityFlags._31;
 	}
 
 	public pure nothrow @property @safe bool chested(bool value) {
-		if(value) entityFlags = cast(long)(_entityFlags | (cast(long)true << 31));
-		else entityFlags = cast(long)(_entityFlags & ~(cast(long)true << 31));
+		_entityFlags._31 = value;
 		return value;
 	}
 
 	public pure nothrow @property @safe bool stackable() {
-		return (_entityFlags >>> 32) & 1;
+		return _entityFlags._32;
 	}
 
 	public pure nothrow @property @safe bool stackable(bool value) {
-		if(value) entityFlags = cast(long)(_entityFlags | (cast(long)true << 32));
-		else entityFlags = cast(long)(_entityFlags & ~(cast(long)true << 32));
+		_entityFlags._32 = value;
 		return value;
 	}
 
 	public pure nothrow @property @safe bool idling() {
-		return (_entityFlags >>> 36) & 1;
+		return _entityFlags._36;
 	}
 
 	public pure nothrow @property @safe bool idling(bool value) {
-		if(value) entityFlags = cast(long)(_entityFlags | (cast(long)true << 36));
-		else entityFlags = cast(long)(_entityFlags & ~(cast(long)true << 36));
+		_entityFlags._36 = value;
 		return value;
 	}
 
@@ -685,12 +652,11 @@ class Metadata {
 	}
 
 	public pure nothrow @property @safe bool asleep() {
-		return (_playerFlags.value >>> 1) & 1;
+		return _playerFlags.value._1;
 	}
 
 	public pure nothrow @property @safe bool asleep(bool value) {
-		if(value) playerFlags = cast(byte)(_playerFlags.value | (cast(byte)true << 1));
-		else playerFlags = cast(byte)(_playerFlags.value & ~(cast(byte)true << 1));
+		_playerFlags.value._1 = value;
 		return value;
 	}
 

@@ -11,6 +11,7 @@ module sul.metadata.minecraft210;
 import std.typecons : Tuple, tuple;
 
 import sul.utils.buffer : Buffer;
+import sul.utils.metadataflags;
 import sul.utils.var;
 
 static import sul.protocol.minecraft210.types;
@@ -187,7 +188,7 @@ class Metadata {
 
 	private void delegate(Buffer) pure nothrow @safe[] _changed;
 
-	private byte _entityFlags;
+	private MetadataFlags!(byte) _entityFlags;
 	private Changed!(uint) _air = tuple(cast(uint)300, false);
 	private Changed!(string) _nametag;
 	private Changed!(bool) _showNametag;
@@ -202,7 +203,7 @@ class Metadata {
 	private Changed!(uint) _particleParameter1;
 	private Changed!(uint) _particleParameter2;
 	private Changed!(uint) _hookedEntity;
-	private Changed!(byte) _arrowFlags;
+	private Changed!(MetadataFlags!(byte)) _arrowFlags;
 	private Changed!(uint) _timeSinceLastHit;
 	private Changed!(uint) _forwardDirection = tuple(cast(uint)1, false);
 	private Changed!(float) _damageTaken = tuple(cast(float)0, false);
@@ -214,26 +215,26 @@ class Metadata {
 	private Changed!(sul.protocol.minecraft210.types.Slot) _firework;
 	private Changed!(sul.protocol.minecraft210.types.Slot) _item;
 	private Changed!(uint) _rotation;
-	private Changed!(byte) _livingFlags;
+	private Changed!(MetadataFlags!(byte)) _livingFlags;
 	private Changed!(float) _health = tuple(cast(float)1, false);
 	private Changed!(uint) _potionColor;
 	private Changed!(bool) _potionAmbient;
 	private Changed!(uint) _arrows;
 	private Changed!(float) _additionalHearts = tuple(cast(float)0, false);
 	private Changed!(uint) _score;
-	private Changed!(byte) _skinParts = tuple(cast(byte)0, false);
+	private Changed!(MetadataFlags!(byte)) _skinParts = tuple(cast(MetadataFlags!(byte))0, false);
 	private Changed!(byte) _mainHand = tuple(cast(byte)1, false);
-	private Changed!(byte) _armorStandFlags;
+	private Changed!(MetadataFlags!(byte)) _armorStandFlags;
 	private Changed!(Tuple!(float, "x", float, "y", float, "z")) _headRotation;
 	private Changed!(Tuple!(float, "x", float, "y", float, "z")) _bodyRotation;
 	private Changed!(Tuple!(float, "x", float, "y", float, "z")) _leftArmRotation;
 	private Changed!(Tuple!(float, "x", float, "y", float, "z")) _rightArmRotation;
 	private Changed!(Tuple!(float, "x", float, "y", float, "z")) _leftLegRotation;
 	private Changed!(Tuple!(float, "x", float, "y", float, "z")) _rightLegRotation;
-	private Changed!(byte) _instentientFlags;
+	private Changed!(MetadataFlags!(byte)) _instentientFlags;
 	private Changed!(byte) _hanging;
 	private Changed!(bool) _baby;
-	private Changed!(byte) _horseFlags;
+	private Changed!(MetadataFlags!(byte)) _horseFlags;
 	private Changed!(uint) _horseType;
 	private Changed!(uint) _horseVariant;
 	private Changed!(sul.protocol.minecraft210.types.OptionalUuid) _ownerUuid;
@@ -241,15 +242,15 @@ class Metadata {
 	private Changed!(bool) _pigSaddled;
 	private Changed!(uint) _rabbitVariant;
 	private Changed!(bool) _standingUp;
-	private Changed!(byte) _sheepFlagsAndColor;
-	private Changed!(byte) _tameableFlags;
+	private Changed!(MetadataFlags!(byte)) _sheepFlagsAndColor;
+	private Changed!(MetadataFlags!(byte)) _tameableFlags;
 	private Changed!(uint) _ocelotVariant;
 	private Changed!(float) _wolfHealth;
 	private Changed!(bool) _begging;
 	private Changed!(uint) _collarColor = tuple(cast(uint)14, false);
 	private Changed!(uint) _profession;
 	private Changed!(byte) _createdByPlayer;
-	private Changed!(byte) _snowmanFlags;
+	private Changed!(MetadataFlags!(byte)) _snowmanFlags;
 	private Changed!(uint) _shulkerDirection;
 	private Changed!(sul.protocol.minecraft210.types.OptionalPosition) _shulkerAttachment;
 	private Changed!(byte) _shulkerShieldHeight;
@@ -257,7 +258,7 @@ class Metadata {
 	private Changed!(uint) _creeperState = tuple(cast(uint)-1, false);
 	private Changed!(bool) _charged;
 	private Changed!(bool) _ignited;
-	private Changed!(byte) _guardianFlags;
+	private Changed!(MetadataFlags!(byte)) _guardianFlags;
 	private Changed!(uint) _guardianTarget;
 	private Changed!(uint) _skeletonType;
 	private Changed!(bool) _swingingArms;
@@ -314,62 +315,56 @@ class Metadata {
 	}
 
 	public pure nothrow @property @safe bool onFire() {
-		return (_entityFlags >>> 0) & 1;
+		return _entityFlags._0;
 	}
 
 	public pure nothrow @property @safe bool onFire(bool value) {
-		if(value) entityFlags = cast(byte)(_entityFlags | (cast(byte)true << 0));
-		else entityFlags = cast(byte)(_entityFlags & ~(cast(byte)true << 0));
+		_entityFlags._0 = value;
 		return value;
 	}
 
 	public pure nothrow @property @safe bool sneaking() {
-		return (_entityFlags >>> 1) & 1;
+		return _entityFlags._1;
 	}
 
 	public pure nothrow @property @safe bool sneaking(bool value) {
-		if(value) entityFlags = cast(byte)(_entityFlags | (cast(byte)true << 1));
-		else entityFlags = cast(byte)(_entityFlags & ~(cast(byte)true << 1));
+		_entityFlags._1 = value;
 		return value;
 	}
 
 	public pure nothrow @property @safe bool sprinting() {
-		return (_entityFlags >>> 3) & 1;
+		return _entityFlags._3;
 	}
 
 	public pure nothrow @property @safe bool sprinting(bool value) {
-		if(value) entityFlags = cast(byte)(_entityFlags | (cast(byte)true << 3));
-		else entityFlags = cast(byte)(_entityFlags & ~(cast(byte)true << 3));
+		_entityFlags._3 = value;
 		return value;
 	}
 
 	public pure nothrow @property @safe bool invisible() {
-		return (_entityFlags >>> 5) & 1;
+		return _entityFlags._5;
 	}
 
 	public pure nothrow @property @safe bool invisible(bool value) {
-		if(value) entityFlags = cast(byte)(_entityFlags | (cast(byte)true << 5));
-		else entityFlags = cast(byte)(_entityFlags & ~(cast(byte)true << 5));
+		_entityFlags._5 = value;
 		return value;
 	}
 
 	public pure nothrow @property @safe bool glowing() {
-		return (_entityFlags >>> 6) & 1;
+		return _entityFlags._6;
 	}
 
 	public pure nothrow @property @safe bool glowing(bool value) {
-		if(value) entityFlags = cast(byte)(_entityFlags | (cast(byte)true << 6));
-		else entityFlags = cast(byte)(_entityFlags & ~(cast(byte)true << 6));
+		_entityFlags._6 = value;
 		return value;
 	}
 
 	public pure nothrow @property @safe bool gliding() {
-		return (_entityFlags >>> 7) & 1;
+		return _entityFlags._7;
 	}
 
 	public pure nothrow @property @safe bool gliding(bool value) {
-		if(value) entityFlags = cast(byte)(_entityFlags | (cast(byte)true << 7));
-		else entityFlags = cast(byte)(_entityFlags & ~(cast(byte)true << 7));
+		_entityFlags._7 = value;
 		return value;
 	}
 
@@ -704,12 +699,11 @@ class Metadata {
 	}
 
 	public pure nothrow @property @safe bool critical() {
-		return (_arrowFlags.value >>> 0) & 1;
+		return _arrowFlags.value._0;
 	}
 
 	public pure nothrow @property @safe bool critical(bool value) {
-		if(value) arrowFlags = cast(byte)(_arrowFlags.value | (cast(byte)true << 0));
-		else arrowFlags = cast(byte)(_arrowFlags.value & ~(cast(byte)true << 0));
+		_arrowFlags.value._0 = value;
 		return value;
 	}
 
@@ -978,22 +972,20 @@ class Metadata {
 	}
 
 	public pure nothrow @property @safe bool handActive() {
-		return (_livingFlags.value >>> 0) & 1;
+		return _livingFlags.value._0;
 	}
 
 	public pure nothrow @property @safe bool handActive(bool value) {
-		if(value) livingFlags = cast(byte)(_livingFlags.value | (cast(byte)true << 0));
-		else livingFlags = cast(byte)(_livingFlags.value & ~(cast(byte)true << 0));
+		_livingFlags.value._0 = value;
 		return value;
 	}
 
 	public pure nothrow @property @safe bool offhand() {
-		return (_livingFlags.value >>> 1) & 1;
+		return _livingFlags.value._1;
 	}
 
 	public pure nothrow @property @safe bool offhand(bool value) {
-		if(value) livingFlags = cast(byte)(_livingFlags.value | (cast(byte)true << 1));
-		else livingFlags = cast(byte)(_livingFlags.value & ~(cast(byte)true << 1));
+		_livingFlags.value._1 = value;
 		return value;
 	}
 
@@ -1152,72 +1144,65 @@ class Metadata {
 	}
 
 	public pure nothrow @property @safe bool cape() {
-		return (_skinParts.value >>> 0) & 1;
+		return _skinParts.value._0;
 	}
 
 	public pure nothrow @property @safe bool cape(bool value) {
-		if(value) skinParts = cast(byte)(_skinParts.value | (cast(byte)true << 0));
-		else skinParts = cast(byte)(_skinParts.value & ~(cast(byte)true << 0));
+		_skinParts.value._0 = value;
 		return value;
 	}
 
 	public pure nothrow @property @safe bool jacket() {
-		return (_skinParts.value >>> 1) & 1;
+		return _skinParts.value._1;
 	}
 
 	public pure nothrow @property @safe bool jacket(bool value) {
-		if(value) skinParts = cast(byte)(_skinParts.value | (cast(byte)true << 1));
-		else skinParts = cast(byte)(_skinParts.value & ~(cast(byte)true << 1));
+		_skinParts.value._1 = value;
 		return value;
 	}
 
 	public pure nothrow @property @safe bool leftSleeve() {
-		return (_skinParts.value >>> 2) & 1;
+		return _skinParts.value._2;
 	}
 
 	public pure nothrow @property @safe bool leftSleeve(bool value) {
-		if(value) skinParts = cast(byte)(_skinParts.value | (cast(byte)true << 2));
-		else skinParts = cast(byte)(_skinParts.value & ~(cast(byte)true << 2));
+		_skinParts.value._2 = value;
 		return value;
 	}
 
 	public pure nothrow @property @safe bool rightSleeve() {
-		return (_skinParts.value >>> 3) & 1;
+		return _skinParts.value._3;
 	}
 
 	public pure nothrow @property @safe bool rightSleeve(bool value) {
-		if(value) skinParts = cast(byte)(_skinParts.value | (cast(byte)true << 3));
-		else skinParts = cast(byte)(_skinParts.value & ~(cast(byte)true << 3));
+		_skinParts.value._3 = value;
 		return value;
 	}
 
 	public pure nothrow @property @safe bool leftPants() {
-		return (_skinParts.value >>> 4) & 1;
+		return _skinParts.value._4;
 	}
 
 	public pure nothrow @property @safe bool leftPants(bool value) {
-		if(value) skinParts = cast(byte)(_skinParts.value | (cast(byte)true << 4));
-		else skinParts = cast(byte)(_skinParts.value & ~(cast(byte)true << 4));
+		_skinParts.value._4 = value;
 		return value;
 	}
 
 	public pure nothrow @property @safe bool rightPants() {
-		return (_skinParts.value >>> 5) & 1;
+		return _skinParts.value._5;
 	}
 
 	public pure nothrow @property @safe bool rightPants(bool value) {
-		if(value) skinParts = cast(byte)(_skinParts.value | (cast(byte)true << 5));
-		else skinParts = cast(byte)(_skinParts.value & ~(cast(byte)true << 5));
+		_skinParts.value._5 = value;
 		return value;
 	}
 
 	public pure nothrow @property @safe bool hat() {
-		return (_skinParts.value >>> 6) & 1;
+		return _skinParts.value._6;
 	}
 
 	public pure nothrow @property @safe bool hat(bool value) {
-		if(value) skinParts = cast(byte)(_skinParts.value | (cast(byte)true << 6));
-		else skinParts = cast(byte)(_skinParts.value & ~(cast(byte)true << 6));
+		_skinParts.value._6 = value;
 		return value;
 	}
 
@@ -1266,42 +1251,38 @@ class Metadata {
 	}
 
 	public pure nothrow @property @safe bool isSmall() {
-		return (_armorStandFlags.value >>> 0) & 1;
+		return _armorStandFlags.value._0;
 	}
 
 	public pure nothrow @property @safe bool isSmall(bool value) {
-		if(value) armorStandFlags = cast(byte)(_armorStandFlags.value | (cast(byte)true << 0));
-		else armorStandFlags = cast(byte)(_armorStandFlags.value & ~(cast(byte)true << 0));
+		_armorStandFlags.value._0 = value;
 		return value;
 	}
 
 	public pure nothrow @property @safe bool hasArms() {
-		return (_armorStandFlags.value >>> 2) & 1;
+		return _armorStandFlags.value._2;
 	}
 
 	public pure nothrow @property @safe bool hasArms(bool value) {
-		if(value) armorStandFlags = cast(byte)(_armorStandFlags.value | (cast(byte)true << 2));
-		else armorStandFlags = cast(byte)(_armorStandFlags.value & ~(cast(byte)true << 2));
+		_armorStandFlags.value._2 = value;
 		return value;
 	}
 
 	public pure nothrow @property @safe bool noBasePlate() {
-		return (_armorStandFlags.value >>> 3) & 1;
+		return _armorStandFlags.value._3;
 	}
 
 	public pure nothrow @property @safe bool noBasePlate(bool value) {
-		if(value) armorStandFlags = cast(byte)(_armorStandFlags.value | (cast(byte)true << 3));
-		else armorStandFlags = cast(byte)(_armorStandFlags.value & ~(cast(byte)true << 3));
+		_armorStandFlags.value._3 = value;
 		return value;
 	}
 
 	public pure nothrow @property @safe bool setMarker() {
-		return (_armorStandFlags.value >>> 4) & 1;
+		return _armorStandFlags.value._4;
 	}
 
 	public pure nothrow @property @safe bool setMarker(bool value) {
-		if(value) armorStandFlags = cast(byte)(_armorStandFlags.value | (cast(byte)true << 4));
-		else armorStandFlags = cast(byte)(_armorStandFlags.value & ~(cast(byte)true << 4));
+		_armorStandFlags.value._4 = value;
 		return value;
 	}
 
@@ -1460,22 +1441,20 @@ class Metadata {
 	}
 
 	public pure nothrow @property @safe bool noAi() {
-		return (_instentientFlags.value >>> 0) & 1;
+		return _instentientFlags.value._0;
 	}
 
 	public pure nothrow @property @safe bool noAi(bool value) {
-		if(value) instentientFlags = cast(byte)(_instentientFlags.value | (cast(byte)true << 0));
-		else instentientFlags = cast(byte)(_instentientFlags.value & ~(cast(byte)true << 0));
+		_instentientFlags.value._0 = value;
 		return value;
 	}
 
 	public pure nothrow @property @safe bool leftHanded() {
-		return (_instentientFlags.value >>> 1) & 1;
+		return _instentientFlags.value._1;
 	}
 
 	public pure nothrow @property @safe bool leftHanded(bool value) {
-		if(value) instentientFlags = cast(byte)(_instentientFlags.value | (cast(byte)true << 1));
-		else instentientFlags = cast(byte)(_instentientFlags.value & ~(cast(byte)true << 1));
+		_instentientFlags.value._1 = value;
 		return value;
 	}
 
@@ -1546,62 +1525,56 @@ class Metadata {
 	}
 
 	public pure nothrow @property @safe bool horseTamed() {
-		return (_horseFlags.value >>> 1) & 1;
+		return _horseFlags.value._1;
 	}
 
 	public pure nothrow @property @safe bool horseTamed(bool value) {
-		if(value) horseFlags = cast(byte)(_horseFlags.value | (cast(byte)true << 1));
-		else horseFlags = cast(byte)(_horseFlags.value & ~(cast(byte)true << 1));
+		_horseFlags.value._1 = value;
 		return value;
 	}
 
 	public pure nothrow @property @safe bool horseSaddled() {
-		return (_horseFlags.value >>> 2) & 1;
+		return _horseFlags.value._2;
 	}
 
 	public pure nothrow @property @safe bool horseSaddled(bool value) {
-		if(value) horseFlags = cast(byte)(_horseFlags.value | (cast(byte)true << 2));
-		else horseFlags = cast(byte)(_horseFlags.value & ~(cast(byte)true << 2));
+		_horseFlags.value._2 = value;
 		return value;
 	}
 
 	public pure nothrow @property @safe bool horseChested() {
-		return (_horseFlags.value >>> 3) & 1;
+		return _horseFlags.value._3;
 	}
 
 	public pure nothrow @property @safe bool horseChested(bool value) {
-		if(value) horseFlags = cast(byte)(_horseFlags.value | (cast(byte)true << 3));
-		else horseFlags = cast(byte)(_horseFlags.value & ~(cast(byte)true << 3));
+		_horseFlags.value._3 = value;
 		return value;
 	}
 
 	public pure nothrow @property @safe bool horseEating() {
-		return (_horseFlags.value >>> 5) & 1;
+		return _horseFlags.value._5;
 	}
 
 	public pure nothrow @property @safe bool horseEating(bool value) {
-		if(value) horseFlags = cast(byte)(_horseFlags.value | (cast(byte)true << 5));
-		else horseFlags = cast(byte)(_horseFlags.value & ~(cast(byte)true << 5));
+		_horseFlags.value._5 = value;
 		return value;
 	}
 
 	public pure nothrow @property @safe bool horseRearing() {
-		return (_horseFlags.value >>> 6) & 1;
+		return _horseFlags.value._6;
 	}
 
 	public pure nothrow @property @safe bool horseRearing(bool value) {
-		if(value) horseFlags = cast(byte)(_horseFlags.value | (cast(byte)true << 6));
-		else horseFlags = cast(byte)(_horseFlags.value & ~(cast(byte)true << 6));
+		_horseFlags.value._6 = value;
 		return value;
 	}
 
 	public pure nothrow @property @safe bool mouthOpen() {
-		return (_horseFlags.value >>> 7) & 1;
+		return _horseFlags.value._7;
 	}
 
 	public pure nothrow @property @safe bool mouthOpen(bool value) {
-		if(value) horseFlags = cast(byte)(_horseFlags.value | (cast(byte)true << 7));
-		else horseFlags = cast(byte)(_horseFlags.value & ~(cast(byte)true << 7));
+		_horseFlags.value._7 = value;
 		return value;
 	}
 
@@ -1782,12 +1755,11 @@ class Metadata {
 	}
 
 	public pure nothrow @property @safe bool sheared() {
-		return (_sheepFlagsAndColor.value >>> 7) & 1;
+		return _sheepFlagsAndColor.value._7;
 	}
 
 	public pure nothrow @property @safe bool sheared(bool value) {
-		if(value) sheepFlagsAndColor = cast(byte)(_sheepFlagsAndColor.value | (cast(byte)true << 7));
-		else sheepFlagsAndColor = cast(byte)(_sheepFlagsAndColor.value & ~(cast(byte)true << 7));
+		_sheepFlagsAndColor.value._7 = value;
 		return value;
 	}
 
@@ -1814,32 +1786,29 @@ class Metadata {
 	}
 
 	public pure nothrow @property @safe bool sitting() {
-		return (_tameableFlags.value >>> 0) & 1;
+		return _tameableFlags.value._0;
 	}
 
 	public pure nothrow @property @safe bool sitting(bool value) {
-		if(value) tameableFlags = cast(byte)(_tameableFlags.value | (cast(byte)true << 0));
-		else tameableFlags = cast(byte)(_tameableFlags.value & ~(cast(byte)true << 0));
+		_tameableFlags.value._0 = value;
 		return value;
 	}
 
 	public pure nothrow @property @safe bool angry() {
-		return (_tameableFlags.value >>> 1) & 1;
+		return _tameableFlags.value._1;
 	}
 
 	public pure nothrow @property @safe bool angry(bool value) {
-		if(value) tameableFlags = cast(byte)(_tameableFlags.value | (cast(byte)true << 1));
-		else tameableFlags = cast(byte)(_tameableFlags.value & ~(cast(byte)true << 1));
+		_tameableFlags.value._1 = value;
 		return value;
 	}
 
 	public pure nothrow @property @safe bool tamed() {
-		return (_tameableFlags.value >>> 2) & 1;
+		return _tameableFlags.value._2;
 	}
 
 	public pure nothrow @property @safe bool tamed(bool value) {
-		if(value) tameableFlags = cast(byte)(_tameableFlags.value | (cast(byte)true << 2));
-		else tameableFlags = cast(byte)(_tameableFlags.value & ~(cast(byte)true << 2));
+		_tameableFlags.value._2 = value;
 		return value;
 	}
 
@@ -1998,12 +1967,11 @@ class Metadata {
 	}
 
 	public pure nothrow @property @safe bool pumpkinless() {
-		return (_snowmanFlags.value >>> 4) & 1;
+		return _snowmanFlags.value._4;
 	}
 
 	public pure nothrow @property @safe bool pumpkinless(bool value) {
-		if(value) snowmanFlags = cast(byte)(_snowmanFlags.value | (cast(byte)true << 4));
-		else snowmanFlags = cast(byte)(_snowmanFlags.value & ~(cast(byte)true << 4));
+		_snowmanFlags.value._4 = value;
 		return value;
 	}
 
@@ -2184,22 +2152,20 @@ class Metadata {
 	}
 
 	public pure nothrow @property @safe bool retractingSpikes() {
-		return (_guardianFlags.value >>> 1) & 1;
+		return _guardianFlags.value._1;
 	}
 
 	public pure nothrow @property @safe bool retractingSpikes(bool value) {
-		if(value) guardianFlags = cast(byte)(_guardianFlags.value | (cast(byte)true << 1));
-		else guardianFlags = cast(byte)(_guardianFlags.value & ~(cast(byte)true << 1));
+		_guardianFlags.value._1 = value;
 		return value;
 	}
 
 	public pure nothrow @property @safe bool elder() {
-		return (_guardianFlags.value >>> 2) & 1;
+		return _guardianFlags.value._2;
 	}
 
 	public pure nothrow @property @safe bool elder(bool value) {
-		if(value) guardianFlags = cast(byte)(_guardianFlags.value | (cast(byte)true << 2));
-		else guardianFlags = cast(byte)(_guardianFlags.value & ~(cast(byte)true << 2));
+		_guardianFlags.value._2 = value;
 		return value;
 	}
 
