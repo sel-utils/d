@@ -129,7 +129,7 @@ class Metadata {
 	public enum uint AREA_EFFECT_CLOUD_RADIUS = 61;
 	public enum uint AREA_EFFECT_CLOUD_WAITING = 62;
 	public enum uint AREA_EFFECT_CLOUD_PARTICLE = 63;
-	public enum uint SHUKER_DIRECTION = 65;
+	public enum uint SHULKER_DIRECTION = 65;
 	public enum uint SHULKER_ATTACHMENT = 67;
 	public enum uint TRADING_PLAYER = 68;
 	public enum uint COMMAND_BLOCK_COMMAND = 71;
@@ -196,7 +196,7 @@ class Metadata {
 	private Changed!(float) _areaEffectCloudRadius = tuple(cast(float)0.5, false);
 	private Changed!(int) _areaEffectCloudWaiting;
 	private Changed!(int) _areaEffectCloudParticle;
-	private Changed!(byte) _shukerDirection;
+	private Changed!(byte) _shulkerDirection;
 	private Changed!(Tuple!(int, "x", int, "y", int, "z")) _shulkerAttachment;
 	private Changed!(long) _tradingPlayer;
 	private Changed!(string) _commandBlockCommand;
@@ -1702,25 +1702,25 @@ class Metadata {
 		}
 	}
 
-	public pure nothrow @property @safe @nogc byte shukerDirection() {
-		return _shukerDirection.value;
+	public pure nothrow @property @safe @nogc byte shulkerDirection() {
+		return _shulkerDirection.value;
 	}
 
-	public pure nothrow @property @safe byte shukerDirection(byte value) {
+	public pure nothrow @property @safe byte shulkerDirection(byte value) {
 		this._cached = false;
-		this._shukerDirection.value = value;
-		if(!this._shukerDirection.changed) {
-			this._shukerDirection.changed = true;
-			this._changed ~= &this.encodeShukerDirection;
+		this._shulkerDirection.value = value;
+		if(!this._shulkerDirection.changed) {
+			this._shulkerDirection.changed = true;
+			this._changed ~= &this.encodeShulkerDirection;
 		}
 		return value;
 	}
 
-	public pure nothrow @safe encodeShukerDirection(Buffer buffer) {
+	public pure nothrow @safe encodeShulkerDirection(Buffer buffer) {
 		with(buffer) {
 			writeBytes(varuint.encode(65));
 			writeBytes(varuint.encode(0));
-			writeBigEndianByte(this._shukerDirection.value);
+			writeBigEndianByte(this._shulkerDirection.value);
 		}
 	}
 

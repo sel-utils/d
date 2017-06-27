@@ -2954,37 +2954,36 @@ class SetEntityLink : Buffer {
 	public enum bool SERVERBOUND = false;
 
 	// action
-	public enum ubyte ADD = 0;
-	public enum ubyte RIDE = 1;
-	public enum ubyte REMOVE = 2;
+	public enum ubyte REMOVE = 0;
+	public enum ubyte ADD = 1;
 
-	public enum string[] FIELDS = ["from", "to", "action"];
+	public enum string[] FIELDS = ["vehicle", "passenger", "action"];
 
-	public long from;
-	public long to;
+	public long vehicle;
+	public long passenger;
 	public ubyte action;
 
 	public pure nothrow @safe @nogc this() {}
 
-	public pure nothrow @safe @nogc this(long from, long to=long.init, ubyte action=ubyte.init) {
-		this.from = from;
-		this.to = to;
+	public pure nothrow @safe @nogc this(long vehicle, long passenger=long.init, ubyte action=ubyte.init) {
+		this.vehicle = vehicle;
+		this.passenger = passenger;
 		this.action = action;
 	}
 
 	public pure nothrow @safe ubyte[] encode(bool writeId=true)() {
 		_buffer.length = 0;
 		static if(writeId){ writeBigEndianUbyte(ID); }
-		writeBytes(varlong.encode(from));
-		writeBytes(varlong.encode(to));
+		writeBytes(varlong.encode(vehicle));
+		writeBytes(varlong.encode(passenger));
 		writeBigEndianUbyte(action);
 		return _buffer;
 	}
 
 	public pure nothrow @safe void decode(bool readId=true)() {
 		static if(readId){ ubyte _id; _id=readBigEndianUbyte(); }
-		from=varlong.decode(_buffer, &_index);
-		to=varlong.decode(_buffer, &_index);
+		vehicle=varlong.decode(_buffer, &_index);
+		passenger=varlong.decode(_buffer, &_index);
 		action=readBigEndianUbyte();
 	}
 
@@ -2996,7 +2995,7 @@ class SetEntityLink : Buffer {
 	}
 
 	public override string toString() {
-		return "SetEntityLink(from: " ~ std.conv.to!string(this.from) ~ ", to: " ~ std.conv.to!string(this.to) ~ ", action: " ~ std.conv.to!string(this.action) ~ ")";
+		return "SetEntityLink(vehicle: " ~ std.conv.to!string(this.vehicle) ~ ", passenger: " ~ std.conv.to!string(this.passenger) ~ ", action: " ~ std.conv.to!string(this.action) ~ ")";
 	}
 
 }
