@@ -2225,6 +2225,7 @@ class EntityEvent : Buffer {
 	public enum ubyte SQUID_INK_CLOUD = 15;
 	public enum ubyte AMBIENT_SOUND = 16;
 	public enum ubyte RESPAWN = 17;
+	public enum ubyte UNLEASH = 63;
 
 	public enum string[] FIELDS = ["entityId", "eventId", "unknown2"];
 
