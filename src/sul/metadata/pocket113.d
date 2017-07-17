@@ -129,6 +129,7 @@ class Metadata {
 	public enum uint AREA_EFFECT_CLOUD_RADIUS = 61;
 	public enum uint AREA_EFFECT_CLOUD_WAITING = 62;
 	public enum uint AREA_EFFECT_CLOUD_PARTICLE = 63;
+	public enum uint SHULKER_PEAK_HEIGHT = 64;
 	public enum uint SHULKER_DIRECTION = 65;
 	public enum uint SHULKER_ATTACHMENT = 67;
 	public enum uint TRADING_PLAYER = 68;
@@ -196,6 +197,7 @@ class Metadata {
 	private Changed!(float) _areaEffectCloudRadius = tuple(cast(float)0.5, false);
 	private Changed!(int) _areaEffectCloudWaiting;
 	private Changed!(int) _areaEffectCloudParticle;
+	private Changed!(int) _shulkerPeakHeight;
 	private Changed!(byte) _shulkerDirection;
 	private Changed!(Tuple!(int, "x", int, "y", int, "z")) _shulkerAttachment;
 	private Changed!(long) _tradingPlayer;
@@ -1699,6 +1701,28 @@ class Metadata {
 			writeBytes(varuint.encode(63));
 			writeBytes(varuint.encode(2));
 			writeBytes(varint.encode(this._areaEffectCloudParticle.value));
+		}
+	}
+
+	public pure nothrow @property @safe @nogc int shulkerPeakHeight() {
+		return _shulkerPeakHeight.value;
+	}
+
+	public pure nothrow @property @safe int shulkerPeakHeight(int value) {
+		this._cached = false;
+		this._shulkerPeakHeight.value = value;
+		if(!this._shulkerPeakHeight.changed) {
+			this._shulkerPeakHeight.changed = true;
+			this._changed ~= &this.encodeShulkerPeakHeight;
+		}
+		return value;
+	}
+
+	public pure nothrow @safe encodeShulkerPeakHeight(Buffer buffer) {
+		with(buffer) {
+			writeBytes(varuint.encode(64));
+			writeBytes(varuint.encode(2));
+			writeBytes(varint.encode(this._shulkerPeakHeight.value));
 		}
 	}
 
