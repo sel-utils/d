@@ -3726,13 +3726,14 @@ class AdventureSettings : Buffer {
  * Sets a block entity's nbt tag, block's additional data that cannot be indicated
  * in the block's meta. More informations about block entities and their tag format
  * can be found on Minecraft Wiki.
+ * The client sends this packet when it writes a sign.
  */
 class BlockEntityData : Buffer {
 
 	public enum ubyte ID = 56;
 
 	public enum bool CLIENTBOUND = true;
-	public enum bool SERVERBOUND = false;
+	public enum bool SERVERBOUND = true;
 
 	public enum string[] FIELDS = ["position", "nbt"];
 

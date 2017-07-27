@@ -3639,7 +3639,7 @@ class BlockEntityData : Buffer {
 	public enum ubyte ID = 56;
 
 	public enum bool CLIENTBOUND = true;
-	public enum bool SERVERBOUND = false;
+	public enum bool SERVERBOUND = true;
 
 	public enum string[] FIELDS = ["position", "nbt"];
 
