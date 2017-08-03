@@ -76,7 +76,10 @@ class Metadata {
 		IDLING = 39,
 		EVOKER_SPELL = 40,
 		CHARGE_ATTACK = 41,
+		ISWASDCONTROLLED = 42,
 		LINGER = 45,
+		GRAVITY = 46,
+		DANCING = 48,
 	}
 	public enum uint HEALTH = 1;
 	public enum uint VARIANT = 2;
@@ -616,12 +619,39 @@ class Metadata {
 		return value;
 	}
 
+	public pure nothrow @property @safe bool isWASDcontrolled() {
+		return _entityFlags._42;
+	}
+
+	public pure nothrow @property @safe bool isWASDcontrolled(bool value) {
+		_entityFlags._42 = value;
+		return value;
+	}
+
 	public pure nothrow @property @safe bool linger() {
 		return _entityFlags._45;
 	}
 
 	public pure nothrow @property @safe bool linger(bool value) {
 		_entityFlags._45 = value;
+		return value;
+	}
+
+	public pure nothrow @property @safe bool gravity() {
+		return _entityFlags._46;
+	}
+
+	public pure nothrow @property @safe bool gravity(bool value) {
+		_entityFlags._46 = value;
+		return value;
+	}
+
+	public pure nothrow @property @safe bool dancing() {
+		return _entityFlags._48;
+	}
+
+	public pure nothrow @property @safe bool dancing(bool value) {
+		_entityFlags._48 = value;
 		return value;
 	}
 
