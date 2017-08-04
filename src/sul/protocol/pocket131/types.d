@@ -4,9 +4,9 @@
  * 
  * License: https://github.com/sel-project/sel-utils/blob/master/LICENSE
  * Repository: https://github.com/sel-project/sel-utils
- * Generated from https://github.com/sel-project/sel-utils/blob/master/xml/protocol/pocket130.xml
+ * Generated from https://github.com/sel-project/sel-utils/blob/master/xml/protocol/pocket131.xml
  */
-module sul.protocol.pocket130.types;
+module sul.protocol.pocket131.types;
 
 import std.bitmanip : write, peek;
 static import std.conv;
@@ -17,7 +17,7 @@ import std.uuid : UUID;
 import sul.utils.buffer;
 import sul.utils.var;
 
-static if(__traits(compiles, { import sul.metadata.pocket130; })) import sul.metadata.pocket130;
+static if(__traits(compiles, { import sul.metadata.pocket131; })) import sul.metadata.pocket131;
 
 struct LoginBody {
 
@@ -272,7 +272,7 @@ struct McpeUuid {
  */
 struct Skin {
 
-	public enum string[] FIELDS = ["name", "data"];
+	public enum string[] FIELDS = ["name", "data", "capeData", "geometryName", "geometryData"];
 
 	/**
 	 * Name of the skin. It's used to render the shape of the skin correctly.
@@ -283,11 +283,17 @@ struct Skin {
 	 * Bytes of the skin in format RGBA. The length should be 8192 or 16382.
 	 */
 	public ubyte[] data;
+	public ubyte[] capeData;
+	public string geometryName;
+	public ubyte[] geometryData;
 
 	public pure nothrow @safe void encode(Buffer buffer) {
 		with(buffer) {
 			writeBytes(varuint.encode(cast(uint)name.length)); writeString(name);
 			writeBytes(varuint.encode(cast(uint)data.length)); writeBytes(data);
+			writeBytes(varuint.encode(cast(uint)capeData.length)); writeBytes(capeData);
+			writeBytes(varuint.encode(cast(uint)geometryName.length)); writeString(geometryName);
+			writeBytes(varuint.encode(cast(uint)geometryData.length)); writeBytes(geometryData);
 		}
 	}
 
@@ -295,11 +301,14 @@ struct Skin {
 		with(buffer) {
 			uint bfz=varuint.decode(_buffer, &_index); name=readString(bfz);
 			data.length=varuint.decode(_buffer, &_index); if(_buffer.length>=_index+data.length){ data=_buffer[_index.._index+data.length].dup; _index+=data.length; }
+			capeData.length=varuint.decode(_buffer, &_index); if(_buffer.length>=_index+capeData.length){ capeData=_buffer[_index.._index+capeData.length].dup; _index+=capeData.length; }
+			uint zvbvcly1=varuint.decode(_buffer, &_index); geometryName=readString(zvbvcly1);
+			geometryData.length=varuint.decode(_buffer, &_index); if(_buffer.length>=_index+geometryData.length){ geometryData=_buffer[_index.._index+geometryData.length].dup; _index+=geometryData.length; }
 		}
 	}
 
 	public string toString() {
-		return "Skin(name: " ~ std.conv.to!string(this.name) ~ ", data: " ~ std.conv.to!string(this.data) ~ ")";
+		return "Skin(name: " ~ std.conv.to!string(this.name) ~ ", data: " ~ std.conv.to!string(this.data) ~ ", capeData: " ~ std.conv.to!string(this.capeData) ~ ", geometryName: " ~ std.conv.to!string(this.geometryName) ~ ", geometryData: " ~ std.conv.to!string(this.geometryData) ~ ")";
 	}
 
 }
@@ -310,13 +319,13 @@ struct Skin {
  */
 struct PlayerList {
 
-	public enum string[] FIELDS = ["uuid", "entityId", "displayName", "skin"];
+	public enum string[] FIELDS = ["uuid", "entityId", "displayName", "skin", "xuid"];
 
 	/**
 	 * UUID of the player. If it's associated with an XBOX Live account the player's profile
 	 * will also be available in pause menu.
 	 */
-	public sul.protocol.pocket130.types.McpeUuid uuid;
+	public sul.protocol.pocket131.types.McpeUuid uuid;
 
 	/**
 	 * Player's id, used to associate the skin with the game's entity spawned with AddPlayer.
@@ -332,7 +341,8 @@ struct PlayerList {
 	/**
 	 * Player's skin usually given in the Login's packet body.
 	 */
-	public sul.protocol.pocket130.types.Skin skin;
+	public sul.protocol.pocket131.types.Skin skin;
+	public string xuid;
 
 	public pure nothrow @safe void encode(Buffer buffer) {
 		with(buffer) {
@@ -340,6 +350,7 @@ struct PlayerList {
 			writeBytes(varlong.encode(entityId));
 			writeBytes(varuint.encode(cast(uint)displayName.length)); writeString(displayName);
 			skin.encode(bufferInstance);
+			writeBytes(varuint.encode(cast(uint)xuid.length)); writeString(xuid);
 		}
 	}
 
@@ -349,11 +360,12 @@ struct PlayerList {
 			entityId=varlong.decode(_buffer, &_index);
 			uint zlcxe5bu=varuint.decode(_buffer, &_index); displayName=readString(zlcxe5bu);
 			skin.decode(bufferInstance);
+			uint evz=varuint.decode(_buffer, &_index); xuid=readString(evz);
 		}
 	}
 
 	public string toString() {
-		return "PlayerList(uuid: " ~ std.conv.to!string(this.uuid) ~ ", entityId: " ~ std.conv.to!string(this.entityId) ~ ", displayName: " ~ std.conv.to!string(this.displayName) ~ ", skin: " ~ std.conv.to!string(this.skin) ~ ")";
+		return "PlayerList(uuid: " ~ std.conv.to!string(this.uuid) ~ ", entityId: " ~ std.conv.to!string(this.entityId) ~ ", displayName: " ~ std.conv.to!string(this.displayName) ~ ", skin: " ~ std.conv.to!string(this.skin) ~ ", xuid: " ~ std.conv.to!string(this.xuid) ~ ")";
 	}
 
 }
@@ -439,7 +451,7 @@ struct ChunkData {
 	 * (the 3rd element of the array will be the 3rd section from bottom, starting at `y=24`).
 	 * The amount of sections should be in a range from 0 (empty chunk) to 16.
 	 */
-	public sul.protocol.pocket130.types.Section[] sections;
+	public sul.protocol.pocket131.types.Section[] sections;
 
 	/**
 	 * Coordinates of the highest block in the column that receives sky light (order `xz`).
@@ -457,7 +469,7 @@ struct ChunkData {
 	 * implemented in the game yet and crashes the client.
 	 */
 	public ubyte[] borders;
-	public sul.protocol.pocket130.types.ExtraData[] extraData;
+	public sul.protocol.pocket131.types.ExtraData[] extraData;
 
 	/**
 	 * Additional data for the chunk's block entities (tiles), encoded in the same way
@@ -677,7 +689,7 @@ struct Command {
 	public ubyte unknown2;
 	public ubyte permissionLevel;
 	public int aliasesId = -1;
-	public sul.protocol.pocket130.types.Overload[] overloads;
+	public sul.protocol.pocket131.types.Overload[] overloads;
 
 	public pure nothrow @safe void encode(Buffer buffer) {
 		with(buffer) {
@@ -711,7 +723,7 @@ struct Overload {
 
 	public enum string[] FIELDS = ["parameters"];
 
-	public sul.protocol.pocket130.types.Parameter[] parameters;
+	public sul.protocol.pocket131.types.Parameter[] parameters;
 
 	public pure nothrow @safe void encode(Buffer buffer) {
 		with(buffer) {

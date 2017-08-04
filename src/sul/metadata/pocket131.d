@@ -4,9 +4,9 @@
  * 
  * License: https://github.com/sel-project/sel-utils/blob/master/LICENSE
  * Repository: https://github.com/sel-project/sel-utils
- * Generated from https://github.com/sel-project/sel-utils/blob/master/xml/metadata/pocket130.xml
+ * Generated from https://github.com/sel-project/sel-utils/blob/master/xml/metadata/pocket131.xml
  */
-module sul.metadata.pocket130;
+module sul.metadata.pocket131;
 
 import std.typecons : Tuple, tuple;
 
@@ -14,7 +14,7 @@ import sul.utils.buffer : Buffer;
 import sul.utils.metadataflags;
 import sul.utils.var;
 
-static import sul.protocol.pocket130.types;
+static import sul.protocol.pocket131.types;
 
 alias Changed(T) = Tuple!(T, "value", bool, "changed");
 
@@ -76,7 +76,7 @@ class Metadata {
 		IDLING = 39,
 		EVOKER_SPELL = 40,
 		CHARGE_ATTACK = 41,
-		ISWASDCONTROLLED = 42,
+		IS_WASD_CONTROLLED = 42,
 		LINGER = 45,
 		GRAVITY = 46,
 		DANCING = 48,
@@ -619,11 +619,11 @@ class Metadata {
 		return value;
 	}
 
-	public pure nothrow @property @safe bool isWASDcontrolled() {
+	public pure nothrow @property @safe bool isWasdControlled() {
 		return _entityFlags._42;
 	}
 
-	public pure nothrow @property @safe bool isWASDcontrolled(bool value) {
+	public pure nothrow @property @safe bool isWasdControlled(bool value) {
 		_entityFlags._42 = value;
 		return value;
 	}
@@ -2002,7 +2002,7 @@ class Metadata {
 						metadata.decoded ~= DecodedMetadata.fromString(id, _4);
 						break;
 					case 5:
-						sul.protocol.pocket130.types.Slot _5;
+						sul.protocol.pocket131.types.Slot _5;
 						_5.decode(bufferInstance);
 						metadata.decoded ~= DecodedMetadata.fromSlot(id, _5);
 						break;
@@ -2042,7 +2042,7 @@ class DecodedMetadata {
 		int int_;
 		float float_;
 		string string_;
-		sul.protocol.pocket130.types.Slot slot;
+		sul.protocol.pocket131.types.Slot slot;
 		Tuple!(int, "x", int, "y", int, "z") block_position;
 		long long_;
 		Tuple!(float, "x", float, "y", float, "z") entity_position;
@@ -2083,7 +2083,7 @@ class DecodedMetadata {
 		return ret;
 	}
 
-	public static pure nothrow @trusted DecodedMetadata fromSlot(uint id, sul.protocol.pocket130.types.Slot value) {
+	public static pure nothrow @trusted DecodedMetadata fromSlot(uint id, sul.protocol.pocket131.types.Slot value) {
 		auto ret = new DecodedMetadata(id, 5);
 		ret.slot = value;
 		return ret;
