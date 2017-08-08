@@ -77,7 +77,8 @@ class Metadata {
 		EVOKER_SPELL = 40,
 		CHARGE_ATTACK = 41,
 		IS_WASD_CONTROLLED = 42,
-		LINGER = 45,
+		LINGER = 44,
+		COLLIDE = 45,
 		GRAVITY = 46,
 		DANCING = 48,
 	}
@@ -629,10 +630,19 @@ class Metadata {
 	}
 
 	public pure nothrow @property @safe bool linger() {
-		return _entityFlags._45;
+		return _entityFlags._44;
 	}
 
 	public pure nothrow @property @safe bool linger(bool value) {
+		_entityFlags._44 = value;
+		return value;
+	}
+
+	public pure nothrow @property @safe bool collide() {
+		return _entityFlags._45;
+	}
+
+	public pure nothrow @property @safe bool collide(bool value) {
 		_entityFlags._45 = value;
 		return value;
 	}
@@ -717,7 +727,7 @@ class Metadata {
 		with(buffer) {
 			writeBytes(varuint.encode(3));
 			writeBytes(varuint.encode(0));
-			writeBigEndianByte(this._color.value);
+			writeLittleEndianByte(this._color.value);
 		}
 	}
 
@@ -845,7 +855,7 @@ class Metadata {
 		with(buffer) {
 			writeBytes(varuint.encode(9));
 			writeBytes(varuint.encode(0));
-			writeBigEndianByte(this._potionAmbient.value);
+			writeLittleEndianByte(this._potionAmbient.value);
 		}
 	}
 
@@ -1021,7 +1031,7 @@ class Metadata {
 		with(buffer) {
 			writeBytes(varuint.encode(18));
 			writeBytes(varuint.encode(0));
-			writeBigEndianByte(this._minecartHasBlock.value);
+			writeLittleEndianByte(this._minecartHasBlock.value);
 		}
 	}
 
@@ -1109,7 +1119,7 @@ class Metadata {
 		with(buffer) {
 			writeBytes(varuint.encode(27));
 			writeBytes(varuint.encode(0));
-			writeBigEndianByte(this._playerFlags.value);
+			writeLittleEndianByte(this._playerFlags.value);
 		}
 	}
 
@@ -1620,7 +1630,7 @@ class Metadata {
 		with(buffer) {
 			writeBytes(varuint.encode(58));
 			writeBytes(varuint.encode(0));
-			writeBigEndianByte(this._riderRotationLocked.value);
+			writeLittleEndianByte(this._riderRotationLocked.value);
 		}
 	}
 
@@ -1774,7 +1784,7 @@ class Metadata {
 		with(buffer) {
 			writeBytes(varuint.encode(65));
 			writeBytes(varuint.encode(0));
-			writeBigEndianByte(this._shulkerDirection.value);
+			writeLittleEndianByte(this._shulkerDirection.value);
 		}
 	}
 
@@ -1906,7 +1916,7 @@ class Metadata {
 		with(buffer) {
 			writeBytes(varuint.encode(74));
 			writeBytes(varuint.encode(0));
-			writeBigEndianByte(this._controllingRiderSeatNumber.value);
+			writeLittleEndianByte(this._controllingRiderSeatNumber.value);
 		}
 	}
 
@@ -1978,7 +1988,7 @@ class Metadata {
 				switch(varuint.decode(_buffer, &_index)) {
 					case 0:
 						byte _0;
-						_0=readBigEndianByte();
+						_0=readLittleEndianByte();
 						metadata.decoded ~= DecodedMetadata.fromByte(id, _0);
 						break;
 					case 1:

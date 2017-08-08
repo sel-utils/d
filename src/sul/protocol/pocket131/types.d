@@ -387,7 +387,7 @@ struct Link {
 		with(buffer) {
 			writeBytes(varlong.encode(from));
 			writeBytes(varlong.encode(to));
-			writeBigEndianUbyte(action);
+			writeLittleEndianUbyte(action);
 		}
 	}
 
@@ -395,7 +395,7 @@ struct Link {
 		with(buffer) {
 			from=varlong.decode(_buffer, &_index);
 			to=varlong.decode(_buffer, &_index);
-			action=readBigEndianUbyte();
+			action=readLittleEndianUbyte();
 		}
 	}
 
@@ -439,6 +439,50 @@ struct Recipe {
 
 }
 
+struct InventoryAction {
+
+	// source
+	public enum uint CONTAINER = 0;
+	public enum uint WORLD = 2;
+	public enum uint CREATIVE = 3;
+
+	public enum string[] FIELDS = ["source", "container", "unknown2", "slot", "oldItem", "newItem"];
+
+	public uint source;
+	public int container = -1;
+	public uint unknown2;
+	public uint slot;
+	public sul.protocol.pocket131.types.Slot oldItem;
+	public sul.protocol.pocket131.types.Slot newItem;
+
+	public pure nothrow @safe void encode(Buffer buffer) {
+		with(buffer) {
+			writeBytes(varuint.encode(source));
+			if(source==0){ writeBytes(varint.encode(container)); }
+			if(source==2){ writeBytes(varuint.encode(unknown2)); }
+			writeBytes(varuint.encode(slot));
+			oldItem.encode(bufferInstance);
+			newItem.encode(bufferInstance);
+		}
+	}
+
+	public pure nothrow @safe void decode(Buffer buffer) {
+		with(buffer) {
+			source=varuint.decode(_buffer, &_index);
+			if(source==0){ container=varint.decode(_buffer, &_index); }
+			if(source==2){ unknown2=varuint.decode(_buffer, &_index); }
+			slot=varuint.decode(_buffer, &_index);
+			oldItem.decode(bufferInstance);
+			newItem.decode(bufferInstance);
+		}
+	}
+
+	public string toString() {
+		return "InventoryAction(source: " ~ std.conv.to!string(this.source) ~ ", container: " ~ std.conv.to!string(this.container) ~ ", unknown2: " ~ std.conv.to!string(this.unknown2) ~ ", slot: " ~ std.conv.to!string(this.slot) ~ ", oldItem: " ~ std.conv.to!string(this.oldItem) ~ ", newItem: " ~ std.conv.to!string(this.newItem) ~ ")";
+	}
+
+}
+
 /**
  * Chunk's blocks, lights and other immutable data.
  */
@@ -452,11 +496,6 @@ struct ChunkData {
 	 * The amount of sections should be in a range from 0 (empty chunk) to 16.
 	 */
 	public sul.protocol.pocket131.types.Section[] sections;
-
-	/**
-	 * Coordinates of the highest block in the column that receives sky light (order `xz`).
-	 * It is used to increase the speed when calculating the block's light level.
-	 */
 	public ushort[256] heights;
 
 	/**
@@ -484,7 +523,7 @@ struct ChunkData {
 		Buffer buffer = new Buffer();
 		with(buffer) {
 			writeBytes(varuint.encode(cast(uint)sections.length)); foreach(cvdlbm;sections){ cvdlbm.encode(bufferInstance); }
-			foreach(avzhc;heights){ writeBigEndianUshort(avzhc); }
+			foreach(avzhc;heights){ writeLittleEndianUshort(avzhc); }
 			writeBytes(biomes);
 			writeBytes(varuint.encode(cast(uint)borders.length)); writeBytes(borders);
 			writeBytes(varuint.encode(cast(uint)extraData.length)); foreach(zhcfyr;extraData){ zhcfyr.encode(bufferInstance); }
@@ -502,7 +541,7 @@ struct ChunkData {
 		}
 		with(buffer) {
 			sections.length=varuint.decode(_buffer, &_index); foreach(ref cvdlbm;sections){ cvdlbm.decode(bufferInstance); }
-			foreach(ref avzhc;heights){ avzhc=readBigEndianUshort(); }
+			foreach(ref avzhc;heights){ avzhc=readLittleEndianUshort(); }
 			if(_buffer.length>=_index+biomes.length){ biomes=_buffer[_index.._index+biomes.length].dup; _index+=biomes.length; }
 			borders.length=varuint.decode(_buffer, &_index); if(_buffer.length>=_index+borders.length){ borders=_buffer[_index.._index+borders.length].dup; _index+=borders.length; }
 			extraData.length=varuint.decode(_buffer, &_index); foreach(ref zhcfyr;extraData){ zhcfyr.decode(bufferInstance); }
@@ -530,7 +569,7 @@ struct Section {
 
 	public pure nothrow @safe void encode(Buffer buffer) {
 		with(buffer) {
-			writeBigEndianUbyte(storageVersion);
+			writeLittleEndianUbyte(storageVersion);
 			writeBytes(blockIds);
 			writeBytes(blockMetas);
 		}
@@ -538,7 +577,7 @@ struct Section {
 
 	public pure nothrow @safe void decode(Buffer buffer) {
 		with(buffer) {
-			storageVersion=readBigEndianUbyte();
+			storageVersion=readLittleEndianUbyte();
 			if(_buffer.length>=_index+blockIds.length){ blockIds=_buffer[_index.._index+blockIds.length].dup; _index+=blockIds.length; }
 			if(_buffer.length>=_index+blockMetas.length){ blockMetas=_buffer[_index.._index+blockMetas.length].dup; _index+=blockMetas.length; }
 		}
@@ -593,7 +632,7 @@ struct Decoration {
 	public pure nothrow @safe void encode(Buffer buffer) {
 		with(buffer) {
 			writeBytes(varint.encode(rotationAndIcon));
-			writeBigEndianUbyte(position.x); writeBigEndianUbyte(position.z);
+			writeLittleEndianUbyte(position.x); writeLittleEndianUbyte(position.z);
 			writeBytes(varuint.encode(cast(uint)label.length)); writeString(label);
 			writeLittleEndianUint(color);
 		}
@@ -602,7 +641,7 @@ struct Decoration {
 	public pure nothrow @safe void decode(Buffer buffer) {
 		with(buffer) {
 			rotationAndIcon=varint.decode(_buffer, &_index);
-			position.x=readBigEndianUbyte(); position.z=readBigEndianUbyte();
+			position.x=readLittleEndianUbyte(); position.z=readLittleEndianUbyte();
 			uint bfzw=varuint.decode(_buffer, &_index); label=readString(bfzw);
 			color=readLittleEndianUint();
 		}
@@ -651,15 +690,15 @@ struct Rule {
 	public string name;
 	public ubyte type;
 	public bool booleanValue;
-	public int integerValue;
+	public uint integerValue;
 	public float floatingValue;
 
 	public pure nothrow @safe void encode(Buffer buffer) {
 		with(buffer) {
 			writeBytes(varuint.encode(cast(uint)name.length)); writeString(name);
-			writeBigEndianUbyte(type);
-			if(type==1){ writeBigEndianBool(booleanValue); }
-			if(type==2){ writeBigEndianInt(integerValue); }
+			writeLittleEndianUbyte(type);
+			if(type==1){ writeLittleEndianBool(booleanValue); }
+			if(type==2){ writeBytes(varuint.encode(integerValue)); }
 			if(type==3){ writeLittleEndianFloat(floatingValue); }
 		}
 	}
@@ -667,9 +706,9 @@ struct Rule {
 	public pure nothrow @safe void decode(Buffer buffer) {
 		with(buffer) {
 			uint bfz=varuint.decode(_buffer, &_index); name=readString(bfz);
-			type=readBigEndianUbyte();
-			if(type==1){ booleanValue=readBigEndianBool(); }
-			if(type==2){ integerValue=readBigEndianInt(); }
+			type=readLittleEndianUbyte();
+			if(type==1){ booleanValue=readLittleEndianBool(); }
+			if(type==2){ integerValue=varuint.decode(_buffer, &_index); }
 			if(type==3){ floatingValue=readLittleEndianFloat(); }
 		}
 	}
@@ -695,8 +734,8 @@ struct Command {
 		with(buffer) {
 			writeBytes(varuint.encode(cast(uint)name.length)); writeString(name);
 			writeBytes(varuint.encode(cast(uint)description.length)); writeString(description);
-			writeBigEndianUbyte(unknown2);
-			writeBigEndianUbyte(permissionLevel);
+			writeLittleEndianUbyte(unknown2);
+			writeLittleEndianUbyte(permissionLevel);
 			writeLittleEndianInt(aliasesId);
 			writeBytes(varuint.encode(cast(uint)overloads.length)); foreach(bzcxyr;overloads){ bzcxyr.encode(bufferInstance); }
 		}
@@ -706,8 +745,8 @@ struct Command {
 		with(buffer) {
 			uint bfz=varuint.decode(_buffer, &_index); name=readString(bfz);
 			uint zvyjcrb4=varuint.decode(_buffer, &_index); description=readString(zvyjcrb4);
-			unknown2=readBigEndianUbyte();
-			permissionLevel=readBigEndianUbyte();
+			unknown2=readLittleEndianUbyte();
+			permissionLevel=readLittleEndianUbyte();
 			aliasesId=readLittleEndianInt();
 			overloads.length=varuint.decode(_buffer, &_index); foreach(ref bzcxyr;overloads){ bzcxyr.decode(bufferInstance); }
 		}
@@ -755,7 +794,7 @@ struct Parameter {
 		with(buffer) {
 			writeBytes(varuint.encode(cast(uint)name.length)); writeString(name);
 			writeLittleEndianUint(type);
-			writeBigEndianBool(optional);
+			writeLittleEndianBool(optional);
 		}
 	}
 
@@ -763,7 +802,7 @@ struct Parameter {
 		with(buffer) {
 			uint bfz=varuint.decode(_buffer, &_index); name=readString(bfz);
 			type=readLittleEndianUint();
-			optional=readBigEndianBool();
+			optional=readLittleEndianBool();
 		}
 	}
 
