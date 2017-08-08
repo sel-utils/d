@@ -302,16 +302,16 @@ class ResourcePacksInfo : Buffer {
 		_buffer.length = 0;
 		static if(writeId){ writeBytes(varuint.encode(ID)); }
 		writeLittleEndianBool(mustAccept);
-		writeLittleEndianUshort(cast(ushort)behaviourPacks.length); foreach(yvyzbvuf;behaviourPacks){ yvyzbvuf.encode(bufferInstance); }
-		writeLittleEndianUshort(cast(ushort)resourcePacks.length); foreach(cvbvyvyn;resourcePacks){ cvbvyvyn.encode(bufferInstance); }
+		writeBigEndianUshort(cast(ushort)behaviourPacks.length); foreach(yvyzbvuf;behaviourPacks){ yvyzbvuf.encode(bufferInstance); }
+		writeBigEndianUshort(cast(ushort)resourcePacks.length); foreach(cvbvyvyn;resourcePacks){ cvbvyvyn.encode(bufferInstance); }
 		return _buffer;
 	}
 
 	public pure nothrow @safe void decode(bool readId=true)() {
 		static if(readId){ uint _id; _id=varuint.decode(_buffer, &_index); }
 		mustAccept=readLittleEndianBool();
-		behaviourPacks.length=readLittleEndianUshort(); foreach(ref yvyzbvuf;behaviourPacks){ yvyzbvuf.decode(bufferInstance); }
-		resourcePacks.length=readLittleEndianUshort(); foreach(ref cvbvyvyn;resourcePacks){ cvbvyvyn.decode(bufferInstance); }
+		behaviourPacks.length=readBigEndianUshort(); foreach(ref yvyzbvuf;behaviourPacks){ yvyzbvuf.decode(bufferInstance); }
+		resourcePacks.length=readBigEndianUshort(); foreach(ref cvbvyvyn;resourcePacks){ cvbvyvyn.decode(bufferInstance); }
 	}
 
 	public static pure nothrow @safe ResourcePacksInfo fromBuffer(bool readId=true)(ubyte[] buffer) {
@@ -3913,11 +3913,11 @@ class AdventureSettings : Buffer {
 	public enum uint MUTED = 1024;
 
 	// permission level
-	public enum uint USER = 0;
-	public enum uint OPERATOR = 1;
-	public enum uint HOST = 2;
-	public enum uint AUTOMATION = 3;
-	public enum uint ADMIN = 4;
+	public enum uint LEVEL_USER = 0;
+	public enum uint LEVEL_OPERATOR = 1;
+	public enum uint LEVEL_HOST = 2;
+	public enum uint LEVEL_AUTOMATION = 3;
+	public enum uint LEVEL_ADMIN = 4;
 
 	// abilities
 	public enum uint BUILD_AND_MINE = 1;
