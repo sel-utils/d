@@ -4,9 +4,9 @@
  * 
  * License: https://github.com/sel-project/sel-utils/blob/master/LICENSE
  * Repository: https://github.com/sel-project/sel-utils
- * Generated from https://github.com/sel-project/sel-utils/blob/master/xml/protocol/pocket131.xml
+ * Generated from https://github.com/sel-project/sel-utils/blob/master/xml/protocol/pocket132.xml
  */
-module sul.protocol.pocket131.types;
+module sul.protocol.pocket132.types;
 
 import std.bitmanip : write, peek;
 static import std.conv;
@@ -17,7 +17,7 @@ import std.uuid : UUID;
 import sul.utils.buffer;
 import sul.utils.var;
 
-static if(__traits(compiles, { import sul.metadata.pocket131; })) import sul.metadata.pocket131;
+static if(__traits(compiles, { import sul.metadata.pocket132; })) import sul.metadata.pocket132;
 
 struct LoginBody {
 
@@ -268,6 +268,63 @@ struct McpeUuid {
 }
 
 /**
+ * Informations about a player that will be added to the player's list in the pause
+ * menu.
+ */
+struct PlayerList {
+
+	public enum string[] FIELDS = ["uuid", "entityId", "displayName", "skin", "unknown4"];
+
+	/**
+	 * UUID of the player. If it's associated with an XBOX Live account the player's profile
+	 * will also be available in pause menu.
+	 */
+	public sul.protocol.pocket132.types.McpeUuid uuid;
+
+	/**
+	 * Player's id, used to associate the skin with the game's entity spawned with AddPlayer.
+	 */
+	public long entityId;
+
+	/**
+	 * Player's display name, that can contain Minecraft's formatting codes. It shouldn't
+	 * contain suffixes nor prefixes.
+	 */
+	public string displayName;
+
+	/**
+	 * Player's skin usually given in the Login's packet body.
+	 */
+	public sul.protocol.pocket132.types.Skin skin;
+	public string unknown4;
+
+	public pure nothrow @safe void encode(Buffer buffer) {
+		with(buffer) {
+			uuid.encode(bufferInstance);
+			writeBytes(varlong.encode(entityId));
+			writeBytes(varuint.encode(cast(uint)displayName.length)); writeString(displayName);
+			skin.encode(bufferInstance);
+			writeBytes(varuint.encode(cast(uint)unknown4.length)); writeString(unknown4);
+		}
+	}
+
+	public pure nothrow @safe void decode(Buffer buffer) {
+		with(buffer) {
+			uuid.decode(bufferInstance);
+			entityId=varlong.decode(_buffer, &_index);
+			uint zlcxe5bu=varuint.decode(_buffer, &_index); displayName=readString(zlcxe5bu);
+			skin.decode(bufferInstance);
+			uint d5b9bq=varuint.decode(_buffer, &_index); unknown4=readString(d5b9bq);
+		}
+	}
+
+	public string toString() {
+		return "PlayerList(uuid: " ~ std.conv.to!string(this.uuid) ~ ", entityId: " ~ std.conv.to!string(this.entityId) ~ ", displayName: " ~ std.conv.to!string(this.displayName) ~ ", skin: " ~ std.conv.to!string(this.skin) ~ ", unknown4: " ~ std.conv.to!string(this.unknown4) ~ ")";
+	}
+
+}
+
+/**
  * Player's skin.
  */
 struct Skin {
@@ -313,63 +370,6 @@ struct Skin {
 
 }
 
-/**
- * Informations about a player that will be added to the player's list in the pause
- * menu.
- */
-struct PlayerList {
-
-	public enum string[] FIELDS = ["uuid", "entityId", "displayName", "skin", "xuid"];
-
-	/**
-	 * UUID of the player. If it's associated with an XBOX Live account the player's profile
-	 * will also be available in pause menu.
-	 */
-	public sul.protocol.pocket131.types.McpeUuid uuid;
-
-	/**
-	 * Player's id, used to associate the skin with the game's entity spawned with AddPlayer.
-	 */
-	public long entityId;
-
-	/**
-	 * Player's display name, that can contain Minecraft's formatting codes. It shouldn't
-	 * contain suffixes nor prefixes.
-	 */
-	public string displayName;
-
-	/**
-	 * Player's skin usually given in the Login's packet body.
-	 */
-	public sul.protocol.pocket131.types.Skin skin;
-	public string xuid;
-
-	public pure nothrow @safe void encode(Buffer buffer) {
-		with(buffer) {
-			uuid.encode(bufferInstance);
-			writeBytes(varlong.encode(entityId));
-			writeBytes(varuint.encode(cast(uint)displayName.length)); writeString(displayName);
-			skin.encode(bufferInstance);
-			writeBytes(varuint.encode(cast(uint)xuid.length)); writeString(xuid);
-		}
-	}
-
-	public pure nothrow @safe void decode(Buffer buffer) {
-		with(buffer) {
-			uuid.decode(bufferInstance);
-			entityId=varlong.decode(_buffer, &_index);
-			uint zlcxe5bu=varuint.decode(_buffer, &_index); displayName=readString(zlcxe5bu);
-			skin.decode(bufferInstance);
-			uint evz=varuint.decode(_buffer, &_index); xuid=readString(evz);
-		}
-	}
-
-	public string toString() {
-		return "PlayerList(uuid: " ~ std.conv.to!string(this.uuid) ~ ", entityId: " ~ std.conv.to!string(this.entityId) ~ ", displayName: " ~ std.conv.to!string(this.displayName) ~ ", skin: " ~ std.conv.to!string(this.skin) ~ ", xuid: " ~ std.conv.to!string(this.xuid) ~ ")";
-	}
-
-}
-
 struct Link {
 
 	// action
@@ -377,17 +377,19 @@ struct Link {
 	public enum ubyte RIDE = 1;
 	public enum ubyte REMOVE = 2;
 
-	public enum string[] FIELDS = ["from", "to", "action"];
+	public enum string[] FIELDS = ["from", "to", "action", "unknown3"];
 
 	public long from;
 	public long to;
 	public ubyte action;
+	public ubyte unknown3;
 
 	public pure nothrow @safe void encode(Buffer buffer) {
 		with(buffer) {
 			writeBytes(varlong.encode(from));
 			writeBytes(varlong.encode(to));
 			writeLittleEndianUbyte(action);
+			writeLittleEndianUbyte(unknown3);
 		}
 	}
 
@@ -396,11 +398,12 @@ struct Link {
 			from=varlong.decode(_buffer, &_index);
 			to=varlong.decode(_buffer, &_index);
 			action=readLittleEndianUbyte();
+			unknown3=readLittleEndianUbyte();
 		}
 	}
 
 	public string toString() {
-		return "Link(from: " ~ std.conv.to!string(this.from) ~ ", to: " ~ std.conv.to!string(this.to) ~ ", action: " ~ std.conv.to!string(this.action) ~ ")";
+		return "Link(from: " ~ std.conv.to!string(this.from) ~ ", to: " ~ std.conv.to!string(this.to) ~ ", action: " ~ std.conv.to!string(this.action) ~ ", unknown3: " ~ std.conv.to!string(this.unknown3) ~ ")";
 	}
 
 }
@@ -452,8 +455,8 @@ struct InventoryAction {
 	public int container = -1;
 	public uint unknown2;
 	public uint slot;
-	public sul.protocol.pocket131.types.Slot oldItem;
-	public sul.protocol.pocket131.types.Slot newItem;
+	public sul.protocol.pocket132.types.Slot oldItem;
+	public sul.protocol.pocket132.types.Slot newItem;
 
 	public pure nothrow @safe void encode(Buffer buffer) {
 		with(buffer) {
@@ -495,7 +498,7 @@ struct ChunkData {
 	 * (the 3rd element of the array will be the 3rd section from bottom, starting at `y=24`).
 	 * The amount of sections should be in a range from 0 (empty chunk) to 16.
 	 */
-	public sul.protocol.pocket131.types.Section[] sections;
+	public sul.protocol.pocket132.types.Section[] sections;
 	public ushort[256] heights;
 
 	/**
@@ -508,7 +511,7 @@ struct ChunkData {
 	 * implemented in the game yet and crashes the client.
 	 */
 	public ubyte[] borders;
-	public sul.protocol.pocket131.types.ExtraData[] extraData;
+	public sul.protocol.pocket132.types.ExtraData[] extraData;
 
 	/**
 	 * Additional data for the chunk's block entities (tiles), encoded in the same way
@@ -728,7 +731,7 @@ struct Command {
 	public ubyte unknown2;
 	public ubyte permissionLevel;
 	public int aliasesId = -1;
-	public sul.protocol.pocket131.types.Overload[] overloads;
+	public sul.protocol.pocket132.types.Overload[] overloads;
 
 	public pure nothrow @safe void encode(Buffer buffer) {
 		with(buffer) {
@@ -762,7 +765,7 @@ struct Overload {
 
 	public enum string[] FIELDS = ["parameters"];
 
-	public sul.protocol.pocket131.types.Parameter[] parameters;
+	public sul.protocol.pocket132.types.Parameter[] parameters;
 
 	public pure nothrow @safe void encode(Buffer buffer) {
 		with(buffer) {

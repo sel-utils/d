@@ -4,14 +4,14 @@
  * 
  * License: https://github.com/sel-project/sel-utils/blob/master/LICENSE
  * Repository: https://github.com/sel-project/sel-utils
- * Generated from https://github.com/sel-project/sel-utils/blob/master/xml/protocol/pocket131.xml
+ * Generated from https://github.com/sel-project/sel-utils/blob/master/xml/protocol/pocket132.xml
  */
 /**
  * Packets related to the gameplay. Network-related packets (encapsulation, acks, nacks)
  * are managed by RakNet and every packet in this section is encapsualted in an Encapsualted
  * packet.
  */
-module sul.protocol.pocket131.play;
+module sul.protocol.pocket132.play;
 
 import std.bitmanip : write, peek;
 static import std.conv;
@@ -23,9 +23,9 @@ import std.uuid : UUID;
 import sul.utils.buffer;
 import sul.utils.var;
 
-static import sul.protocol.pocket131.types;
+static import sul.protocol.pocket132.types;
 
-static if(__traits(compiles, { import sul.metadata.pocket131; })) import sul.metadata.pocket131;
+static if(__traits(compiles, { import sul.metadata.pocket132; })) import sul.metadata.pocket132;
 
 alias Packets = TypeTuple!(Login, PlayStatus, ServerToClientHandshake, ClientToServerHandshake, Disconnect, ResourcePacksInfo, ResourcePacksStackPacket, ResourcePackClientResponse, Text, SetTime, StartGame, AddPlayer, AddEntity, RemoveEntity, AddItemEntity, AddHangingEntity, TakeItemEntity, MoveEntity, MovePlayer, RiderJump, UpdateBlock, AddPainting, Explode, LevelSoundEvent, LevelEvent, BlockEvent, EntityEvent, MobEffect, UpdateAttributes, InventoryTransaction, MobEquipment, MobArmorEquipment, Interact, BlockPickRequest, EntityPickRequest, PlayerAction, EntityFall, HurtArmor, SetEntityData, SetEntityMotion, SetEntityLink, SetHealth, SetSpawnPosition, Animate, Respawn, ContainerOpen, ContainerClose, PlayerHotbar, InventoryContent, InventorySlot, ContainerSetData, CraftingData, CraftingEvent, GuiDataPickItem, AdventureSettings, BlockEntityData, PlayerInput, FullChunkData, SetCommandsEnabled, SetDifficulty, ChangeDimension, SetPlayerGameType, PlayerList, SimpleEvent, TelemetryEvent, SpawnExperienceOrb, ClientboundMapItemData, MapInfoRequest, RequestChunkRadius, ChunkRadiusUpdated, ItemFrameDropItem, GameRulesChanged, Camera, BossEvent, ShowCredits, AvailableCommands, CommandRequest, CommandBlockUpdate, UpdateTrade, UpdateEquip, ResourcePackDataInfo, ResourcePackChunkData, ResourcePackChunkRequest, Transfer, PlaySound, StopSound, SetTitle, AddBehaviorTree, StructureBlockUpdate, ShowStoreOffer, PurchaseReceipt, PlayerSkin, SubClientLogin, InitiateWebSocketConnection, SetLastHurtBy, BookEdit, NpcRequest, PhotoTransfer, ModalFormRequest, ModalFormResponse, ServerSettingsRequest, ServerSettingsResponse, ShowProfile);
 
@@ -45,17 +45,17 @@ class Login : Buffer {
 	/**
 	 * Version of the protocol used by the player.
 	 */
-	public uint protocol = 131;
+	public uint protocol = 132;
 
 	/**
 	 * Payload that contains 2 JWTs (with each length indicated by an unsigned little-endian
 	 * 32-bits integer) with more informations about the player and its account.
 	 */
-	public sul.protocol.pocket131.types.LoginBody body_;
+	public sul.protocol.pocket132.types.LoginBody body_;
 
 	public pure nothrow @safe @nogc this() {}
 
-	public pure nothrow @safe @nogc this(uint protocol, sul.protocol.pocket131.types.LoginBody body_=sul.protocol.pocket131.types.LoginBody.init) {
+	public pure nothrow @safe @nogc this(uint protocol, sul.protocol.pocket132.types.LoginBody body_=sul.protocol.pocket132.types.LoginBody.init) {
 		this.protocol = protocol;
 		this.body_ = body_;
 	}
@@ -287,12 +287,12 @@ class ResourcePacksInfo : Buffer {
 	public enum string[] FIELDS = ["mustAccept", "behaviourPacks", "resourcePacks"];
 
 	public bool mustAccept;
-	public sul.protocol.pocket131.types.PackWithSize[] behaviourPacks;
-	public sul.protocol.pocket131.types.PackWithSize[] resourcePacks;
+	public sul.protocol.pocket132.types.PackWithSize[] behaviourPacks;
+	public sul.protocol.pocket132.types.PackWithSize[] resourcePacks;
 
 	public pure nothrow @safe @nogc this() {}
 
-	public pure nothrow @safe @nogc this(bool mustAccept, sul.protocol.pocket131.types.PackWithSize[] behaviourPacks=(sul.protocol.pocket131.types.PackWithSize[]).init, sul.protocol.pocket131.types.PackWithSize[] resourcePacks=(sul.protocol.pocket131.types.PackWithSize[]).init) {
+	public pure nothrow @safe @nogc this(bool mustAccept, sul.protocol.pocket132.types.PackWithSize[] behaviourPacks=(sul.protocol.pocket132.types.PackWithSize[]).init, sul.protocol.pocket132.types.PackWithSize[] resourcePacks=(sul.protocol.pocket132.types.PackWithSize[]).init) {
 		this.mustAccept = mustAccept;
 		this.behaviourPacks = behaviourPacks;
 		this.resourcePacks = resourcePacks;
@@ -337,12 +337,12 @@ class ResourcePacksStackPacket : Buffer {
 	public enum string[] FIELDS = ["mustAccept", "behaviourPacks", "resourcePacks"];
 
 	public bool mustAccept;
-	public sul.protocol.pocket131.types.Pack[] behaviourPacks;
-	public sul.protocol.pocket131.types.Pack[] resourcePacks;
+	public sul.protocol.pocket132.types.Pack[] behaviourPacks;
+	public sul.protocol.pocket132.types.Pack[] resourcePacks;
 
 	public pure nothrow @safe @nogc this() {}
 
-	public pure nothrow @safe @nogc this(bool mustAccept, sul.protocol.pocket131.types.Pack[] behaviourPacks=(sul.protocol.pocket131.types.Pack[]).init, sul.protocol.pocket131.types.Pack[] resourcePacks=(sul.protocol.pocket131.types.Pack[]).init) {
+	public pure nothrow @safe @nogc this(bool mustAccept, sul.protocol.pocket132.types.Pack[] behaviourPacks=(sul.protocol.pocket132.types.Pack[]).init, sul.protocol.pocket132.types.Pack[] resourcePacks=(sul.protocol.pocket132.types.Pack[]).init) {
 		this.mustAccept = mustAccept;
 		this.behaviourPacks = behaviourPacks;
 		this.resourcePacks = resourcePacks;
@@ -871,7 +871,7 @@ class StartGame : Buffer {
 	public enum ubyte VANILLA = 0;
 	public enum ubyte EDUCATION = 1;
 
-	public enum string[] FIELDS = ["entityId", "runtimeId", "gamemode", "position", "yaw", "pitch", "seed", "dimension", "generator", "worldGamemode", "difficulty", "spawnPosition", "loadedInCreative", "time", "vers", "rainLevel", "lightningLevel", "multiplayerGame", "broadcastToLan", "broadcastToXbl", "commandsEnabled", "textureRequired", "gameRules", "bonusChestEnabled", "trustPlayersEnabled", "permissionLevel", "unknown26", "levelId", "worldName", "premiumWorldTemplate", "unknown30", "worldTicks", "unknown32"];
+	public enum string[] FIELDS = ["entityId", "runtimeId", "gamemode", "position", "yaw", "pitch", "seed", "dimension", "generator", "worldGamemode", "difficulty", "spawnPosition", "loadedInCreative", "time", "vers", "rainLevel", "lightningLevel", "multiplayerGame", "broadcastToLan", "broadcastToXbl", "commandsEnabled", "textureRequired", "gameRules", "bonusChestEnabled", "startWithMapEnabled", "trustPlayersEnabled", "permissionLevel", "unknown27", "levelId", "worldName", "premiumWorldTemplate", "unknown31", "worldTicks", "unknown33"];
 
 	/**
 	 * Player's entity id that uniquely identifies the entity of the server.
@@ -953,11 +953,12 @@ class StartGame : Buffer {
 	 */
 	public bool commandsEnabled;
 	public bool textureRequired;
-	public sul.protocol.pocket131.types.Rule[] gameRules;
+	public sul.protocol.pocket132.types.Rule[] gameRules;
 	public bool bonusChestEnabled;
+	public bool startWithMapEnabled;
 	public bool trustPlayersEnabled;
 	public int permissionLevel;
-	public int unknown26;
+	public int unknown27;
 	public string levelId;
 
 	/**
@@ -966,13 +967,13 @@ class StartGame : Buffer {
 	 */
 	public string worldName;
 	public string premiumWorldTemplate;
-	public bool unknown30;
+	public bool unknown31;
 	public ulong worldTicks;
-	public int unknown32;
+	public int unknown33;
 
 	public pure nothrow @safe @nogc this() {}
 
-	public pure nothrow @safe @nogc this(long entityId, long runtimeId=long.init, int gamemode=int.init, Tuple!(float, "x", float, "y", float, "z") position=Tuple!(float, "x", float, "y", float, "z").init, float yaw=float.init, float pitch=float.init, int seed=int.init, int dimension=0, int generator=1, int worldGamemode=int.init, int difficulty=int.init, Tuple!(int, "x", int, "y", int, "z") spawnPosition=Tuple!(int, "x", int, "y", int, "z").init, bool loadedInCreative=bool.init, int time=int.init, ubyte vers=ubyte.init, float rainLevel=float.init, float lightningLevel=float.init, bool multiplayerGame=true, bool broadcastToLan=bool.init, bool broadcastToXbl=bool.init, bool commandsEnabled=bool.init, bool textureRequired=bool.init, sul.protocol.pocket131.types.Rule[] gameRules=(sul.protocol.pocket131.types.Rule[]).init, bool bonusChestEnabled=bool.init, bool trustPlayersEnabled=bool.init, int permissionLevel=int.init, int unknown26=int.init, string levelId=string.init, string worldName=string.init, string premiumWorldTemplate=string.init, bool unknown30=bool.init, ulong worldTicks=ulong.init, int unknown32=int.init) {
+	public pure nothrow @safe @nogc this(long entityId, long runtimeId=long.init, int gamemode=int.init, Tuple!(float, "x", float, "y", float, "z") position=Tuple!(float, "x", float, "y", float, "z").init, float yaw=float.init, float pitch=float.init, int seed=int.init, int dimension=0, int generator=1, int worldGamemode=int.init, int difficulty=int.init, Tuple!(int, "x", int, "y", int, "z") spawnPosition=Tuple!(int, "x", int, "y", int, "z").init, bool loadedInCreative=bool.init, int time=int.init, ubyte vers=ubyte.init, float rainLevel=float.init, float lightningLevel=float.init, bool multiplayerGame=true, bool broadcastToLan=bool.init, bool broadcastToXbl=bool.init, bool commandsEnabled=bool.init, bool textureRequired=bool.init, sul.protocol.pocket132.types.Rule[] gameRules=(sul.protocol.pocket132.types.Rule[]).init, bool bonusChestEnabled=bool.init, bool startWithMapEnabled=bool.init, bool trustPlayersEnabled=bool.init, int permissionLevel=int.init, int unknown27=int.init, string levelId=string.init, string worldName=string.init, string premiumWorldTemplate=string.init, bool unknown31=bool.init, ulong worldTicks=ulong.init, int unknown33=int.init) {
 		this.entityId = entityId;
 		this.runtimeId = runtimeId;
 		this.gamemode = gamemode;
@@ -997,15 +998,16 @@ class StartGame : Buffer {
 		this.textureRequired = textureRequired;
 		this.gameRules = gameRules;
 		this.bonusChestEnabled = bonusChestEnabled;
+		this.startWithMapEnabled = startWithMapEnabled;
 		this.trustPlayersEnabled = trustPlayersEnabled;
 		this.permissionLevel = permissionLevel;
-		this.unknown26 = unknown26;
+		this.unknown27 = unknown27;
 		this.levelId = levelId;
 		this.worldName = worldName;
 		this.premiumWorldTemplate = premiumWorldTemplate;
-		this.unknown30 = unknown30;
+		this.unknown31 = unknown31;
 		this.worldTicks = worldTicks;
-		this.unknown32 = unknown32;
+		this.unknown33 = unknown33;
 	}
 
 	public pure nothrow @safe ubyte[] encode(bool writeId=true)() {
@@ -1035,15 +1037,16 @@ class StartGame : Buffer {
 		writeLittleEndianBool(textureRequired);
 		writeBytes(varuint.encode(cast(uint)gameRules.length)); foreach(zfzjbv;gameRules){ zfzjbv.encode(bufferInstance); }
 		writeLittleEndianBool(bonusChestEnabled);
+		writeLittleEndianBool(startWithMapEnabled);
 		writeLittleEndianBool(trustPlayersEnabled);
 		writeBytes(varint.encode(permissionLevel));
-		writeBytes(varint.encode(unknown26));
+		writeBytes(varint.encode(unknown27));
 		writeBytes(varuint.encode(cast(uint)levelId.length)); writeString(levelId);
 		writeBytes(varuint.encode(cast(uint)worldName.length)); writeString(worldName);
 		writeBytes(varuint.encode(cast(uint)premiumWorldTemplate.length)); writeString(premiumWorldTemplate);
-		writeLittleEndianBool(unknown30);
+		writeLittleEndianBool(unknown31);
 		writeLittleEndianUlong(worldTicks);
-		writeBytes(varint.encode(unknown32));
+		writeBytes(varint.encode(unknown33));
 		return _buffer;
 	}
 
@@ -1073,15 +1076,16 @@ class StartGame : Buffer {
 		textureRequired=readLittleEndianBool();
 		gameRules.length=varuint.decode(_buffer, &_index); foreach(ref zfzjbv;gameRules){ zfzjbv.decode(bufferInstance); }
 		bonusChestEnabled=readLittleEndianBool();
+		startWithMapEnabled=readLittleEndianBool();
 		trustPlayersEnabled=readLittleEndianBool();
 		permissionLevel=varint.decode(_buffer, &_index);
-		unknown26=varint.decode(_buffer, &_index);
+		unknown27=varint.decode(_buffer, &_index);
 		uint bvzxz=varuint.decode(_buffer, &_index); levelId=readString(bvzxz);
 		uint d9bry1=varuint.decode(_buffer, &_index); worldName=readString(d9bry1);
 		uint cjblbdcx=varuint.decode(_buffer, &_index); premiumWorldTemplate=readString(cjblbdcx);
-		unknown30=readLittleEndianBool();
+		unknown31=readLittleEndianBool();
 		worldTicks=readLittleEndianUlong();
-		unknown32=varint.decode(_buffer, &_index);
+		unknown33=varint.decode(_buffer, &_index);
 	}
 
 	public static pure nothrow @safe StartGame fromBuffer(bool readId=true)(ubyte[] buffer) {
@@ -1092,7 +1096,7 @@ class StartGame : Buffer {
 	}
 
 	public override string toString() {
-		return "StartGame(entityId: " ~ std.conv.to!string(this.entityId) ~ ", runtimeId: " ~ std.conv.to!string(this.runtimeId) ~ ", gamemode: " ~ std.conv.to!string(this.gamemode) ~ ", position: " ~ std.conv.to!string(this.position) ~ ", yaw: " ~ std.conv.to!string(this.yaw) ~ ", pitch: " ~ std.conv.to!string(this.pitch) ~ ", seed: " ~ std.conv.to!string(this.seed) ~ ", dimension: " ~ std.conv.to!string(this.dimension) ~ ", generator: " ~ std.conv.to!string(this.generator) ~ ", worldGamemode: " ~ std.conv.to!string(this.worldGamemode) ~ ", difficulty: " ~ std.conv.to!string(this.difficulty) ~ ", spawnPosition: " ~ std.conv.to!string(this.spawnPosition) ~ ", loadedInCreative: " ~ std.conv.to!string(this.loadedInCreative) ~ ", time: " ~ std.conv.to!string(this.time) ~ ", vers: " ~ std.conv.to!string(this.vers) ~ ", rainLevel: " ~ std.conv.to!string(this.rainLevel) ~ ", lightningLevel: " ~ std.conv.to!string(this.lightningLevel) ~ ", multiplayerGame: " ~ std.conv.to!string(this.multiplayerGame) ~ ", broadcastToLan: " ~ std.conv.to!string(this.broadcastToLan) ~ ", broadcastToXbl: " ~ std.conv.to!string(this.broadcastToXbl) ~ ", commandsEnabled: " ~ std.conv.to!string(this.commandsEnabled) ~ ", textureRequired: " ~ std.conv.to!string(this.textureRequired) ~ ", gameRules: " ~ std.conv.to!string(this.gameRules) ~ ", bonusChestEnabled: " ~ std.conv.to!string(this.bonusChestEnabled) ~ ", trustPlayersEnabled: " ~ std.conv.to!string(this.trustPlayersEnabled) ~ ", permissionLevel: " ~ std.conv.to!string(this.permissionLevel) ~ ", unknown26: " ~ std.conv.to!string(this.unknown26) ~ ", levelId: " ~ std.conv.to!string(this.levelId) ~ ", worldName: " ~ std.conv.to!string(this.worldName) ~ ", premiumWorldTemplate: " ~ std.conv.to!string(this.premiumWorldTemplate) ~ ", unknown30: " ~ std.conv.to!string(this.unknown30) ~ ", worldTicks: " ~ std.conv.to!string(this.worldTicks) ~ ", unknown32: " ~ std.conv.to!string(this.unknown32) ~ ")";
+		return "StartGame(entityId: " ~ std.conv.to!string(this.entityId) ~ ", runtimeId: " ~ std.conv.to!string(this.runtimeId) ~ ", gamemode: " ~ std.conv.to!string(this.gamemode) ~ ", position: " ~ std.conv.to!string(this.position) ~ ", yaw: " ~ std.conv.to!string(this.yaw) ~ ", pitch: " ~ std.conv.to!string(this.pitch) ~ ", seed: " ~ std.conv.to!string(this.seed) ~ ", dimension: " ~ std.conv.to!string(this.dimension) ~ ", generator: " ~ std.conv.to!string(this.generator) ~ ", worldGamemode: " ~ std.conv.to!string(this.worldGamemode) ~ ", difficulty: " ~ std.conv.to!string(this.difficulty) ~ ", spawnPosition: " ~ std.conv.to!string(this.spawnPosition) ~ ", loadedInCreative: " ~ std.conv.to!string(this.loadedInCreative) ~ ", time: " ~ std.conv.to!string(this.time) ~ ", vers: " ~ std.conv.to!string(this.vers) ~ ", rainLevel: " ~ std.conv.to!string(this.rainLevel) ~ ", lightningLevel: " ~ std.conv.to!string(this.lightningLevel) ~ ", multiplayerGame: " ~ std.conv.to!string(this.multiplayerGame) ~ ", broadcastToLan: " ~ std.conv.to!string(this.broadcastToLan) ~ ", broadcastToXbl: " ~ std.conv.to!string(this.broadcastToXbl) ~ ", commandsEnabled: " ~ std.conv.to!string(this.commandsEnabled) ~ ", textureRequired: " ~ std.conv.to!string(this.textureRequired) ~ ", gameRules: " ~ std.conv.to!string(this.gameRules) ~ ", bonusChestEnabled: " ~ std.conv.to!string(this.bonusChestEnabled) ~ ", startWithMapEnabled: " ~ std.conv.to!string(this.startWithMapEnabled) ~ ", trustPlayersEnabled: " ~ std.conv.to!string(this.trustPlayersEnabled) ~ ", permissionLevel: " ~ std.conv.to!string(this.permissionLevel) ~ ", unknown27: " ~ std.conv.to!string(this.unknown27) ~ ", levelId: " ~ std.conv.to!string(this.levelId) ~ ", worldName: " ~ std.conv.to!string(this.worldName) ~ ", premiumWorldTemplate: " ~ std.conv.to!string(this.premiumWorldTemplate) ~ ", unknown31: " ~ std.conv.to!string(this.unknown31) ~ ", worldTicks: " ~ std.conv.to!string(this.worldTicks) ~ ", unknown33: " ~ std.conv.to!string(this.unknown33) ~ ")";
 	}
 
 }
@@ -1111,12 +1115,12 @@ class AddPlayer : Buffer {
 	public enum bool CLIENTBOUND = true;
 	public enum bool SERVERBOUND = false;
 
-	public enum string[] FIELDS = ["uuid", "username", "entityId", "runtimeId", "position", "motion", "pitch", "headYaw", "yaw", "heldItem", "metadata", "unknown11", "unknown12", "unknown13", "unknown14", "unknown15"];
+	public enum string[] FIELDS = ["uuid", "username", "entityId", "runtimeId", "position", "motion", "pitch", "headYaw", "yaw", "heldItem", "metadata", "unknown11", "unknown12", "unknown13", "unknown14", "unknown15", "links"];
 
 	/**
 	 * Player's UUID, should match an UUID of a player in the list added through PlayerList.
 	 */
-	public sul.protocol.pocket131.types.McpeUuid uuid;
+	public sul.protocol.pocket132.types.McpeUuid uuid;
 
 	/**
 	 * Player's username and text displayed on the nametag if something else is not specified
@@ -1130,17 +1134,18 @@ class AddPlayer : Buffer {
 	public float pitch;
 	public float headYaw;
 	public float yaw;
-	public sul.protocol.pocket131.types.Slot heldItem;
+	public sul.protocol.pocket132.types.Slot heldItem;
 	public Metadata metadata;
 	public uint unknown11;
 	public uint unknown12;
 	public uint unknown13;
 	public uint unknown14;
 	public long unknown15;
+	public sul.protocol.pocket132.types.Link[] links;
 
 	public pure nothrow @safe @nogc this() {}
 
-	public pure nothrow @safe @nogc this(sul.protocol.pocket131.types.McpeUuid uuid, string username=string.init, long entityId=long.init, long runtimeId=long.init, Tuple!(float, "x", float, "y", float, "z") position=Tuple!(float, "x", float, "y", float, "z").init, Tuple!(float, "x", float, "y", float, "z") motion=Tuple!(float, "x", float, "y", float, "z").init, float pitch=float.init, float headYaw=float.init, float yaw=float.init, sul.protocol.pocket131.types.Slot heldItem=sul.protocol.pocket131.types.Slot.init, Metadata metadata=Metadata.init, uint unknown11=uint.init, uint unknown12=uint.init, uint unknown13=uint.init, uint unknown14=uint.init, long unknown15=long.init) {
+	public pure nothrow @safe @nogc this(sul.protocol.pocket132.types.McpeUuid uuid, string username=string.init, long entityId=long.init, long runtimeId=long.init, Tuple!(float, "x", float, "y", float, "z") position=Tuple!(float, "x", float, "y", float, "z").init, Tuple!(float, "x", float, "y", float, "z") motion=Tuple!(float, "x", float, "y", float, "z").init, float pitch=float.init, float headYaw=float.init, float yaw=float.init, sul.protocol.pocket132.types.Slot heldItem=sul.protocol.pocket132.types.Slot.init, Metadata metadata=Metadata.init, uint unknown11=uint.init, uint unknown12=uint.init, uint unknown13=uint.init, uint unknown14=uint.init, long unknown15=long.init, sul.protocol.pocket132.types.Link[] links=(sul.protocol.pocket132.types.Link[]).init) {
 		this.uuid = uuid;
 		this.username = username;
 		this.entityId = entityId;
@@ -1157,6 +1162,7 @@ class AddPlayer : Buffer {
 		this.unknown13 = unknown13;
 		this.unknown14 = unknown14;
 		this.unknown15 = unknown15;
+		this.links = links;
 	}
 
 	public pure nothrow @safe ubyte[] encode(bool writeId=true)() {
@@ -1178,6 +1184,7 @@ class AddPlayer : Buffer {
 		writeBytes(varuint.encode(unknown13));
 		writeBytes(varuint.encode(unknown14));
 		writeLittleEndianLong(unknown15);
+		writeBytes(varuint.encode(cast(uint)links.length)); foreach(blam;links){ blam.encode(bufferInstance); }
 		return _buffer;
 	}
 
@@ -1199,6 +1206,7 @@ class AddPlayer : Buffer {
 		unknown13=varuint.decode(_buffer, &_index);
 		unknown14=varuint.decode(_buffer, &_index);
 		unknown15=readLittleEndianLong();
+		links.length=varuint.decode(_buffer, &_index); foreach(ref blam;links){ blam.decode(bufferInstance); }
 	}
 
 	public static pure nothrow @safe AddPlayer fromBuffer(bool readId=true)(ubyte[] buffer) {
@@ -1209,7 +1217,7 @@ class AddPlayer : Buffer {
 	}
 
 	public override string toString() {
-		return "AddPlayer(uuid: " ~ std.conv.to!string(this.uuid) ~ ", username: " ~ std.conv.to!string(this.username) ~ ", entityId: " ~ std.conv.to!string(this.entityId) ~ ", runtimeId: " ~ std.conv.to!string(this.runtimeId) ~ ", position: " ~ std.conv.to!string(this.position) ~ ", motion: " ~ std.conv.to!string(this.motion) ~ ", pitch: " ~ std.conv.to!string(this.pitch) ~ ", headYaw: " ~ std.conv.to!string(this.headYaw) ~ ", yaw: " ~ std.conv.to!string(this.yaw) ~ ", heldItem: " ~ std.conv.to!string(this.heldItem) ~ ", metadata: " ~ std.conv.to!string(this.metadata) ~ ", unknown11: " ~ std.conv.to!string(this.unknown11) ~ ", unknown12: " ~ std.conv.to!string(this.unknown12) ~ ", unknown13: " ~ std.conv.to!string(this.unknown13) ~ ", unknown14: " ~ std.conv.to!string(this.unknown14) ~ ", unknown15: " ~ std.conv.to!string(this.unknown15) ~ ")";
+		return "AddPlayer(uuid: " ~ std.conv.to!string(this.uuid) ~ ", username: " ~ std.conv.to!string(this.username) ~ ", entityId: " ~ std.conv.to!string(this.entityId) ~ ", runtimeId: " ~ std.conv.to!string(this.runtimeId) ~ ", position: " ~ std.conv.to!string(this.position) ~ ", motion: " ~ std.conv.to!string(this.motion) ~ ", pitch: " ~ std.conv.to!string(this.pitch) ~ ", headYaw: " ~ std.conv.to!string(this.headYaw) ~ ", yaw: " ~ std.conv.to!string(this.yaw) ~ ", heldItem: " ~ std.conv.to!string(this.heldItem) ~ ", metadata: " ~ std.conv.to!string(this.metadata) ~ ", unknown11: " ~ std.conv.to!string(this.unknown11) ~ ", unknown12: " ~ std.conv.to!string(this.unknown12) ~ ", unknown13: " ~ std.conv.to!string(this.unknown13) ~ ", unknown14: " ~ std.conv.to!string(this.unknown14) ~ ", unknown15: " ~ std.conv.to!string(this.unknown15) ~ ", links: " ~ std.conv.to!string(this.links) ~ ")";
 	}
 
 }
@@ -1230,13 +1238,13 @@ class AddEntity : Buffer {
 	public Tuple!(float, "x", float, "y", float, "z") motion;
 	public float pitch;
 	public float yaw;
-	public sul.protocol.pocket131.types.Attribute[] attributes;
+	public sul.protocol.pocket132.types.Attribute[] attributes;
 	public Metadata metadata;
-	public sul.protocol.pocket131.types.Link[] links;
+	public sul.protocol.pocket132.types.Link[] links;
 
 	public pure nothrow @safe @nogc this() {}
 
-	public pure nothrow @safe @nogc this(long entityId, long runtimeId=long.init, uint type=uint.init, Tuple!(float, "x", float, "y", float, "z") position=Tuple!(float, "x", float, "y", float, "z").init, Tuple!(float, "x", float, "y", float, "z") motion=Tuple!(float, "x", float, "y", float, "z").init, float pitch=float.init, float yaw=float.init, sul.protocol.pocket131.types.Attribute[] attributes=(sul.protocol.pocket131.types.Attribute[]).init, Metadata metadata=Metadata.init, sul.protocol.pocket131.types.Link[] links=(sul.protocol.pocket131.types.Link[]).init) {
+	public pure nothrow @safe @nogc this(long entityId, long runtimeId=long.init, uint type=uint.init, Tuple!(float, "x", float, "y", float, "z") position=Tuple!(float, "x", float, "y", float, "z").init, Tuple!(float, "x", float, "y", float, "z") motion=Tuple!(float, "x", float, "y", float, "z").init, float pitch=float.init, float yaw=float.init, sul.protocol.pocket132.types.Attribute[] attributes=(sul.protocol.pocket132.types.Attribute[]).init, Metadata metadata=Metadata.init, sul.protocol.pocket132.types.Link[] links=(sul.protocol.pocket132.types.Link[]).init) {
 		this.entityId = entityId;
 		this.runtimeId = runtimeId;
 		this.type = type;
@@ -1351,14 +1359,14 @@ class AddItemEntity : Buffer {
 
 	public long entityId;
 	public long runtimeId;
-	public sul.protocol.pocket131.types.Slot item;
+	public sul.protocol.pocket132.types.Slot item;
 	public Tuple!(float, "x", float, "y", float, "z") position;
 	public Tuple!(float, "x", float, "y", float, "z") motion;
 	public Metadata metadata;
 
 	public pure nothrow @safe @nogc this() {}
 
-	public pure nothrow @safe @nogc this(long entityId, long runtimeId=long.init, sul.protocol.pocket131.types.Slot item=sul.protocol.pocket131.types.Slot.init, Tuple!(float, "x", float, "y", float, "z") position=Tuple!(float, "x", float, "y", float, "z").init, Tuple!(float, "x", float, "y", float, "z") motion=Tuple!(float, "x", float, "y", float, "z").init, Metadata metadata=Metadata.init) {
+	public pure nothrow @safe @nogc this(long entityId, long runtimeId=long.init, sul.protocol.pocket132.types.Slot item=sul.protocol.pocket132.types.Slot.init, Tuple!(float, "x", float, "y", float, "z") position=Tuple!(float, "x", float, "y", float, "z").init, Tuple!(float, "x", float, "y", float, "z") motion=Tuple!(float, "x", float, "y", float, "z").init, Metadata metadata=Metadata.init) {
 		this.entityId = entityId;
 		this.runtimeId = runtimeId;
 		this.item = item;
@@ -1413,12 +1421,12 @@ class AddHangingEntity : Buffer {
 
 	public long entityId;
 	public long runtimeId;
-	public sul.protocol.pocket131.types.BlockPosition position;
+	public sul.protocol.pocket132.types.BlockPosition position;
 	public int unknown3;
 
 	public pure nothrow @safe @nogc this() {}
 
-	public pure nothrow @safe @nogc this(long entityId, long runtimeId=long.init, sul.protocol.pocket131.types.BlockPosition position=sul.protocol.pocket131.types.BlockPosition.init, int unknown3=int.init) {
+	public pure nothrow @safe @nogc this(long entityId, long runtimeId=long.init, sul.protocol.pocket132.types.BlockPosition position=sul.protocol.pocket132.types.BlockPosition.init, int unknown3=int.init) {
 		this.entityId = entityId;
 		this.runtimeId = runtimeId;
 		this.position = position;
@@ -1720,13 +1728,13 @@ class UpdateBlock : Buffer {
 
 	public enum string[] FIELDS = ["position", "block", "flagsAndMeta"];
 
-	public sul.protocol.pocket131.types.BlockPosition position;
+	public sul.protocol.pocket132.types.BlockPosition position;
 	public uint block;
 	public uint flagsAndMeta;
 
 	public pure nothrow @safe @nogc this() {}
 
-	public pure nothrow @safe @nogc this(sul.protocol.pocket131.types.BlockPosition position, uint block=uint.init, uint flagsAndMeta=uint.init) {
+	public pure nothrow @safe @nogc this(sul.protocol.pocket132.types.BlockPosition position, uint block=uint.init, uint flagsAndMeta=uint.init) {
 		this.position = position;
 		this.block = block;
 		this.flagsAndMeta = flagsAndMeta;
@@ -1775,13 +1783,13 @@ class AddPainting : Buffer {
 
 	public long entityId;
 	public long runtimeId;
-	public sul.protocol.pocket131.types.BlockPosition position;
+	public sul.protocol.pocket132.types.BlockPosition position;
 	public int direction;
 	public string title;
 
 	public pure nothrow @safe @nogc this() {}
 
-	public pure nothrow @safe @nogc this(long entityId, long runtimeId=long.init, sul.protocol.pocket131.types.BlockPosition position=sul.protocol.pocket131.types.BlockPosition.init, int direction=int.init, string title=string.init) {
+	public pure nothrow @safe @nogc this(long entityId, long runtimeId=long.init, sul.protocol.pocket132.types.BlockPosition position=sul.protocol.pocket132.types.BlockPosition.init, int direction=int.init, string title=string.init) {
 		this.entityId = entityId;
 		this.runtimeId = runtimeId;
 		this.position = position;
@@ -1833,11 +1841,11 @@ class Explode : Buffer {
 
 	public Tuple!(float, "x", float, "y", float, "z") position;
 	public float radius;
-	public sul.protocol.pocket131.types.BlockPosition[] destroyedBlocks;
+	public sul.protocol.pocket132.types.BlockPosition[] destroyedBlocks;
 
 	public pure nothrow @safe @nogc this() {}
 
-	public pure nothrow @safe @nogc this(Tuple!(float, "x", float, "y", float, "z") position, float radius=float.init, sul.protocol.pocket131.types.BlockPosition[] destroyedBlocks=(sul.protocol.pocket131.types.BlockPosition[]).init) {
+	public pure nothrow @safe @nogc this(Tuple!(float, "x", float, "y", float, "z") position, float radius=float.init, sul.protocol.pocket132.types.BlockPosition[] destroyedBlocks=(sul.protocol.pocket132.types.BlockPosition[]).init) {
 		this.position = position;
 		this.radius = radius;
 		this.destroyedBlocks = destroyedBlocks;
@@ -2219,12 +2227,12 @@ class BlockEvent : Buffer {
 
 	public enum string[] FIELDS = ["position", "data"];
 
-	public sul.protocol.pocket131.types.BlockPosition position;
+	public sul.protocol.pocket132.types.BlockPosition position;
 	public int[2] data;
 
 	public pure nothrow @safe @nogc this() {}
 
-	public pure nothrow @safe @nogc this(sul.protocol.pocket131.types.BlockPosition position, int[2] data=(int[2]).init) {
+	public pure nothrow @safe @nogc this(sul.protocol.pocket132.types.BlockPosition position, int[2] data=(int[2]).init) {
 		this.position = position;
 		this.data = data;
 	}
@@ -2405,11 +2413,11 @@ class UpdateAttributes : Buffer {
 	public enum string[] FIELDS = ["entityId", "attributes"];
 
 	public long entityId;
-	public sul.protocol.pocket131.types.Attribute[] attributes;
+	public sul.protocol.pocket132.types.Attribute[] attributes;
 
 	public pure nothrow @safe @nogc this() {}
 
-	public pure nothrow @safe @nogc this(long entityId, sul.protocol.pocket131.types.Attribute[] attributes=(sul.protocol.pocket131.types.Attribute[]).init) {
+	public pure nothrow @safe @nogc this(long entityId, sul.protocol.pocket132.types.Attribute[] attributes=(sul.protocol.pocket132.types.Attribute[]).init) {
 		this.entityId = entityId;
 		this.attributes = attributes;
 	}
@@ -2451,11 +2459,11 @@ class InventoryTransaction : Buffer {
 	public enum string[] FIELDS = ["type", "actions"];
 
 	public uint type;
-	public sul.protocol.pocket131.types.InventoryAction[] actions;
+	public sul.protocol.pocket132.types.InventoryAction[] actions;
 
 	public pure nothrow @safe @nogc this() {}
 
-	public pure nothrow @safe @nogc this(uint type, sul.protocol.pocket131.types.InventoryAction[] actions=(sul.protocol.pocket131.types.InventoryAction[]).init) {
+	public pure nothrow @safe @nogc this(uint type, sul.protocol.pocket132.types.InventoryAction[] actions=(sul.protocol.pocket132.types.InventoryAction[]).init) {
 		this.type = type;
 		this.actions = actions;
 	}
@@ -2545,16 +2553,16 @@ class InventoryTransaction : Buffer {
 		public enum string[] FIELDS = ["actionType", "blockPosition", "face", "hotbarSlot", "item", "playerPosition", "clickPosition"];
 
 		public uint actionType;
-		public sul.protocol.pocket131.types.BlockPosition blockPosition;
+		public sul.protocol.pocket132.types.BlockPosition blockPosition;
 		public int face;
 		public int hotbarSlot;
-		public sul.protocol.pocket131.types.Slot item;
+		public sul.protocol.pocket132.types.Slot item;
 		public Tuple!(float, "x", float, "y", float, "z") playerPosition;
 		public Tuple!(float, "x", float, "y", float, "z") clickPosition;
 
 		public pure nothrow @safe @nogc this() {}
 
-		public pure nothrow @safe @nogc this(uint actionType, sul.protocol.pocket131.types.BlockPosition blockPosition=sul.protocol.pocket131.types.BlockPosition.init, int face=int.init, int hotbarSlot=int.init, sul.protocol.pocket131.types.Slot item=sul.protocol.pocket131.types.Slot.init, Tuple!(float, "x", float, "y", float, "z") playerPosition=Tuple!(float, "x", float, "y", float, "z").init, Tuple!(float, "x", float, "y", float, "z") clickPosition=Tuple!(float, "x", float, "y", float, "z").init) {
+		public pure nothrow @safe @nogc this(uint actionType, sul.protocol.pocket132.types.BlockPosition blockPosition=sul.protocol.pocket132.types.BlockPosition.init, int face=int.init, int hotbarSlot=int.init, sul.protocol.pocket132.types.Slot item=sul.protocol.pocket132.types.Slot.init, Tuple!(float, "x", float, "y", float, "z") playerPosition=Tuple!(float, "x", float, "y", float, "z").init, Tuple!(float, "x", float, "y", float, "z") clickPosition=Tuple!(float, "x", float, "y", float, "z").init) {
 			this.actionType = actionType;
 			this.blockPosition = blockPosition;
 			this.face = face;
@@ -2606,13 +2614,13 @@ class InventoryTransaction : Buffer {
 		public long entityId;
 		public uint actionType;
 		public int hotbarSlot;
-		public sul.protocol.pocket131.types.Slot item;
+		public sul.protocol.pocket132.types.Slot item;
 		public Tuple!(float, "x", float, "y", float, "z") unknown4;
 		public Tuple!(float, "x", float, "y", float, "z") unknown5;
 
 		public pure nothrow @safe @nogc this() {}
 
-		public pure nothrow @safe @nogc this(long entityId, uint actionType=uint.init, int hotbarSlot=int.init, sul.protocol.pocket131.types.Slot item=sul.protocol.pocket131.types.Slot.init, Tuple!(float, "x", float, "y", float, "z") unknown4=Tuple!(float, "x", float, "y", float, "z").init, Tuple!(float, "x", float, "y", float, "z") unknown5=Tuple!(float, "x", float, "y", float, "z").init) {
+		public pure nothrow @safe @nogc this(long entityId, uint actionType=uint.init, int hotbarSlot=int.init, sul.protocol.pocket132.types.Slot item=sul.protocol.pocket132.types.Slot.init, Tuple!(float, "x", float, "y", float, "z") unknown4=Tuple!(float, "x", float, "y", float, "z").init, Tuple!(float, "x", float, "y", float, "z") unknown5=Tuple!(float, "x", float, "y", float, "z").init) {
 			this.entityId = entityId;
 			this.actionType = actionType;
 			this.hotbarSlot = hotbarSlot;
@@ -2660,12 +2668,12 @@ class InventoryTransaction : Buffer {
 
 		public uint actionType;
 		public int hotbarSlot;
-		public sul.protocol.pocket131.types.Slot item;
+		public sul.protocol.pocket132.types.Slot item;
 		public Tuple!(float, "x", float, "y", float, "z") headPosition;
 
 		public pure nothrow @safe @nogc this() {}
 
-		public pure nothrow @safe @nogc this(uint actionType, int hotbarSlot=int.init, sul.protocol.pocket131.types.Slot item=sul.protocol.pocket131.types.Slot.init, Tuple!(float, "x", float, "y", float, "z") headPosition=Tuple!(float, "x", float, "y", float, "z").init) {
+		public pure nothrow @safe @nogc this(uint actionType, int hotbarSlot=int.init, sul.protocol.pocket132.types.Slot item=sul.protocol.pocket132.types.Slot.init, Tuple!(float, "x", float, "y", float, "z") headPosition=Tuple!(float, "x", float, "y", float, "z").init) {
 			this.actionType = actionType;
 			this.hotbarSlot = hotbarSlot;
 			this.item = item;
@@ -2710,7 +2718,7 @@ class MobEquipment : Buffer {
 	public enum string[] FIELDS = ["entityId", "item", "inventorySlot", "hotbarSlot", "unknown4"];
 
 	public long entityId;
-	public sul.protocol.pocket131.types.Slot item;
+	public sul.protocol.pocket132.types.Slot item;
 
 	/**
 	 * Slot of the inventory where the item is. The hotbat slots (0-8) are not counted.
@@ -2726,7 +2734,7 @@ class MobEquipment : Buffer {
 
 	public pure nothrow @safe @nogc this() {}
 
-	public pure nothrow @safe @nogc this(long entityId, sul.protocol.pocket131.types.Slot item=sul.protocol.pocket131.types.Slot.init, ubyte inventorySlot=ubyte.init, ubyte hotbarSlot=ubyte.init, ubyte unknown4=ubyte.init) {
+	public pure nothrow @safe @nogc this(long entityId, sul.protocol.pocket132.types.Slot item=sul.protocol.pocket132.types.Slot.init, ubyte inventorySlot=ubyte.init, ubyte hotbarSlot=ubyte.init, ubyte unknown4=ubyte.init) {
 		this.entityId = entityId;
 		this.item = item;
 		this.inventorySlot = inventorySlot;
@@ -2777,11 +2785,11 @@ class MobArmorEquipment : Buffer {
 	public enum string[] FIELDS = ["entityId", "armor"];
 
 	public long entityId;
-	public sul.protocol.pocket131.types.Slot[4] armor;
+	public sul.protocol.pocket132.types.Slot[4] armor;
 
 	public pure nothrow @safe @nogc this() {}
 
-	public pure nothrow @safe @nogc this(long entityId, sul.protocol.pocket131.types.Slot[4] armor=(sul.protocol.pocket131.types.Slot[4]).init) {
+	public pure nothrow @safe @nogc this(long entityId, sul.protocol.pocket132.types.Slot[4] armor=(sul.protocol.pocket132.types.Slot[4]).init) {
 		this.entityId = entityId;
 		this.armor = armor;
 	}
@@ -2994,12 +3002,12 @@ class PlayerAction : Buffer {
 
 	public long entityId;
 	public int action;
-	public sul.protocol.pocket131.types.BlockPosition position;
+	public sul.protocol.pocket132.types.BlockPosition position;
 	public int face;
 
 	public pure nothrow @safe @nogc this() {}
 
-	public pure nothrow @safe @nogc this(long entityId, int action=int.init, sul.protocol.pocket131.types.BlockPosition position=sul.protocol.pocket131.types.BlockPosition.init, int face=int.init) {
+	public pure nothrow @safe @nogc this(long entityId, int action=int.init, sul.protocol.pocket132.types.BlockPosition position=sul.protocol.pocket132.types.BlockPosition.init, int face=int.init) {
 		this.entityId = entityId;
 		this.action = action;
 		this.position = position;
@@ -3356,12 +3364,12 @@ class SetSpawnPosition : Buffer {
 	public enum string[] FIELDS = ["type", "position", "forced"];
 
 	public int type;
-	public sul.protocol.pocket131.types.BlockPosition position;
+	public sul.protocol.pocket132.types.BlockPosition position;
 	public bool forced;
 
 	public pure nothrow @safe @nogc this() {}
 
-	public pure nothrow @safe @nogc this(int type, sul.protocol.pocket131.types.BlockPosition position=sul.protocol.pocket131.types.BlockPosition.init, bool forced=bool.init) {
+	public pure nothrow @safe @nogc this(int type, sul.protocol.pocket132.types.BlockPosition position=sul.protocol.pocket132.types.BlockPosition.init, bool forced=bool.init) {
 		this.type = type;
 		this.position = position;
 		this.forced = forced;
@@ -3503,12 +3511,12 @@ class ContainerOpen : Buffer {
 
 	public ubyte window;
 	public ubyte type;
-	public sul.protocol.pocket131.types.BlockPosition position;
+	public sul.protocol.pocket132.types.BlockPosition position;
 	public long entityId;
 
 	public pure nothrow @safe @nogc this() {}
 
-	public pure nothrow @safe @nogc this(ubyte window, ubyte type=ubyte.init, sul.protocol.pocket131.types.BlockPosition position=sul.protocol.pocket131.types.BlockPosition.init, long entityId=long.init) {
+	public pure nothrow @safe @nogc this(ubyte window, ubyte type=ubyte.init, sul.protocol.pocket132.types.BlockPosition position=sul.protocol.pocket132.types.BlockPosition.init, long entityId=long.init) {
 		this.window = window;
 		this.type = type;
 		this.position = position;
@@ -3630,11 +3638,11 @@ class InventoryContent : Buffer {
 	public enum string[] FIELDS = ["window", "slots"];
 
 	public uint window;
-	public sul.protocol.pocket131.types.Slot[] slots;
+	public sul.protocol.pocket132.types.Slot[] slots;
 
 	public pure nothrow @safe @nogc this() {}
 
-	public pure nothrow @safe @nogc this(uint window, sul.protocol.pocket131.types.Slot[] slots=(sul.protocol.pocket131.types.Slot[]).init) {
+	public pure nothrow @safe @nogc this(uint window, sul.protocol.pocket132.types.Slot[] slots=(sul.protocol.pocket132.types.Slot[]).init) {
 		this.window = window;
 		this.slots = slots;
 	}
@@ -3757,11 +3765,11 @@ class CraftingData : Buffer {
 
 	public enum string[] FIELDS = ["recipes"];
 
-	public sul.protocol.pocket131.types.Recipe[] recipes;
+	public sul.protocol.pocket132.types.Recipe[] recipes;
 
 	public pure nothrow @safe @nogc this() {}
 
-	public pure nothrow @safe @nogc this(sul.protocol.pocket131.types.Recipe[] recipes) {
+	public pure nothrow @safe @nogc this(sul.protocol.pocket132.types.Recipe[] recipes) {
 		this.recipes = recipes;
 	}
 
@@ -3801,13 +3809,13 @@ class CraftingEvent : Buffer {
 
 	public ubyte window;
 	public int type;
-	public sul.protocol.pocket131.types.McpeUuid uuid;
-	public sul.protocol.pocket131.types.Slot[] input;
-	public sul.protocol.pocket131.types.Slot[] output;
+	public sul.protocol.pocket132.types.McpeUuid uuid;
+	public sul.protocol.pocket132.types.Slot[] input;
+	public sul.protocol.pocket132.types.Slot[] output;
 
 	public pure nothrow @safe @nogc this() {}
 
-	public pure nothrow @safe @nogc this(ubyte window, int type=int.init, sul.protocol.pocket131.types.McpeUuid uuid=sul.protocol.pocket131.types.McpeUuid.init, sul.protocol.pocket131.types.Slot[] input=(sul.protocol.pocket131.types.Slot[]).init, sul.protocol.pocket131.types.Slot[] output=(sul.protocol.pocket131.types.Slot[]).init) {
+	public pure nothrow @safe @nogc this(ubyte window, int type=int.init, sul.protocol.pocket132.types.McpeUuid uuid=sul.protocol.pocket132.types.McpeUuid.init, sul.protocol.pocket132.types.Slot[] input=(sul.protocol.pocket132.types.Slot[]).init, sul.protocol.pocket132.types.Slot[] output=(sul.protocol.pocket132.types.Slot[]).init) {
 		this.window = window;
 		this.type = type;
 		this.uuid = uuid;
@@ -4003,7 +4011,7 @@ class BlockEntityData : Buffer {
 	/**
 	 * Position of the block that will be associated with tag.
 	 */
-	public sul.protocol.pocket131.types.BlockPosition position;
+	public sul.protocol.pocket132.types.BlockPosition position;
 
 	/**
 	 * Named binary tag of the block. The format varies from the classic format of Minecraft:
@@ -4020,7 +4028,7 @@ class BlockEntityData : Buffer {
 
 	public pure nothrow @safe @nogc this() {}
 
-	public pure nothrow @safe @nogc this(sul.protocol.pocket131.types.BlockPosition position, ubyte[] nbt=(ubyte[]).init) {
+	public pure nothrow @safe @nogc this(sul.protocol.pocket132.types.BlockPosition position, ubyte[] nbt=(ubyte[]).init) {
 		this.position = position;
 		this.nbt = nbt;
 	}
@@ -4122,11 +4130,11 @@ class FullChunkData : Buffer {
 	 * Coordinates of the chunk.
 	 */
 	public Tuple!(int, "x", int, "z") position;
-	public sul.protocol.pocket131.types.ChunkData data;
+	public sul.protocol.pocket132.types.ChunkData data;
 
 	public pure nothrow @safe @nogc this() {}
 
-	public pure nothrow @safe @nogc this(Tuple!(int, "x", int, "z") position, sul.protocol.pocket131.types.ChunkData data=sul.protocol.pocket131.types.ChunkData.init) {
+	public pure nothrow @safe @nogc this(Tuple!(int, "x", int, "z") position, sul.protocol.pocket132.types.ChunkData data=sul.protocol.pocket132.types.ChunkData.init) {
 		this.position = position;
 		this.data = data;
 	}
@@ -4418,11 +4426,11 @@ class PlayerList : Buffer {
 
 		public enum string[] FIELDS = ["players"];
 
-		public sul.protocol.pocket131.types.PlayerList[] players;
+		public sul.protocol.pocket132.types.PlayerList[] players;
 
 		public pure nothrow @safe @nogc this() {}
 
-		public pure nothrow @safe @nogc this(sul.protocol.pocket131.types.PlayerList[] players) {
+		public pure nothrow @safe @nogc this(sul.protocol.pocket132.types.PlayerList[] players) {
 			this.players = players;
 		}
 
@@ -4449,11 +4457,11 @@ class PlayerList : Buffer {
 
 		public enum string[] FIELDS = ["players"];
 
-		public sul.protocol.pocket131.types.McpeUuid[] players;
+		public sul.protocol.pocket132.types.McpeUuid[] players;
 
 		public pure nothrow @safe @nogc this() {}
 
-		public pure nothrow @safe @nogc this(sul.protocol.pocket131.types.McpeUuid[] players) {
+		public pure nothrow @safe @nogc this(sul.protocol.pocket132.types.McpeUuid[] players) {
 			this.players = players;
 		}
 
@@ -4628,11 +4636,11 @@ class ClientboundMapItemData : Buffer {
 	 * ARGB colours encoded as unsigned varints.
 	 */
 	public ubyte[] data;
-	public sul.protocol.pocket131.types.Decoration[] decorations;
+	public sul.protocol.pocket132.types.Decoration[] decorations;
 
 	public pure nothrow @safe @nogc this() {}
 
-	public pure nothrow @safe @nogc this(long mapId, uint update=uint.init, ubyte scale=ubyte.init, Tuple!(int, "x", int, "z") size=Tuple!(int, "x", int, "z").init, Tuple!(int, "x", int, "z") offset=Tuple!(int, "x", int, "z").init, ubyte[] data=(ubyte[]).init, sul.protocol.pocket131.types.Decoration[] decorations=(sul.protocol.pocket131.types.Decoration[]).init) {
+	public pure nothrow @safe @nogc this(long mapId, uint update=uint.init, ubyte scale=ubyte.init, Tuple!(int, "x", int, "z") size=Tuple!(int, "x", int, "z").init, Tuple!(int, "x", int, "z") offset=Tuple!(int, "x", int, "z").init, ubyte[] data=(ubyte[]).init, sul.protocol.pocket132.types.Decoration[] decorations=(sul.protocol.pocket132.types.Decoration[]).init) {
 		this.mapId = mapId;
 		this.update = update;
 		this.scale = scale;
@@ -4831,12 +4839,12 @@ class ItemFrameDropItem : Buffer {
 
 	public enum string[] FIELDS = ["position", "item"];
 
-	public sul.protocol.pocket131.types.BlockPosition position;
-	public sul.protocol.pocket131.types.Slot item;
+	public sul.protocol.pocket132.types.BlockPosition position;
+	public sul.protocol.pocket132.types.Slot item;
 
 	public pure nothrow @safe @nogc this() {}
 
-	public pure nothrow @safe @nogc this(sul.protocol.pocket131.types.BlockPosition position, sul.protocol.pocket131.types.Slot item=sul.protocol.pocket131.types.Slot.init) {
+	public pure nothrow @safe @nogc this(sul.protocol.pocket132.types.BlockPosition position, sul.protocol.pocket132.types.Slot item=sul.protocol.pocket132.types.Slot.init) {
 		this.position = position;
 		this.item = item;
 	}
@@ -4882,11 +4890,11 @@ class GameRulesChanged : Buffer {
 
 	public enum string[] FIELDS = ["rules"];
 
-	public sul.protocol.pocket131.types.Rule[] rules;
+	public sul.protocol.pocket132.types.Rule[] rules;
 
 	public pure nothrow @safe @nogc this() {}
 
-	public pure nothrow @safe @nogc this(sul.protocol.pocket131.types.Rule[] rules) {
+	public pure nothrow @safe @nogc this(sul.protocol.pocket132.types.Rule[] rules) {
 		this.rules = rules;
 	}
 
@@ -5080,11 +5088,11 @@ class AvailableCommands : Buffer {
 
 	public string[] enumValues;
 	public uint unknown1;
-	public sul.protocol.pocket131.types.Command[] commands;
+	public sul.protocol.pocket132.types.Command[] commands;
 
 	public pure nothrow @safe @nogc this() {}
 
-	public pure nothrow @safe @nogc this(string[] enumValues, uint unknown1=uint.init, sul.protocol.pocket131.types.Command[] commands=(sul.protocol.pocket131.types.Command[]).init) {
+	public pure nothrow @safe @nogc this(string[] enumValues, uint unknown1=uint.init, sul.protocol.pocket132.types.Command[] commands=(sul.protocol.pocket132.types.Command[]).init) {
 		this.enumValues = enumValues;
 		this.unknown1 = unknown1;
 		this.commands = commands;
@@ -5189,7 +5197,7 @@ class CommandBlockUpdate : Buffer {
 	public enum string[] FIELDS = ["updateBlock", "position", "mode", "redstoneMode", "conditional", "minecart", "command", "lastOutput", "hover", "trackOutput"];
 
 	public bool updateBlock;
-	public sul.protocol.pocket131.types.BlockPosition position;
+	public sul.protocol.pocket132.types.BlockPosition position;
 	public uint mode;
 	public bool redstoneMode;
 	public bool conditional;
@@ -5201,7 +5209,7 @@ class CommandBlockUpdate : Buffer {
 
 	public pure nothrow @safe @nogc this() {}
 
-	public pure nothrow @safe @nogc this(bool updateBlock, sul.protocol.pocket131.types.BlockPosition position=sul.protocol.pocket131.types.BlockPosition.init, uint mode=uint.init, bool redstoneMode=bool.init, bool conditional=bool.init, long minecart=long.init, string command=string.init, string lastOutput=string.init, string hover=string.init, bool trackOutput=bool.init) {
+	public pure nothrow @safe @nogc this(bool updateBlock, sul.protocol.pocket132.types.BlockPosition position=sul.protocol.pocket132.types.BlockPosition.init, uint mode=uint.init, bool redstoneMode=bool.init, bool conditional=bool.init, long minecart=long.init, string command=string.init, string lastOutput=string.init, string hover=string.init, bool trackOutput=bool.init) {
 		this.updateBlock = updateBlock;
 		this.position = position;
 		this.mode = mode;
@@ -5591,13 +5599,13 @@ class PlaySound : Buffer {
 	public enum string[] FIELDS = ["name", "position", "volume", "pitch"];
 
 	public string name;
-	public sul.protocol.pocket131.types.BlockPosition position;
+	public sul.protocol.pocket132.types.BlockPosition position;
 	public float volume;
 	public float pitch;
 
 	public pure nothrow @safe @nogc this() {}
 
-	public pure nothrow @safe @nogc this(string name, sul.protocol.pocket131.types.BlockPosition position=sul.protocol.pocket131.types.BlockPosition.init, float volume=float.init, float pitch=float.init) {
+	public pure nothrow @safe @nogc this(string name, sul.protocol.pocket132.types.BlockPosition position=sul.protocol.pocket132.types.BlockPosition.init, float volume=float.init, float pitch=float.init) {
 		this.name = name;
 		this.position = position;
 		this.volume = volume;
@@ -5835,26 +5843,34 @@ class ShowStoreOffer : Buffer {
 	public enum bool CLIENTBOUND = true;
 	public enum bool SERVERBOUND = false;
 
-	public enum string[] FIELDS = ["unknown0"];
+	public enum string[] FIELDS = ["unknown0", "unknown1", "unknown2"];
 
 	public string unknown0;
+	public bool unknown1;
+	public string unknown2;
 
 	public pure nothrow @safe @nogc this() {}
 
-	public pure nothrow @safe @nogc this(string unknown0) {
+	public pure nothrow @safe @nogc this(string unknown0, bool unknown1=bool.init, string unknown2=string.init) {
 		this.unknown0 = unknown0;
+		this.unknown1 = unknown1;
+		this.unknown2 = unknown2;
 	}
 
 	public pure nothrow @safe ubyte[] encode(bool writeId=true)() {
 		_buffer.length = 0;
 		static if(writeId){ writeBytes(varuint.encode(ID)); }
 		writeBytes(varuint.encode(cast(uint)unknown0.length)); writeString(unknown0);
+		writeLittleEndianBool(unknown1);
+		writeBytes(varuint.encode(cast(uint)unknown2.length)); writeString(unknown2);
 		return _buffer;
 	}
 
 	public pure nothrow @safe void decode(bool readId=true)() {
 		static if(readId){ uint _id; _id=varuint.decode(_buffer, &_index); }
 		uint d5b9ba=varuint.decode(_buffer, &_index); unknown0=readString(d5b9ba);
+		unknown1=readLittleEndianBool();
+		uint d5b9bi=varuint.decode(_buffer, &_index); unknown2=readString(d5b9bi);
 	}
 
 	public static pure nothrow @safe ShowStoreOffer fromBuffer(bool readId=true)(ubyte[] buffer) {
@@ -5865,7 +5881,7 @@ class ShowStoreOffer : Buffer {
 	}
 
 	public override string toString() {
-		return "ShowStoreOffer(unknown0: " ~ std.conv.to!string(this.unknown0) ~ ")";
+		return "ShowStoreOffer(unknown0: " ~ std.conv.to!string(this.unknown0) ~ ", unknown1: " ~ std.conv.to!string(this.unknown1) ~ ", unknown2: " ~ std.conv.to!string(this.unknown2) ~ ")";
 	}
 
 }
@@ -5921,7 +5937,7 @@ class PlayerSkin : Buffer {
 
 	public enum string[] FIELDS = ["uuid", "skinId", "skinName", "unknown3", "skinData", "capeData", "geometryModel", "geometryData"];
 
-	public sul.protocol.pocket131.types.McpeUuid uuid;
+	public sul.protocol.pocket132.types.McpeUuid uuid;
 	public string skinId;
 	public string skinName;
 	public string unknown3;
@@ -5932,7 +5948,7 @@ class PlayerSkin : Buffer {
 
 	public pure nothrow @safe @nogc this() {}
 
-	public pure nothrow @safe @nogc this(sul.protocol.pocket131.types.McpeUuid uuid, string skinId=string.init, string skinName=string.init, string unknown3=string.init, ubyte[] skinData=(ubyte[]).init, ubyte[] capeData=(ubyte[]).init, string geometryModel=string.init, ubyte[] geometryData=(ubyte[]).init) {
+	public pure nothrow @safe @nogc this(sul.protocol.pocket132.types.McpeUuid uuid, string skinId=string.init, string skinName=string.init, string unknown3=string.init, ubyte[] skinData=(ubyte[]).init, ubyte[] capeData=(ubyte[]).init, string geometryModel=string.init, ubyte[] geometryData=(ubyte[]).init) {
 		this.uuid = uuid;
 		this.skinId = skinId;
 		this.skinName = skinName;
