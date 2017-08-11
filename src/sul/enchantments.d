@@ -22,7 +22,7 @@ public struct Enchantment
 {
 
     string name;
-    EnchantmentData minecraft, pocket;
+    EnchantmentData java, pocket;
     ubyte max;
 
 }

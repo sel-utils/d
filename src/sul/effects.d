@@ -22,7 +22,7 @@ public struct Effect
 {
 
     string name;
-    EffectValue minecraft, pocket;
+    EffectValue java, pocket;
     uint particles;
 
 }

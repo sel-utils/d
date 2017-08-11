@@ -24,7 +24,7 @@ public struct Item
 
     string name;
     size_t index;
-    ItemData minecraft, pocket;
+    ItemData java, pocket;
     ubyte stack;
     ushort durability;
 
