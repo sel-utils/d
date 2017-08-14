@@ -5084,17 +5084,19 @@ class AvailableCommands : Buffer {
 	public enum bool CLIENTBOUND = true;
 	public enum bool SERVERBOUND = false;
 
-	public enum string[] FIELDS = ["enumValues", "unknown1", "commands"];
+	public enum string[] FIELDS = ["enumValues", "unknown1", "enums", "commands"];
 
 	public string[] enumValues;
-	public uint unknown1;
+	public string[] unknown1;
+	public sul.protocol.pocket132.types.Enum[] enums;
 	public sul.protocol.pocket132.types.Command[] commands;
 
 	public pure nothrow @safe @nogc this() {}
 
-	public pure nothrow @safe @nogc this(string[] enumValues, uint unknown1=uint.init, sul.protocol.pocket132.types.Command[] commands=(sul.protocol.pocket132.types.Command[]).init) {
+	public pure nothrow @safe @nogc this(string[] enumValues, string[] unknown1=(string[]).init, sul.protocol.pocket132.types.Enum[] enums=(sul.protocol.pocket132.types.Enum[]).init, sul.protocol.pocket132.types.Command[] commands=(sul.protocol.pocket132.types.Command[]).init) {
 		this.enumValues = enumValues;
 		this.unknown1 = unknown1;
+		this.enums = enums;
 		this.commands = commands;
 	}
 
@@ -5102,7 +5104,8 @@ class AvailableCommands : Buffer {
 		_buffer.length = 0;
 		static if(writeId){ writeBytes(varuint.encode(ID)); }
 		writeBytes(varuint.encode(cast(uint)enumValues.length)); foreach(z5bzbvc;enumValues){ writeBytes(varuint.encode(cast(uint)z5bzbvc.length)); writeString(z5bzbvc); }
-		writeBytes(varuint.encode(unknown1));
+		writeBytes(varuint.encode(cast(uint)unknown1.length)); foreach(d5b9be;unknown1){ writeBytes(varuint.encode(cast(uint)d5b9be.length)); writeString(d5b9be); }
+		writeBytes(varuint.encode(cast(uint)enums.length)); foreach(z5bm;enums){ z5bm.encode(bufferInstance); }
 		writeBytes(varuint.encode(cast(uint)commands.length)); foreach(y9bfzm;commands){ y9bfzm.encode(bufferInstance); }
 		return _buffer;
 	}
@@ -5110,7 +5113,8 @@ class AvailableCommands : Buffer {
 	public pure nothrow @safe void decode(bool readId=true)() {
 		static if(readId){ uint _id; _id=varuint.decode(_buffer, &_index); }
 		enumValues.length=varuint.decode(_buffer, &_index); foreach(ref z5bzbvc;enumValues){ uint evejy=varuint.decode(_buffer, &_index); z5bzbvc=readString(evejy); }
-		unknown1=varuint.decode(_buffer, &_index);
+		unknown1.length=varuint.decode(_buffer, &_index); foreach(ref d5b9be;unknown1){ uint zvoj=varuint.decode(_buffer, &_index); d5b9be=readString(zvoj); }
+		enums.length=varuint.decode(_buffer, &_index); foreach(ref z5bm;enums){ z5bm.decode(bufferInstance); }
 		commands.length=varuint.decode(_buffer, &_index); foreach(ref y9bfzm;commands){ y9bfzm.decode(bufferInstance); }
 	}
 
@@ -5122,7 +5126,7 @@ class AvailableCommands : Buffer {
 	}
 
 	public override string toString() {
-		return "AvailableCommands(enumValues: " ~ std.conv.to!string(this.enumValues) ~ ", unknown1: " ~ std.conv.to!string(this.unknown1) ~ ", commands: " ~ std.conv.to!string(this.commands) ~ ")";
+		return "AvailableCommands(enumValues: " ~ std.conv.to!string(this.enumValues) ~ ", unknown1: " ~ std.conv.to!string(this.unknown1) ~ ", enums: " ~ std.conv.to!string(this.enums) ~ ", commands: " ~ std.conv.to!string(this.commands) ~ ")";
 	}
 
 }

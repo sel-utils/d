@@ -722,15 +722,42 @@ struct Rule {
 
 }
 
+struct Enum {
+
+	public enum string[] FIELDS = ["name", "valuesIndexes"];
+
+	public string name;
+	public ushort[] valuesIndexes;
+
+	public pure nothrow @safe void encode(Buffer buffer) {
+		with(buffer) {
+			writeBytes(varuint.encode(cast(uint)name.length)); writeString(name);
+			writeBytes(varuint.encode(cast(uint)valuesIndexes.length)); foreach(dfdvs5zh;valuesIndexes){ writeLittleEndianUshort(dfdvs5zh); }
+		}
+	}
+
+	public pure nothrow @safe void decode(Buffer buffer) {
+		with(buffer) {
+			uint bfz=varuint.decode(_buffer, &_index); name=readString(bfz);
+			valuesIndexes.length=varuint.decode(_buffer, &_index); foreach(ref dfdvs5zh;valuesIndexes){ dfdvs5zh=readLittleEndianUshort(); }
+		}
+	}
+
+	public string toString() {
+		return "Enum(name: " ~ std.conv.to!string(this.name) ~ ", valuesIndexes: " ~ std.conv.to!string(this.valuesIndexes) ~ ")";
+	}
+
+}
+
 struct Command {
 
-	public enum string[] FIELDS = ["name", "description", "unknown2", "permissionLevel", "aliasesId", "overloads"];
+	public enum string[] FIELDS = ["name", "description", "unknown2", "permissionLevel", "aliasesEnum", "overloads"];
 
 	public string name;
 	public string description;
 	public ubyte unknown2;
 	public ubyte permissionLevel;
-	public int aliasesId = -1;
+	public int aliasesEnum = -1;
 	public sul.protocol.pocket132.types.Overload[] overloads;
 
 	public pure nothrow @safe void encode(Buffer buffer) {
@@ -739,7 +766,7 @@ struct Command {
 			writeBytes(varuint.encode(cast(uint)description.length)); writeString(description);
 			writeLittleEndianUbyte(unknown2);
 			writeLittleEndianUbyte(permissionLevel);
-			writeLittleEndianInt(aliasesId);
+			writeLittleEndianInt(aliasesEnum);
 			writeBytes(varuint.encode(cast(uint)overloads.length)); foreach(bzcxyr;overloads){ bzcxyr.encode(bufferInstance); }
 		}
 	}
@@ -750,13 +777,13 @@ struct Command {
 			uint zvyjcrb4=varuint.decode(_buffer, &_index); description=readString(zvyjcrb4);
 			unknown2=readLittleEndianUbyte();
 			permissionLevel=readLittleEndianUbyte();
-			aliasesId=readLittleEndianInt();
+			aliasesEnum=readLittleEndianInt();
 			overloads.length=varuint.decode(_buffer, &_index); foreach(ref bzcxyr;overloads){ bzcxyr.decode(bufferInstance); }
 		}
 	}
 
 	public string toString() {
-		return "Command(name: " ~ std.conv.to!string(this.name) ~ ", description: " ~ std.conv.to!string(this.description) ~ ", unknown2: " ~ std.conv.to!string(this.unknown2) ~ ", permissionLevel: " ~ std.conv.to!string(this.permissionLevel) ~ ", aliasesId: " ~ std.conv.to!string(this.aliasesId) ~ ", overloads: " ~ std.conv.to!string(this.overloads) ~ ")";
+		return "Command(name: " ~ std.conv.to!string(this.name) ~ ", description: " ~ std.conv.to!string(this.description) ~ ", unknown2: " ~ std.conv.to!string(this.unknown2) ~ ", permissionLevel: " ~ std.conv.to!string(this.permissionLevel) ~ ", aliasesEnum: " ~ std.conv.to!string(this.aliasesEnum) ~ ", overloads: " ~ std.conv.to!string(this.overloads) ~ ")";
 	}
 
 }
@@ -786,6 +813,21 @@ struct Overload {
 }
 
 struct Parameter {
+
+	// type
+	public enum uint VALID = 1048576;
+	public enum uint INT = 1;
+	public enum uint FLOAT = 2;
+	public enum uint MIXED = 3;
+	public enum uint TARGET = 4;
+	public enum uint STRING = 12;
+	public enum uint POSITION = 13;
+	public enum uint RAWTEXT = 16;
+	public enum uint TEXT = 18;
+	public enum uint JSON = 21;
+	public enum uint COMMAND = 28;
+	public enum uint ENUM = 2097152;
+	public enum uint TEMPLATE = 16777216;
 
 	public enum string[] FIELDS = ["name", "type", "optional"];
 
