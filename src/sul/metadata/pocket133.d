@@ -4,9 +4,9 @@
  * 
  * License: https://github.com/sel-project/sel-utils/blob/master/LICENSE
  * Repository: https://github.com/sel-project/sel-utils
- * Generated from https://github.com/sel-project/sel-utils/blob/master/xml/metadata/pocket132.xml
+ * Generated from https://github.com/sel-project/sel-utils/blob/master/xml/metadata/pocket133.xml
  */
-module sul.metadata.pocket132;
+module sul.metadata.pocket133;
 
 import std.typecons : Tuple, tuple;
 
@@ -14,7 +14,7 @@ import sul.utils.buffer : Buffer;
 import sul.utils.metadataflags;
 import sul.utils.var;
 
-static import sul.protocol.pocket132.types;
+static import sul.protocol.pocket133.types;
 
 alias Changed(T) = Tuple!(T, "value", bool, "changed");
 
@@ -2012,7 +2012,7 @@ class Metadata {
 						metadata.decoded ~= DecodedMetadata.fromString(id, _4);
 						break;
 					case 5:
-						sul.protocol.pocket132.types.Slot _5;
+						sul.protocol.pocket133.types.Slot _5;
 						_5.decode(bufferInstance);
 						metadata.decoded ~= DecodedMetadata.fromSlot(id, _5);
 						break;
@@ -2052,7 +2052,7 @@ class DecodedMetadata {
 		int int_;
 		float float_;
 		string string_;
-		sul.protocol.pocket132.types.Slot slot;
+		sul.protocol.pocket133.types.Slot slot;
 		Tuple!(int, "x", int, "y", int, "z") block_position;
 		long long_;
 		Tuple!(float, "x", float, "y", float, "z") entity_position;
@@ -2093,7 +2093,7 @@ class DecodedMetadata {
 		return ret;
 	}
 
-	public static pure nothrow @trusted DecodedMetadata fromSlot(uint id, sul.protocol.pocket132.types.Slot value) {
+	public static pure nothrow @trusted DecodedMetadata fromSlot(uint id, sul.protocol.pocket133.types.Slot value) {
 		auto ret = new DecodedMetadata(id, 5);
 		ret.slot = value;
 		return ret;
