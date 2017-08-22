@@ -4,9 +4,9 @@
  * 
  * License: https://github.com/sel-project/sel-utils/blob/master/LICENSE
  * Repository: https://github.com/sel-project/sel-utils
- * Generated from https://github.com/sel-project/sel-utils/blob/master/xml/attributes/pocket133.xml
+ * Generated from https://github.com/sel-project/sel-utils/blob/master/xml/attributes/pocket134.xml
  */
-module sul.attributes.pocket133;
+module sul.attributes.pocket134;
 
 import std.typecons : Tuple;
 
