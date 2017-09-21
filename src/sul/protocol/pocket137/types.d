@@ -4,9 +4,9 @@
  * 
  * License: https://github.com/sel-project/sel-utils/blob/master/LICENSE
  * Repository: https://github.com/sel-project/sel-utils
- * Generated from https://github.com/sel-project/sel-utils/blob/master/xml/protocol/pocket134.xml
+ * Generated from https://github.com/sel-project/sel-utils/blob/master/xml/protocol/pocket137.xml
  */
-module sul.protocol.pocket134.types;
+module sul.protocol.pocket137.types;
 
 import std.bitmanip : write, peek;
 static import std.conv;
@@ -17,7 +17,7 @@ import std.uuid : UUID;
 import sul.utils.buffer;
 import sul.utils.var;
 
-static if(__traits(compiles, { import sul.metadata.pocket134; })) import sul.metadata.pocket134;
+static if(__traits(compiles, { import sul.metadata.pocket137; })) import sul.metadata.pocket137;
 
 struct LoginBody {
 
@@ -279,7 +279,7 @@ struct PlayerList {
 	 * UUID of the player. If it's associated with an XBOX Live account the player's profile
 	 * will also be available in pause menu.
 	 */
-	public sul.protocol.pocket134.types.McpeUuid uuid;
+	public sul.protocol.pocket137.types.McpeUuid uuid;
 
 	/**
 	 * Player's id, used to associate the skin with the game's entity spawned with AddPlayer.
@@ -295,7 +295,7 @@ struct PlayerList {
 	/**
 	 * Player's skin usually given in the Login's packet body.
 	 */
-	public sul.protocol.pocket134.types.Skin skin;
+	public sul.protocol.pocket137.types.Skin skin;
 	public string unknown4;
 
 	public pure nothrow @safe void encode(Buffer buffer) {
@@ -455,8 +455,8 @@ struct InventoryAction {
 	public int container = -1;
 	public uint unknown2;
 	public uint slot;
-	public sul.protocol.pocket134.types.Slot oldItem;
-	public sul.protocol.pocket134.types.Slot newItem;
+	public sul.protocol.pocket137.types.Slot oldItem;
+	public sul.protocol.pocket137.types.Slot newItem;
 
 	public pure nothrow @safe void encode(Buffer buffer) {
 		with(buffer) {
@@ -498,7 +498,7 @@ struct ChunkData {
 	 * (the 3rd element of the array will be the 3rd section from bottom, starting at `y=24`).
 	 * The amount of sections should be in a range from 0 (empty chunk) to 16.
 	 */
-	public sul.protocol.pocket134.types.Section[] sections;
+	public sul.protocol.pocket137.types.Section[] sections;
 	public ushort[256] heights;
 
 	/**
@@ -511,7 +511,7 @@ struct ChunkData {
 	 * implemented in the game yet and crashes the client.
 	 */
 	public ubyte[] borders;
-	public sul.protocol.pocket134.types.ExtraData[] extraData;
+	public sul.protocol.pocket137.types.ExtraData[] extraData;
 
 	/**
 	 * Additional data for the chunk's block entities (tiles), encoded in the same way
@@ -758,7 +758,7 @@ struct Command {
 	public ubyte unknown2;
 	public ubyte permissionLevel;
 	public int aliasesEnum = -1;
-	public sul.protocol.pocket134.types.Overload[] overloads;
+	public sul.protocol.pocket137.types.Overload[] overloads;
 
 	public pure nothrow @safe void encode(Buffer buffer) {
 		with(buffer) {
@@ -792,7 +792,7 @@ struct Overload {
 
 	public enum string[] FIELDS = ["parameters"];
 
-	public sul.protocol.pocket134.types.Parameter[] parameters;
+	public sul.protocol.pocket137.types.Parameter[] parameters;
 
 	public pure nothrow @safe void encode(Buffer buffer) {
 		with(buffer) {
@@ -820,12 +820,12 @@ struct Parameter {
 	public enum uint FLOAT = 2;
 	public enum uint MIXED = 3;
 	public enum uint TARGET = 4;
-	public enum uint STRING = 12;
-	public enum uint POSITION = 13;
-	public enum uint RAWTEXT = 16;
-	public enum uint TEXT = 18;
-	public enum uint JSON = 21;
-	public enum uint COMMAND = 28;
+	public enum uint STRING = 13;
+	public enum uint POSITION = 14;
+	public enum uint RAWTEXT = 17;
+	public enum uint TEXT = 19;
+	public enum uint JSON = 22;
+	public enum uint COMMAND = 29;
 	public enum uint ENUM = 2097152;
 	public enum uint TEMPLATE = 16777216;
 
