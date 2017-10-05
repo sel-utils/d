@@ -47,7 +47,7 @@ public struct Block
 
     string name;
     ushort id;
-    BlockData java, pocket;
+    BlockData java, bedrock;
     bool solid;
     double hardness, blastResistance;
     ubyte opacity, luminance, encouragement, flammability;

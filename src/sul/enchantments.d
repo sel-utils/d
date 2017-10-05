@@ -22,7 +22,7 @@ public struct Enchantment
 {
 
     string name;
-    EnchantmentData java, pocket;
+    EnchantmentData java, bedrock;
     ubyte max;
 
 }

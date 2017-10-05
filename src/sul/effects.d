@@ -22,7 +22,7 @@ public struct Effect
 {
 
     string name;
-    EffectValue java, pocket;
+    EffectValue java, bedrock;
     uint particles;
 
 }

@@ -24,7 +24,7 @@ public struct Item
 
     string name;
     size_t index;
-    ItemData java, pocket;
+    ItemData java, bedrock;
     ubyte stack;
     ushort durability;
 
@@ -46,7 +46,7 @@ public enum Items : Item
     grass = Item("grass", 8, ItemData(true, 2, 0, ""), ItemData(true, 2, 0, ""), 64, 0),
     dirt = Item("dirt", 9, ItemData(true, 3, 0, ""), ItemData(true, 3, 0, ""), 64, 0),
     coarseDirt = Item("coarse dirt", 10, ItemData(true, 3, 1, ""), ItemData(false), 64, 0),
-    podzol = Item("podzol", 11, ItemData(true, 3, 2, ""), ItemData(true, 243, 0, ""), 64, 0),
+    podzol = Item("podzol", 11, ItemData(true, 3, 2, ""), ItemData(false), 64, 0),
     cobblestone = Item("cobblestone", 12, ItemData(true, 4, 0, ""), ItemData(true, 4, 0, ""), 64, 0),
     oakWoodPlanks = Item("oak wood planks", 13, ItemData(true, 5, 0, ""), ItemData(true, 5, 0, ""), 64, 0),
     spruceWoodPlanks = Item("spruce wood planks", 14, ItemData(true, 5, 1, ""), ItemData(true, 5, 1, ""), 64, 0),

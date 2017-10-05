@@ -20,7 +20,7 @@ public struct Entity
 {
 
     string name;
-    EntityData java, pocket;
+    EntityData java, bedrock;
     bool object;
     double width, height;
 
