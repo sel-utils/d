@@ -76,35 +76,12 @@ struct Pack {
 
 }
 
-/**
- * Informations about a slot, that, if not empty, contains an item id and meta, the
- * count (0-255) and, optionally, an nbt tag for enchantments, custom name, colours
- * and more.
- */
 struct Slot {
 
 	public enum string[] FIELDS = ["id", "metaAndCount", "nbt"];
 
-	/**
-	 * Item's id or 0 if the slot is empty.
-	 */
 	public int id;
-
-	/**
-	 * Item's meta or uses (unsigned short) left-shifted 8 times and the count (unisgned
-	 * byte).
-	 * Examples:
-	 * ---
-	 * var encoded = item.meta << 8 | item.count
-	 * var meta = encoded >> 8
-	 * var count = count & 255
-	 * ---
-	 */
 	public int metaAndCount;
-
-	/**
-	 * Optional nbt data encoded as a nameless little-endian compound tag.
-	 */
 	public ubyte[] nbt;
 
 	public pure nothrow @safe void encode(Buffer buffer) {
@@ -165,10 +142,6 @@ struct Attribute {
 
 }
 
-/**
- * Position of a block, where x and z are signed and y is always positive (as blocks
- * cannot be placed under 0).
- */
 struct BlockPosition {
 
 	public enum string[] FIELDS = ["x", "y", "z"];
@@ -199,21 +172,11 @@ struct BlockPosition {
 
 }
 
-/**
- * Player's skin.
- */
 struct Skin {
 
 	public enum string[] FIELDS = ["name", "data"];
 
-	/**
-	 * Name of the skin. It's used to render the shape of the skin correctly.
-	 */
 	public string name;
-
-	/**
-	 * Bytes of the skin in format RGBA. The length should be 8192 or 16382.
-	 */
 	public ubyte[] data;
 
 	public pure nothrow @safe void encode(Buffer buffer) {
@@ -236,34 +199,13 @@ struct Skin {
 
 }
 
-/**
- * Informations about a player that will be added to the player's list in the pause
- * menu.
- */
 struct PlayerList {
 
 	public enum string[] FIELDS = ["uuid", "entityId", "displayName", "skin"];
 
-	/**
-	 * UUID of the player. If it's associated with an XBOX Live account the player's profile
-	 * will also be available in pause menu.
-	 */
 	public UUID uuid;
-
-	/**
-	 * Player's id, used to associate the skin with the game's entity spawned with AddPlayer.
-	 */
 	public long entityId;
-
-	/**
-	 * Player's display name, that can contain Minecraft's formatting codes. It shouldn't
-	 * contain suffixes nor prefixes.
-	 */
 	public string displayName;
-
-	/**
-	 * Player's skin usually given in the Login's packet body.
-	 */
 	public sul.protocol.pocket101.types.Skin skin;
 
 	public pure nothrow @safe void encode(Buffer buffer) {
@@ -359,45 +301,15 @@ struct Recipe {
 
 }
 
-/**
- * Chunk's blocks, lights and other immutable data.
- */
 struct ChunkData {
 
 	public enum string[] FIELDS = ["sections", "heights", "biomes", "borders", "extraData", "blockEntities"];
 
-	/**
-	 * 16x16x16 section of the chunk. The array's keys also indicate the section's height
-	 * (the 3rd element of the array will be the 3rd section from bottom, starting at `y=24`).
-	 * The amount of sections should be in a range from 0 (empty chunk) to 16.
-	 */
 	public sul.protocol.pocket101.types.Section[] sections;
-
-	/**
-	 * Coordinates of the highest block in the column that receives sky light (order `xz`).
-	 * It is used to increase the speed when calculating the block's light level.
-	 */
 	public ushort[256] heights;
-
-	/**
-	 * Biomes in order `xz`.
-	 */
 	public ubyte[256] biomes;
-
-	/**
-	 * Colums where there are world borders (in format `xz`). This feature hasn't been
-	 * implemented in the game yet and crashes the client.
-	 */
 	public ubyte[] borders;
 	public sul.protocol.pocket101.types.ExtraData[] extraData;
-
-	/**
-	 * Additional data for the chunk's block entities (tiles), encoded in the same way
-	 * as BlockEntityData.nbt is. The position is given by the `Int` tags `x`, `y`, `z`
-	 * which are added to the block's compound tag together with the `String` tag `id`
-	 * that contains the name of the tile in pascal case.
-	 * Wrong encoding or missing tags may result in the block becoming invisible.
-	 */
 	public ubyte[] blockEntities;
 
 	public pure nothrow @safe void encode(Buffer o_buffer) {
@@ -436,10 +348,6 @@ struct ChunkData {
 
 }
 
-/**
- * Section of a chunk with informations about blocks and lights. The array of bytes
- * are always ordered `xzy`.
- */
 struct Section {
 
 	public enum string[] FIELDS = ["storageVersion", "blockIds", "blockMetas", "skyLight", "blockLight"];
@@ -510,10 +418,6 @@ struct Decoration {
 	public int rotationAndIcon;
 	public Tuple!(ubyte, "x", ubyte, "z") position;
 	public string label;
-
-	/**
-	 * ARGB colour.
-	 */
 	public uint color;
 
 	public pure nothrow @safe void encode(Buffer buffer) {
@@ -540,9 +444,6 @@ struct Decoration {
 
 }
 
-/**
- * A game rule that prevents the client from doing client-side actions and animations.
- */
 struct Rule {
 
 	// name
@@ -554,17 +455,7 @@ struct Rule {
 
 	public enum string[] FIELDS = ["name", "value", "unknown2"];
 
-	/**
-	 * Name of the rule. Same of the `gamerule` command's field in Minecraft: Education
-	 * Edition.
-	 * The behaviours indicated in the following constants' descriptions is enabled or
-	 * disabled.
-	 */
 	public string name;
-
-	/**
-	 * Indicates whether the game rule is enabled.
-	 */
 	public bool value;
 	public bool unknown2;
 

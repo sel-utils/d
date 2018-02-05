@@ -6,11 +6,6 @@
  * Repository: https://github.com/sel-project/sel-utils
  * Generated from https://github.com/sel-project/sel-utils/blob/master/xml/protocol/pocket105.xml
  */
-/**
- * Packets related to the gameplay. Network-related packets (encapsulation, acks, nacks)
- * are managed by RakNet and every packet in this section is encapsualted in an Encapsualted
- * packet.
- */
 module sul.protocol.pocket105.play;
 
 import std.bitmanip : write, peek;
@@ -29,10 +24,6 @@ static if(__traits(compiles, { import sul.metadata.pocket105; })) import sul.met
 
 alias Packets = TypeTuple!(Login, PlayStatus, ServerToClientHandshake, ClientToServerHandshake, Disconnect, Batch, ResourcePacksInfo, ResourcePacksStackPacket, ResourcePackClientResponse, Text, SetTime, StartGame, AddPlayer, AddEntity, RemoveEntity, AddItemEntity, AddHangingEntity, TakeItemEntity, MoveEntity, MovePlayer, RiderJump, RemoveBlock, UpdateBlock, AddPainting, Explode, LevelSoundEvent, LevelEvent, BlockEvent, EntityEvent, MobEffect, UpdateAttributes, MobEquipment, MobArmorEquipment, Interact, BlockPickRequest, UseItem, PlayerAction, PlayerFall, HurtArmor, SetEntityData, SetEntityMotion, SetEntityLink, SetHealth, SetSpawnPosition, Animate, Respawn, DropItem, InventoryAction, ContainerOpen, ContainerClose, ContainerSetSlot, ContainerSetData, ContainerSetContent, CraftingData, CraftingEvent, AdventureSettings, BlockEntityData, PlayerInput, FullChunkData, SetCommandsEnabled, SetDifficulty, ChangeDimension, SetPlayerGameType, PlayerList, TelemetryEvent, SpawnExperienceOrb, ClientboundMapItemData, MapInfoRequest, RequestChunkRadius, ChunkRadiusUpdated, ItemFrameDropItem, ReplaceItemInSlot, GameRulesChanged, Camera, AddItem, BossEvent, ShowCredits, AvailableCommands, CommandStep, CommandBlockUpdate, UpdateTrade, ResourcePackDataInfo, ResourcePackChunkData, ResourcePackChunkRequest, Transfer, PlaySound, StopSound, SetTitle);
 
-/**
- * First MCPE packet sent after the establishment of the connection through raknet.
- * It contains informations about the player.
- */
 class Login : Buffer {
 
 	public enum ubyte ID = 1;
@@ -46,23 +37,8 @@ class Login : Buffer {
 
 	public enum string[] FIELDS = ["protocol", "edition", "body_"];
 
-	/**
-	 * Version of the protocol used by the player.
-	 */
 	public uint protocol;
-
-	/**
-	 * Edition that the player is using to join the server. The different editions may
-	 * have different features and servers may block the access from unaccepted editions
-	 * of the game.
-	 */
 	public ubyte edition;
-
-	/**
-	 * Zlib-compressed bytes that contains 2 JWTs with more informations about the player
-	 * and its account. Once uncompressed the resulting payload will contain 2 JWTs which
-	 * length is indicated by a little-endian unsigned integer each.
-	 */
 	public ubyte[] body_;
 
 	public pure nothrow @safe @nogc this() {}
@@ -102,10 +78,6 @@ class Login : Buffer {
 
 }
 
-/**
- * Packet sent as response to Login to indicate whether the connection has been accepted
- * and when the player is ready to spawn in the world.
- */
 class PlayStatus : Buffer {
 
 	public enum ubyte ID = 2;
@@ -234,9 +206,6 @@ class ClientToServerHandshake : Buffer {
 
 }
 
-/**
- * Disconnects the player from the server.
- */
 class Disconnect : Buffer {
 
 	public enum ubyte ID = 5;
@@ -246,15 +215,7 @@ class Disconnect : Buffer {
 
 	public enum string[] FIELDS = ["hideDisconnectionScreen", "message"];
 
-	/**
-	 * Indicates whether to display the main menu screen or a disconnection message.
-	 */
 	public bool hideDisconnectionScreen;
-
-	/**
-	 * The message to display in the disconnection screen. If the message is in the game's
-	 * language file it will be translated client-side.
-	 */
 	public string message;
 
 	public pure nothrow @safe @nogc this() {}
@@ -291,10 +252,6 @@ class Disconnect : Buffer {
 
 }
 
-/**
- * One ore more packet, each prefixed with their varuint-encoded length, compressed
- * with zlib's deflate algorithm.
- */
 class Batch : Buffer {
 
 	public enum ubyte ID = 6;
@@ -304,32 +261,6 @@ class Batch : Buffer {
 
 	public enum string[] FIELDS = ["data"];
 
-	/**
-	 * Compressed data.
-	 * 
-	 * Pseudo-code for decompression:
-	 * ---
-	 * ubyte[] uncompressed = uncompress(batch.payload);
-	 * int index = 0;
-	 * while(index < uncompressed.length) {
-	 *    int length = varuint.decode(uncompressed, &index);
-	 *    if(length < uncompressed.length - index) {}
-	 *       ubyte[] packet = uncompressed[0..length];
-	 *       index += length;
-	 *    }
-	 * }
-	 * ---
-	 * 
-	 * Pseudo-code for compression:
-	 * ---
-	 * ubyte[] payload;
-	 * foreach(ubyte[] packet ; packets) {
-	 *    payload.concat(varuint.encode(packet.length));
-	 *    payload.concat(packet);
-	 * }
-	 * Batch batch = new Batch(compress(payload, Zlib.DEFLATE));
-	 * ---
-	 */
 	public ubyte[] data;
 
 	public pure nothrow @safe @nogc this() {}
@@ -515,10 +446,6 @@ class ResourcePackClientResponse : Buffer {
 
 }
 
-/**
- * Sends or receives a message from the player. Every variant's field can contain Minecraft's
- * formatting codes.
- */
 class Text : Buffer {
 
 	public enum ubyte ID = 10;
@@ -565,9 +492,6 @@ class Text : Buffer {
 
 	alias Variants = TypeTuple!(Raw, Chat, Translation, Popup, Tip, System, Whisper);
 
-	/**
-	 * Raw message that will be printed in the chat as it is.
-	 */
 	public class Raw {
 
 		public enum typeof(type) TYPE = 0;
@@ -599,25 +523,13 @@ class Text : Buffer {
 
 	}
 
-	/**
-	 * Chat message sent by the player to the server. If sent from the server it will display
-	 * as `&lt;sender&gt; message`.
-	 */
 	public class Chat {
 
 		public enum typeof(type) TYPE = 1;
 
 		public enum string[] FIELDS = ["sender", "message"];
 
-		/**
-		 * Case sensitive name of the player that has sent the message.
-		 */
 		public string sender;
-
-		/**
-		 * Message sent by the player. It should be unformatted (regular expression: `§[a-fA-F0-9k-or]`)
-		 * before being processed as chat message by the server.
-		 */
 		public string message;
 
 		public pure nothrow @safe @nogc this() {}
@@ -646,23 +558,13 @@ class Text : Buffer {
 
 	}
 
-	/**
-	 * Sends a message that will be translated client-side using the player's language.
-	 */
 	public class Translation {
 
 		public enum typeof(type) TYPE = 2;
 
 		public enum string[] FIELDS = ["message", "parameters"];
 
-		/**
-		 * A message in the game's language file.
-		 */
 		public string message;
-
-		/**
-		 * Parameters that will be placed instead of the replacement symbols (%1, %2, etc...).
-		 */
 		public string[] parameters;
 
 		public pure nothrow @safe @nogc this() {}
@@ -691,10 +593,6 @@ class Text : Buffer {
 
 	}
 
-	/**
-	 * Displays popups messages for one tick before fading out. The popup messages are
-	 * displayed at the centre of the screen and are not automatically aligned horizontally.
-	 */
 	public class Popup {
 
 		public enum typeof(type) TYPE = 3;
@@ -730,10 +628,6 @@ class Text : Buffer {
 
 	}
 
-	/**
-	 * Displays a tip message for one tick before fading out. The tip message is displayed
-	 * on top of the inventory bar and can contain multiple lines separated with `\n`.
-	 */
 	public class Tip {
 
 		public enum typeof(type) TYPE = 4;
@@ -796,10 +690,6 @@ class Text : Buffer {
 
 	}
 
-	/**
-	 * Sends a whisper message to the client that will be displayed in the format `<i>sender
-	 * has whispered to you:</i> message`.
-	 */
 	public class Whisper {
 
 		public enum typeof(type) TYPE = 6;
@@ -837,9 +727,6 @@ class Text : Buffer {
 
 }
 
-/**
- * Sets the time.
- */
 class SetTime : Buffer {
 
 	public enum ubyte ID = 11;
@@ -849,16 +736,7 @@ class SetTime : Buffer {
 
 	public enum string[] FIELDS = ["time", "daylightCycle"];
 
-	/**
-	 * Time of the day in a range from 0 to 24000. If higher or lower it will be moduled
-	 * to 24000.
-	 */
 	public int time;
-
-	/**
-	 * Indicates whether the daylight cycle is active. If not, the time will be stopped
-	 * at the value given in the previous field.
-	 */
 	public bool daylightCycle;
 
 	public pure nothrow @safe @nogc this() {}
@@ -928,86 +806,25 @@ class StartGame : Buffer {
 
 	public enum string[] FIELDS = ["entityId", "runtimeId", "position", "yaw", "pitch", "seed", "dimension", "generator", "worldGamemode", "difficulty", "spawnPosition", "loadedInCreative", "time", "edition", "rainLevel", "lightningLevel", "commandsEnabled", "textureRequired", "levelId", "worldName"];
 
-	/**
-	 * Player's entity id that uniquely identifies the entity of the server.
-	 */
 	public long entityId;
 	public long runtimeId;
-
-	/**
-	 * Position where the player will spawn.
-	 */
 	public Tuple!(float, "x", float, "y", float, "z") position;
 	public float yaw;
 	public float pitch;
-
-	/**
-	 * World's seed. It's displayed in the game's world settings and in beta's debug informations
-	 * on top of the screen.
-	 */
 	public int seed;
-
-	/**
-	 * World's dimension. Different dimensions have different sky colours and render distances.
-	 */
 	public int dimension = 0;
-
-	/**
-	 * World's type. It's displayed in the game's world settings.
-	 * In old and infinite world the sky becomes darker at 32 blocks of altitude and in
-	 * flat worlds it only becomes darker under 0.
-	 */
 	public int generator = 1;
-
-	/**
-	 * Default's world gamemode. If the player's gamemode is different from the default's
-	 * one a SetPlayerGameType should be sent after this.
-	 */
 	public int worldGamemode;
-
-	/**
-	 * World's difficulty. The value is visible in the client's world settings.
-	 */
 	public int difficulty;
-
-	/**
-	 * Position where the client's compass will point to.
-	 */
 	public Tuple!(int, "x", int, "y", int, "z") spawnPosition;
 	public bool loadedInCreative;
-
-	/**
-	 * Time of the day that should be in a range from 0 to 24000. If not the absolute value
-	 * is moduled per 24000.
-	 * If the world's time is stopped a SetTime packet should be sent after this.
-	 */
 	public int time;
-
-	/**
-	 * Game's edition. Some behaviours (some entities for example) may only work in a version
-	 * and not in the other.
-	 */
 	public ubyte edition;
-
-	/**
-	 * Intensity of the rain or the snow. Any value lower than or equals to 0 means no
-	 * rain.
-	 */
 	public float rainLevel;
 	public float lightningLevel;
-
-	/**
-	 * Indicates whether the cheats are enabled. If the cheats are disabled the player
-	 * cannot send commands.
-	 */
 	public bool commandsEnabled;
 	public bool textureRequired;
 	public string levelId;
-
-	/**
-	 * World's name that will be displayed in the game's world settings. It can contain
-	 * formatting codes.
-	 */
 	public string worldName;
 
 	public pure nothrow @safe @nogc this() {}
@@ -1098,13 +915,6 @@ class StartGame : Buffer {
 
 }
 
-/**
- * Spawns a player after adding it to the player's list using PlayerList. If PlayerList
- * is sent after this packet the player will appear to have the same skin as the player
- * who receives this packet.
- * Spawning a player to itself (using the same entity id given in the StartGame packet)
- * will crash the client's game.
- */
 class AddPlayer : Buffer {
 
 	public enum ubyte ID = 13;
@@ -1114,15 +924,7 @@ class AddPlayer : Buffer {
 
 	public enum string[] FIELDS = ["uuid", "username", "entityId", "runtimeId", "position", "motion", "pitch", "headYaw", "yaw", "heldItem", "metadata"];
 
-	/**
-	 * Player's UUID, should match an UUID of a player in the list added through PlayerList.
-	 */
 	public UUID uuid;
-
-	/**
-	 * Player's username and text displayed on the nametag if something else is not specified
-	 * in the metadata.
-	 */
 	public string username;
 	public long entityId;
 	public long runtimeId;
@@ -1273,9 +1075,6 @@ class AddEntity : Buffer {
 
 }
 
-/**
- * Despawns an entity or a player.
- */
 class RemoveEntity : Buffer {
 
 	public enum ubyte ID = 15;
@@ -1318,9 +1117,6 @@ class RemoveEntity : Buffer {
 
 }
 
-/**
- * Spawns a dropped item.
- */
 class AddItemEntity : Buffer {
 
 	public enum ubyte ID = 16;
@@ -1433,9 +1229,6 @@ class AddHangingEntity : Buffer {
 
 }
 
-/**
- * Plays the collection animation and despawns the entity that has been collected.
- */
 class TakeItemEntity : Buffer {
 
 	public enum ubyte ID = 18;
@@ -1445,15 +1238,7 @@ class TakeItemEntity : Buffer {
 
 	public enum string[] FIELDS = ["collected", "collector"];
 
-	/**
-	 * Collected entity, usually an item entity or an arrow, that will float toward the
-	 * collector and despawn.
-	 */
 	public long collected;
-
-	/**
-	 * Entity that collects, usually a player or another entity with an inventory.
-	 */
 	public long collector;
 
 	public pure nothrow @safe @nogc this() {}
@@ -1661,10 +1446,6 @@ class RiderJump : Buffer {
 
 }
 
-/**
- * Instantly removes a block, either because the player is in creative mode or because
- * the target block's hardness is 0 or lower (after all enchantments are applied).
- */
 class RemoveBlock : Buffer {
 
 	public enum ubyte ID = 22;
@@ -1763,9 +1544,6 @@ class UpdateBlock : Buffer {
 
 }
 
-/**
- * Spawns a painting entity in the world.
- */
 class AddPainting : Buffer {
 
 	public enum ubyte ID = 24;
@@ -1874,9 +1652,6 @@ class Explode : Buffer {
 
 }
 
-/**
- * Plays a sound at a certain position.
- */
 class LevelSoundEvent : Buffer {
 
 	public enum ubyte ID = 26;
@@ -1985,11 +1760,6 @@ class LevelSoundEvent : Buffer {
 	public enum string[] FIELDS = ["sound", "position", "volume", "pitch", "unknown4"];
 
 	public ubyte sound;
-
-	/**
-	 * Position where the sound was generated. The closer to the player the more intense
-	 * will be on the client.
-	 */
 	public Tuple!(float, "x", float, "y", float, "z") position;
 	public uint volume;
 	public int pitch;
@@ -2317,11 +2087,6 @@ class MobEffect : Buffer {
 
 }
 
-/**
- * Updates an entity's attributes. This packet should be used when a value must be
- * modified but it cannot be done using another packet (for example controlling the
- * player's experience and level).
- */
 class UpdateAttributes : Buffer {
 
 	public enum ubyte ID = 31;
@@ -2368,9 +2133,6 @@ class UpdateAttributes : Buffer {
 
 }
 
-/**
- * Sent when the client puts an item in its hotbar or selects a new hotbar slot.
- */
 class MobEquipment : Buffer {
 
 	public enum ubyte ID = 32;
@@ -2382,16 +2144,7 @@ class MobEquipment : Buffer {
 
 	public long entityId;
 	public sul.protocol.pocket105.types.Slot item;
-
-	/**
-	 * Slot of the inventory where the item is. The hotbat slots (0-8) are not counted.
-	 * 255 means that a generic empty slot has been selected.
-	 */
 	public ubyte inventorySlot;
-
-	/**
-	 * Slot of the hotbar where the item is being moved.
-	 */
 	public ubyte hotbarSlot;
 	public ubyte unknown4;
 
@@ -2717,10 +2470,6 @@ class PlayerAction : Buffer {
 
 }
 
-/**
- * Sent by the player when it falls from a distance that causes damage, that can be
- * influenced by its armour and its effects.
- */
 class PlayerFall : Buffer {
 
 	public enum ubyte ID = 38;
@@ -2730,9 +2479,6 @@ class PlayerFall : Buffer {
 
 	public enum string[] FIELDS = ["distance"];
 
-	/**
-	 * Number of blocks the player has been in free falling before hitting the ground.
-	 */
 	public float distance;
 
 	public pure nothrow @safe @nogc this() {}
@@ -2808,9 +2554,6 @@ class HurtArmor : Buffer {
 
 }
 
-/**
- * Updates an entity's metadata.
- */
 class SetEntityData : Buffer {
 
 	public enum ubyte ID = 40;
@@ -2857,9 +2600,6 @@ class SetEntityData : Buffer {
 
 }
 
-/**
- * Updates an entity's motion.
- */
 class SetEntityMotion : Buffer {
 
 	public enum ubyte ID = 41;
@@ -2869,18 +2609,7 @@ class SetEntityMotion : Buffer {
 
 	public enum string[] FIELDS = ["entityId", "motion"];
 
-	/**
-	 * Entity which motion is updated. If the entity id is the player's, its motion is
-	 * updated client-side and the player will send movement packets to the server (meaning
-	 * that the server has no physical calculations to do). If not an animation will be
-	 * done client-side but the server will have to calculate the new position applying
-	 * the item's movement rules.
-	 */
 	public long entityId;
-
-	/**
-	 * New motion for the entity that will influence its movement.
-	 */
 	public Tuple!(float, "x", float, "y", float, "z") motion;
 
 	public pure nothrow @safe @nogc this() {}
@@ -3609,9 +3338,6 @@ class CraftingEvent : Buffer {
 
 }
 
-/**
- * Updates the world's settings and client's permissions.
- */
 class AdventureSettings : Buffer {
 
 	public enum ubyte ID = 56;
@@ -3676,11 +3402,6 @@ class AdventureSettings : Buffer {
 
 }
 
-/**
- * Sets a block entity's nbt tag, block's additional data that cannot be indicated
- * in the block's meta. More informations about block entities and their tag format
- * can be found on Minecraft Wiki.
- */
 class BlockEntityData : Buffer {
 
 	public enum ubyte ID = 57;
@@ -3690,22 +3411,7 @@ class BlockEntityData : Buffer {
 
 	public enum string[] FIELDS = ["position", "nbt"];
 
-	/**
-	 * Position of the block that will be associated with tag.
-	 */
 	public sul.protocol.pocket105.types.BlockPosition position;
-
-	/**
-	 * Named binary tag of the block. The format varies from the classic format of Minecraft:
-	 * Pocket Edition (which is like Minecraft's but little endian) introducing the use
-	 * of varints for some types:
-	 * + The tag `Int` is encoded as a signed varint instead of a simple signed 32-bits
-	 * integer
-	 * + The length of the `ByteArray` and the `IntArray` is encoded as an unsigned varint
-	 * instead of a 32-bits integer
-	 * + The length of the `String` tag and the named tag's name length are encoded as
-	 * an unisgned varint instead of a 16-bits integer
-	 */
 	public ubyte[] nbt;
 
 	public pure nothrow @safe @nogc this() {}
@@ -3792,9 +3498,6 @@ class PlayerInput : Buffer {
 
 }
 
-/**
- * Sends a 16x16 chunk to the client with its blocks, lights and block entities (tiles).
- */
 class FullChunkData : Buffer {
 
 	public enum ubyte ID = 59;
@@ -3804,9 +3507,6 @@ class FullChunkData : Buffer {
 
 	public enum string[] FIELDS = ["position", "data"];
 
-	/**
-	 * Coordinates of the chunk.
-	 */
 	public Tuple!(int, "x", int, "z") position;
 	public sul.protocol.pocket105.types.ChunkData data;
 
@@ -3844,9 +3544,6 @@ class FullChunkData : Buffer {
 
 }
 
-/**
- * Indicates whether the cheats are enabled. If not the client cannot send commands.
- */
 class SetCommandsEnabled : Buffer {
 
 	public enum ubyte ID = 60;
@@ -3889,9 +3586,6 @@ class SetCommandsEnabled : Buffer {
 
 }
 
-/**
- * Sets the world's difficulty.
- */
 class SetDifficulty : Buffer {
 
 	public enum ubyte ID = 61;
@@ -3995,11 +3689,6 @@ class ChangeDimension : Buffer {
 
 }
 
-/**
- * Sets the player's gamemode. This packet is sent by the player when it has the operator
- * status (set in AdventureSettings.permissions) and it changes the gamemode in the
- * settings screen.
- */
 class SetPlayerGameType : Buffer {
 
 	public enum ubyte ID = 63;
@@ -4046,11 +3735,6 @@ class SetPlayerGameType : Buffer {
 
 }
 
-/**
- * Adds or removes a player from the player's list displayed in the pause menu. This
- * packet should be sent before spawning a player with AddPlayer, otherwise the skin
- * is not applied.
- */
 class PlayerList : Buffer {
 
 	public enum ubyte ID = 64;
@@ -4270,16 +3954,8 @@ class ClientboundMapItemData : Buffer {
 	public long mapId;
 	public uint update;
 	public ubyte scale;
-
-	/**
-	 * Colums and rows.
-	 */
 	public Tuple!(int, "x", int, "z") size;
 	public Tuple!(int, "x", int, "z") offset;
-
-	/**
-	 * ARGB colours encoded as unsigned varints.
-	 */
 	public ubyte[] data;
 	public sul.protocol.pocket105.types.Decoration[] decorations;
 
@@ -4374,11 +4050,6 @@ class MapInfoRequest : Buffer {
 
 }
 
-/**
- * Packet sent by the client when its view-distance is updated and when it spawns for
- * the first time a world. A ChunkRadiusUpdate should always be sent in response, otherwise
- * the player will not update its view distance.
- */
 class RequestChunkRadius : Buffer {
 
 	public enum ubyte ID = 69;
@@ -4388,10 +4059,6 @@ class RequestChunkRadius : Buffer {
 
 	public enum string[] FIELDS = ["radius"];
 
-	/**
-	 * Number of chunks before the fog starts to appear in the client's view. The value
-	 * of this field is usually between 8 and 14.
-	 */
 	public int radius;
 
 	public pure nothrow @safe @nogc this() {}
@@ -4425,10 +4092,6 @@ class RequestChunkRadius : Buffer {
 
 }
 
-/**
- * Packet sent always and only in response to RequestChunkRadius to change the client's
- * view distance.
- */
 class ChunkRadiusUpdated : Buffer {
 
 	public enum ubyte ID = 70;
@@ -4438,10 +4101,6 @@ class ChunkRadiusUpdated : Buffer {
 
 	public enum string[] FIELDS = ["radius"];
 
-	/**
-	 * View distance that may be different from the client's one if the server sets a limit
-	 * on the view distance.
-	 */
 	public int radius;
 
 	public pure nothrow @safe @nogc this() {}
@@ -4563,11 +4222,6 @@ class ReplaceItemInSlot : Buffer {
 
 }
 
-/**
- * Updates client's game rules. This packet is ignored if the game is not launched
- * as Education Edition and should be avoid in favour of AdventureSettings, with which
- * the same result can be obtained with less data.
- */
 class GameRulesChanged : Buffer {
 
 	public enum ubyte ID = 73;
@@ -4698,10 +4352,6 @@ class AddItem : Buffer {
 
 }
 
-/**
- * Adds, removes or modifies an entity's boss bar. The percentage of the bar is calculated
- * using the entity's attributes for the health and the max health, updated with UpdateAttributes.
- */
 class BossEvent : Buffer {
 
 	public enum ubyte ID = 76;
@@ -4803,9 +4453,6 @@ class ShowCredits : Buffer {
 
 }
 
-/**
- * Sends a list of the commands that the player can use through the CommandStep packet.
- */
 class AvailableCommands : Buffer {
 
 	public enum ubyte ID = 78;
@@ -4815,9 +4462,6 @@ class AvailableCommands : Buffer {
 
 	public enum string[] FIELDS = ["commands", "unknown1"];
 
-	/**
-	 * JSON object with the commands.
-	 */
 	public string commands;
 	public string unknown1;
 
@@ -5235,11 +4879,6 @@ class ResourcePackChunkRequest : Buffer {
 
 }
 
-/**
- * Transfers the player to another server. Once transferred the player will immediately
- * close the connection with the transferring server, try to resolve the ip and join
- * the new server starting a new raknet session.
- */
 class Transfer : Buffer {
 
 	public enum ubyte ID = 85;
@@ -5249,16 +4888,7 @@ class Transfer : Buffer {
 
 	public enum string[] FIELDS = ["ip", "port"];
 
-	/**
-	 * Address of the new server. It can be an dotted ip (for example `127.0.0.1`) or an
-	 * URI (for example `localhost` or `play.example.com`). Only IP of version 4 are currently
-	 * allowed.
-	 */
 	public string ip;
-
-	/**
-	 * Port of the new server. If 0 the server will try to connect to the default port.
-	 */
 	public ushort port = 19132;
 
 	public pure nothrow @safe @nogc this() {}

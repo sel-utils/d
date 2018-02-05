@@ -6,9 +6,6 @@
  * Repository: https://github.com/sel-project/sel-utils
  * Generated from https://github.com/sel-project/sel-utils/blob/master/xml/protocol/raknet8.xml
  */
-/**
- * Minecraft: Pocket Edition's networking protocol.
- */
 module sul.protocol.raknet8;
 
 public import sul.protocol.raknet8.types;
